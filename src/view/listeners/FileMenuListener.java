@@ -29,7 +29,7 @@ public class FileMenuListener implements ActionListener {
 				}
 			} else {
 				// Wenn Programm leer brauch man kein neues anlegen
-				MainFrame.editorPanel.resetUndoQueue();
+				MainFrame.editorPanel.resetUndoRedoQueue();
 				Transition.createdTransitions = 0;
 			}
 		} else if (e.getActionCommand().equals("openFile")) {

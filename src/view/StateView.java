@@ -18,6 +18,11 @@ import javax.swing.event.DocumentListener;
 
 import model.State;
 
+/**
+ * @author ida
+ *
+ *View for the states in the state chart. 
+ */
 public class StateView extends JDialog implements ActionListener, DocumentListener {
 
 	private static final long serialVersionUID = -8023383434693559831L;

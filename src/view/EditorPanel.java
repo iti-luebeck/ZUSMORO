@@ -25,6 +25,11 @@ import model.Transition;
 import model.UndoRedoQueue;
 
 
+/**
+ * @author ida
+ *
+ * Creates the white editor window and adds all possible events 
+ */
 public class EditorPanel extends JPanel implements Observer, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 8588326049847550395L;
@@ -34,10 +39,27 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 	private Rectangle selectionRect;
 	private UndoRedoQueue undoRedoQueue;
 
+	/**
+	 * @author ida
+	 * 
+	 * Editor modes including funny toString method
+	 */
 	public enum EditorMode {
+		/**
+		 * Edit existing state chart
+		 */
 		EDIT("Editieren"),
+		/**
+		 * Create new state in current chart
+		 */
 		CREATE_STATE("Zustand erstellen"),
+		/**
+		 * Create new transition in existing chart
+		 */
 		CREATE_TRANSITION("Transition erstellen"),
+		/**
+		 * Delete states or transitions in current chart
+		 */
 		DELETE("Zustände oder Transitionen löschen");
 
 		private String s;
@@ -50,17 +72,26 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		}
 	}
 
+	/**
+	 * Constructor without parameters, is super really needed?
+	 */
 	public EditorPanel() {
 		super();
 		construct();
 	}
 
+	/**
+	 * @param robot 
+	 * 
+	 * Constructor with robot, is super really needed?
+	 */
 	public EditorPanel(AbstractRobot robot) {
 		super();
 		construct();
 		MainFrame.automat.setRobot(robot);
 	}
 
+	//actual constructor, why is it here?
 	private void construct() {
 		MainFrame.automat = new Automat();
 		MainFrame.automat.addObserver(this);
@@ -75,7 +106,7 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		this.addMouseMotionListener(this);
 	}
 
-	public void setMode(EditorMode newMode) {
+	void setMode(EditorMode newMode) {
 		this.mode = newMode;
 		MainFrame.statusBar.setEditorMode(mode);
 	}
@@ -135,10 +166,21 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		// Component comp = getComponentAt(e.getX(), e.getY());
 	}
 
+	/** 
+	 * @return current mode
+	 * 
+	 * getter for mode
+	 */
 	public EditorMode getMode() {
 		return mode;
 	}
 
+	
+	/**
+	 * @param rect Selection in window (selected by dragging)
+	 * 
+	 * Marks several states at once
+	 */
 	public void selectStatesIn(Rectangle rect) {
 		Component[] comps = this.getComponents();
 		// ArrayList<State> selectedStates = new ArrayList<State>(comps.length);
@@ -228,6 +270,9 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		}
 	}
 
+	/**
+	 * Repaints only valid components?!
+	 */
 	public void validateProgramm() {
 		this.removeAll();
 		ArrayList<Transition> transitions = new ArrayList<Transition>();
@@ -240,15 +285,21 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		}
 		this.validate();
 		this.repaint();
-		resetUndoQueue();
+		resetUndoRedoQueue();
 	}
 
-	public void resetUndoQueue() {
+	/**
+	 * Clear undoRedoQueue
+	 */
+	public void resetUndoRedoQueue() {
 		undoRedoQueue.clear();
 		MainFrame.menuBar.undo.setEnabled(false);
 		MainFrame.menuBar.redo.setEnabled(false);
 	}
 
+	/**
+	 * Undo the last action if possible
+	 */
 	public void undo() {
 		if (undoRedoQueue.hasUndoEvents()) {
 			ChangeEvent event = undoRedoQueue.dequeUndoEvent();
@@ -279,6 +330,9 @@ public class EditorPanel extends JPanel implements Observer, MouseListener, Mous
 		MainFrame.menuBar.redo.setEnabled(undoRedoQueue.hasRedoEvents());
 	}
 
+	/**
+	 * Redo last undone action if possible
+	 */
 	public void redo() {
 		if (undoRedoQueue.hasRedoEvents()) {
 			ChangeEvent event = undoRedoQueue.dequeRedoEvent();
