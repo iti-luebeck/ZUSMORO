@@ -11,7 +11,12 @@ import javax.swing.JSpinner;
 
 import model.ActionController;
 
-public class ControllerPanel {
+/**
+ * @author ida
+ * 
+ *         Panel to set the parameters for the motor's p-controller
+ */
+public class MotorControllerPanel {
 
 	private JSpinner offsetSpinner;
 	private JSpinner minSpinner;
@@ -21,12 +26,13 @@ public class ControllerPanel {
 	private JLabel min;
 	private JLabel max;
 	private JLabel kpr;
-	private String[] sensors = { "IR0", "IR1", "IR2", "IR3", "IR4", "IR5", "IR6", "IR7", "UIR0", "UIR1", "UIR2" };
+	private String[] sensors = { "IR0", "IR1", "IR2", "IR3", "IR4", "IR5",
+			"IR6", "IR7", "UIR0", "UIR1", "UIR2" };
 	private JLabel sensor1;
-	private JComboBox sensor1Box;
+	private JComboBox<String> sensor1Box;
 	private JCheckBox enableSensor2;
 	private JLabel sensor2;
-	private JComboBox sensor2Box;
+	private JComboBox<String> sensor2Box;
 	private JLabel cV;
 	private JSpinner cVSpinner;
 	private JLabel formel1;
@@ -35,7 +41,11 @@ public class ControllerPanel {
 	private JCheckBox enabled;
 	private ActionController ac;
 
-	public ControllerPanel() {
+	/**
+	 * Constructor for the MotorControllerPanel, generating all the data fields
+	 * and descriptions
+	 */
+	public MotorControllerPanel() {
 		offset = new JLabel("Offset");
 		offsetSpinner = new JSpinner();
 
@@ -49,17 +59,18 @@ public class ControllerPanel {
 		kprSpinner = new JSpinner();
 
 		sensor1 = new JLabel("Sensor1");
-		sensor1Box = new JComboBox(sensors);
+		sensor1Box = new JComboBox<String>(sensors);
 
 		enableSensor2 = new JCheckBox("Sensor2 verwenden");
 
 		sensor2 = new JLabel("Sensor2");
-		sensor2Box = new JComboBox(sensors);
+		sensor2Box = new JComboBox<String>(sensors);
 
 		cV = new JLabel("Sollwert");
 		cVSpinner = new JSpinner();
 
-		formel1 = new JLabel("X = (Kpr/1000) * ( Sollwert - (Sensor1() - Sensor2())");
+		formel1 = new JLabel(
+				"X = (Kpr/1000) * ( Sollwert - (Sensor1() - Sensor2())");
 		formel2 = new JLabel("Minimum <= X <= Maximum");
 		formel3 = new JLabel("Stellgröße = Offset + X");
 
@@ -67,12 +78,14 @@ public class ControllerPanel {
 		ac = null;
 	}
 
-	public ActionController showPanel(MouseEvent e,ActionController ac2) {
+	public ActionController showPanel(MouseEvent e, ActionController ac2) {
 		setValues(ac2);
-		Object[] params = { offset, offsetSpinner, min, minSpinner, max, maxSpinner, kpr, kprSpinner, sensor1,
-				sensor1Box, enableSensor2, sensor2, sensor2Box, cV, cVSpinner, formel1, formel2, formel3, enabled };
-		int n = JOptionPane.showConfirmDialog((Component) e.getSource(), params, "P-Regler",
-				JOptionPane.OK_CANCEL_OPTION);
+		Object[] params = { offset, offsetSpinner, min, minSpinner, max,
+				maxSpinner, kpr, kprSpinner, sensor1, sensor1Box,
+				enableSensor2, sensor2, sensor2Box, cV, cVSpinner, formel1,
+				formel2, formel3, enabled };
+		int n = JOptionPane.showConfirmDialog((Component) e.getSource(),
+				params, "P-Regler", JOptionPane.OK_CANCEL_OPTION);
 
 		if (!enabled.isSelected()) {
 			return null;
@@ -81,8 +94,10 @@ public class ControllerPanel {
 			ac.setMin((Integer) minSpinner.getValue());
 			ac.setMax((Integer) maxSpinner.getValue());
 			ac.setKpr((Integer) kprSpinner.getValue());
-			ac.setVar(enableSensor2.isSelected() ? "DIFFERRENCE_" + (String) sensor1Box.getSelectedItem() + "_"
-					+ (String) sensor2Box.getSelectedItem() : (String) sensor1Box.getSelectedItem());
+			ac.setVar(enableSensor2.isSelected() ? "DIFFERRENCE_"
+					+ (String) sensor1Box.getSelectedItem() + "_"
+					+ (String) sensor2Box.getSelectedItem()
+					: (String) sensor1Box.getSelectedItem());
 			ac.setCompvalue((Integer) cVSpinner.getValue());
 		}
 		return ac;

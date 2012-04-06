@@ -13,12 +13,10 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.security.Guard;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.plaf.SliderUI;
+import javax.swing.JSpinner;
 
 import model.Transition;
 import model.bool.BooleanExpression;
@@ -27,11 +25,17 @@ import model.bool.Variable;
 import model.bool.Variable.Operator;
 import view.AbstractTransitionPanel;
 
+/**
+ * @author ida
+ * 
+ *         Panel to describe the condition for the transition
+ */
 public class TransitionPanel extends AbstractTransitionPanel implements
 		MouseListener {
 	private static final long serialVersionUID = 4115771690354407351L;
-	private final Image trans_background = new ImageIcon(TransitionPanel.class
-			.getResource("trans_background.png")).getImage();
+	private final Image trans_background = new ImageIcon(
+			TransitionPanel.class.getResource("trans_background.png"))
+			.getImage();
 
 	private final int IR0 = 0;
 	// private final int IR1 = 1;
@@ -76,6 +80,13 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 	private Transition transition;
 	private DifferencePanel differencePanel;
 
+	/**
+	 * @param trans
+	 *            Name of the transition
+	 * 
+	 *            Constructor for the TransitionPanel. Adds Listeners, sets
+	 *            initial values.
+	 */
 	public TransitionPanel(Transition trans) {
 		this.transition = trans;
 		addMouseListener(this);
@@ -90,7 +101,7 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 		for (int i = 0; i < sensorPanels.length; i++) {
 			sensorPanels[i] = new SensorPanel();
 		}
-		differencePanel = new DifferencePanel(transition);		
+		differencePanel = new DifferencePanel(transition);
 	}
 
 	private void setValues() {
@@ -187,13 +198,14 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 		} catch (Exception e) {
 			// don't care
 		}
-		for(Variable v:differencePanel.getVars()){
+		for (Variable v : differencePanel.getVars()) {
 			newGuard.addOperand(v);
 			String[] split = v.getVariableName().split("_");
-			toolTip.append("<br>"+split[1]+"-"+split[2]+v.getOperator().toHTMLString()+v.getCompValue());
+			toolTip.append("<br>" + split[1] + "-" + split[2]
+					+ v.getOperator().toHTMLString() + v.getCompValue());
 			somethingSet = true;
 		}
-		
+
 		if (!somethingSet) {
 			toolTip.append("<br>true");
 		}
@@ -203,20 +215,20 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		
-			int x = e.getX();
-			int y = e.getY();
-			Point2D.Double point = new Point2D.Double(x, y);
-			for (int i = 0; i < sensorShapes.length; i++) {
-				if (sensorShapes[i].contains(point)) {
-					addPanel(sensorPanels[i], x, y);
-					return;
-				}
+
+		int x = e.getX();
+		int y = e.getY();
+		Point2D.Double point = new Point2D.Double(x, y);
+		for (int i = 0; i < sensorShapes.length; i++) {
+			if (sensorShapes[i].contains(point)) {
+				addPanel(sensorPanels[i], x, y);
+				return;
 			}
-			removeAll();
-			revalidate();
-			repaint();
-		
+		}
+		removeAll();
+		revalidate();
+		repaint();
+
 	}
 
 	private void addPanel(JPanel panelToAdd, int x, int y) {

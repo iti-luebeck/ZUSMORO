@@ -282,7 +282,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener, Mo
 					index=i;
 				}
 			}
-			ControllerPanel cp=new ControllerPanel();
+			MotorControllerPanel cp=new MotorControllerPanel();
 			ac=cp.showPanel(e,ac);
 			if (index >= 0) {
 				actions.remove(index);

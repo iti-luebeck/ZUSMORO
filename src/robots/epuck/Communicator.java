@@ -38,12 +38,7 @@ public class Communicator extends Observable implements SerialPortEventListener 
 			serialPort = (SerialPort) portIdentifier.open("Communicator", 2000);
 			inStream = serialPort.getInputStream();
 			outStream = serialPort.getOutputStream();
-			serialPort.addEventListener(this);
-			serialPort.notifyOnDataAvailable(true);
-			serialPort
-					.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			serialPort.setDTR(true);
-			serialPort.setRTS(true);
+			initSerialPort();
 			isConnected = true;
 			if (MainFrame.DEBUG) {
 			System.out.println("Communicator connected to: "+portName);
@@ -76,6 +71,16 @@ public class Communicator extends Observable implements SerialPortEventListener 
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	private void initSerialPort() throws TooManyListenersException,
+			UnsupportedCommOperationException {
+		serialPort.addEventListener(this);
+		serialPort.notifyOnDataAvailable(true);
+		serialPort
+				.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+		serialPort.setDTR(true);
+		serialPort.setRTS(true);
 	}
 
 	public void serialEvent(SerialPortEvent event) {
