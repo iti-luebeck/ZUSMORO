@@ -44,15 +44,15 @@ public class Automat extends Observable implements Runnable {
 		saveToFile = saveFile;
 	}
 
-	public void addState(State state) {
+	public void addState(State newState) {
 		if (Automat.runningAutomat == null) {
-			if (state.isInitialState()) {
-				setInitialState(state);
+			if (newState.isInitialState()) {
+				setInitialState(newState);
 			}
-			states.add(state);
+			states.add(newState);
 			fileIsInSync = false;
 			this.setChanged();
-			this.notifyObservers(new ChangeEvent(ChangeEventType.STATE_CREATE, state, false));
+			this.notifyObservers(new ChangeEvent(ChangeEventType.STATE_CREATE, newState, false));
 		}
 	}
 

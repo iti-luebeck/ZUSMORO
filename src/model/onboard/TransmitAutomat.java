@@ -46,8 +46,8 @@ public class TransmitAutomat implements TransmissionJob {
 		}
 		numberOfStates = states.size();
 		numberOfTransitions = trans.size();
-		// numberOfGuards = guards.size();
-		numberOfGuards = 0;
+		numberOfGuards = guards.size();
+		// numberOfGuards = 0;
 
 		initialState = states.indexOf(a.getInitialState());
 		sequence.addAll(stateListStrings(false));
@@ -56,7 +56,7 @@ public class TransmitAutomat implements TransmissionJob {
 		// transitionListStrings
 		sequence.addAll(guardListStrings(false));
 		sequence.add("A" + initialState);
-		MainFrame.automat=automat;
+		MainFrame.automat = automat;
 		pointer = 0;
 	}
 
@@ -73,12 +73,12 @@ public class TransmitAutomat implements TransmissionJob {
 			a.addState(s);
 		}
 		for (State s2 : automat.getStates()) {
-			State s=mapState(automat, a, s2);
+			State s = mapState(automat, a, s2);
 			ArrayList<Transition> extraTransitions = new ArrayList<Transition>();
 			for (Transition t3 : s2.getTransitions()) {
-				Transition t = new Transition(mapState(automat, a, t3
-						.getRootState()), mapState(automat, a, t3
-						.getFollowerState()));
+				Transition t = new Transition(mapState(automat, a,
+						t3.getRootState()), mapState(automat, a,
+						t3.getFollowerState()));
 				t.setGuard(t3.getGuard());
 				HugeAnd operands = new HugeAnd();
 				if (t.getGuard() instanceof HugeAnd) {
@@ -215,7 +215,7 @@ public class TransmitAutomat implements TransmissionJob {
 			for (Transition t : extraTransitions) {
 				s.addTransition(t);
 			}
-			//a.addState(s);
+			// a.addState(s);
 
 		}
 		a.setInitialState(a.getStates().get(
@@ -251,13 +251,13 @@ public class TransmitAutomat implements TransmissionJob {
 
 	@Override
 	public boolean check(String lastMsgRec, String lastMsgSent) {
-		System.out.println(lastMsgRec + "!=" + lastMsgSent);
+		System.out.println("ALARM: " + lastMsgRec + "!=" + lastMsgSent);
 		String compareString = null;
 
 		char firstChar = lastMsgSent.charAt(0);
-		int n = Integer.parseInt(lastMsgSent.substring(1));
+		int n = Integer.parseInt(lastMsgSent.substring(1,
+				lastMsgSent.length() - 1));
 		int restartAt = -1;
-		// TODO geht das besser als switch case?
 
 		switch (firstChar) {
 		case 'y': {
@@ -303,9 +303,13 @@ public class TransmitAutomat implements TransmissionJob {
 		default:
 			break;
 		}
-		// TODO ende switch case
+        
+		compareString += "\r";
+		System.out.println("CompareString: "+ compareString);
+		
+		// TODO Hier nicht gleich, warum?? An manachen Stellen 5 oder 555 statt 0
 		if (compareString == null || !lastMsgRec.equals(compareString)) {
-			System.out.println("Error");
+			System.out.println("Error hier");
 			pointer = restartAt;
 		}
 

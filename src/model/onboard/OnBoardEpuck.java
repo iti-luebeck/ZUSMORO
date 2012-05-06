@@ -159,6 +159,7 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 		boolean updateView = false;
 		if (s.equals("Malloc Error!\r")) {
 			memoryError = true;
+			System.out.println("Memory error");
 		}
 
 		if (transmitted) {

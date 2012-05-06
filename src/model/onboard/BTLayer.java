@@ -50,10 +50,11 @@ public class BTLayer implements Observer {
 
 		lastMsgRec = (String) arg + "\r";
 		System.out.println("Ret:" + lastMsgRec);
-		if (lastMsgSent.contentEquals(lastMsgRec)) {
+		if (lastMsgSent.equals(lastMsgRec)) {
 			job.removeFirst();
 			send();
 		} else {
+			//check if job is complete and if last unit has been transfered correctly
 			if (!job.isComplete() && !job.check(lastMsgRec, lastMsgSent)) {
 				send();
 			}
@@ -95,9 +96,11 @@ public class BTLayer implements Observer {
 			}
 
 		}
-		if (ok) {
+		
+		if(ok){
 			send();
 		}
+		
 		return ok;
 	}
 
