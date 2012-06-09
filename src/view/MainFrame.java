@@ -125,6 +125,20 @@ public class MainFrame extends JFrame {
 		onBoard = new OnBoardEpuck();
 
 	}
+	
+	/**
+	 * Resetting the editor panel after loading file
+	 * 
+	 * @param ePanel active Editor Panel
+	 */
+	public void setEditorPanel(EditorPanel ePanel) {
+		cPane.remove(scrollPane);
+		MainFrame.editorPanel = ePanel;
+		scrollPane = new JScrollPane(MainFrame.editorPanel);
+		cPane.add(scrollPane, BorderLayout.CENTER);
+		validate();
+		repaint();
+	}
 
 	/**
 	 * @param args
