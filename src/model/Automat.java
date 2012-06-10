@@ -186,7 +186,7 @@ public class Automat extends Observable implements Runnable {
 				requestCancel("<html>Die Verbindung zum Roboter ist gestört:<br>" + e.getMessage() + "</html>", true);
 			}
 			try {
-				Thread.sleep(Math.max(Automat.progDelay - 5 + robot.getDesiredAdditionalTimeout()
+				Thread.sleep(Math.max(Automat.progDelay + robot.getDesiredAdditionalTimeout()
 						- (System.currentTimeMillis() - computationStart), 0));
 			} catch (InterruptedException e) {
 				// never mind

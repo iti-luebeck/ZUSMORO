@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -17,12 +18,12 @@ import model.onboard.OnBoardEpuck;
 
 /**
  * @author ida
- *
- * Main class starting Zusmoro, generating main window with standard layout
+ * 
+ *         Main class starting Zusmoro, generating main window with standard
+ *         layout
  */
-//removed logger, maybe put back in?
-//TODO: was kann privat werden?
-
+// removed logger, maybe put back in?
+// TODO: was kann privat werden?
 
 public class MainFrame extends JFrame {
 
@@ -125,11 +126,12 @@ public class MainFrame extends JFrame {
 		onBoard = new OnBoardEpuck();
 
 	}
-	
+
 	/**
 	 * Resetting the editor panel after loading file
 	 * 
-	 * @param ePanel active Editor Panel
+	 * @param ePanel
+	 *            active Editor Panel
 	 */
 	public void setEditorPanel(EditorPanel ePanel) {
 		cPane.remove(scrollPane);
@@ -165,9 +167,17 @@ public class MainFrame extends JFrame {
 							"<html>Soll das bestehende Programm<br>wirklich verworfen werden?</html>",
 							"Programm schließen", JOptionPane.YES_NO_OPTION);
 			if (confirm == JOptionPane.YES_OPTION) {
+				File f=new File("/var/lock/lockdev/LCK..rfcomm0");
+				if(f.exists() && f.isFile()){
+					f.delete();
+					}
 				System.exit(0);
 			}
 		} else {
+			File f=new File("/var/lock/lockdev/LCK..rfcomm0");
+			if(f.exists() && f.isFile()){
+				f.delete();
+				}
 			System.exit(0);
 		}
 	}

@@ -66,7 +66,7 @@ public class ActionController extends Action {
 		if (o instanceof ActionController) {
 			ActionController ac = (ActionController) o;
 			return getKey() == ac.getKey() && offset == ac.offset && min == ac.min && max == ac.max && kpr == ac.kpr
-					&& var == ac.var && compvalue == ac.compvalue;
+					&& var.equals(ac.var) && compvalue == ac.compvalue;
 		} else {
 			return false;
 		}
