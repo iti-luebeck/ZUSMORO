@@ -19,4 +19,5 @@ public abstract class AbstractRobot {
 	public abstract int getDesiredAdditionalTimeout();
 	public abstract AbstractStatePanel getStatePanel(State state);
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);
+	public abstract int getUnAcknowledgedCmds();
 }

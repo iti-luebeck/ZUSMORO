@@ -379,4 +379,9 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	public int[] getMotorState() {
 		return motorState;
 	}
+
+	@Override
+	public int getUnAcknowledgedCmds() {
+		return unacknowledgedCmds;
+	}
 }
