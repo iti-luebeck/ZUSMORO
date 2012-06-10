@@ -15,6 +15,7 @@ public class DebugView extends JDialog {
 	private static final long serialVersionUID = 5138791031355097563L;
 	private EPuckSensorI robot;
 
+	//TODO: Hieraus ein array?
 	private JRadioButton led0;
 	private JRadioButton led1;
 	private JRadioButton led2;
@@ -82,54 +83,43 @@ public class DebugView extends JDialog {
 	}
 
 	private void initComponents() {
-
-		led0 = new JRadioButton();
-		led0.setEnabled(false);
-		led1 = new JRadioButton();
-		led1.setEnabled(false);
-		led2 = new JRadioButton();
-		led2.setEnabled(false);
-		led3 = new JRadioButton();
-		led3.setEnabled(false);
-		led4 = new JRadioButton();
-		led4.setEnabled(false);
-		led4a = new JRadioButton();
-		led4a.setEnabled(false);
-		led5 = new JRadioButton();
-		led5.setEnabled(false);
-		led6 = new JRadioButton();
-		led6.setEnabled(false);
-		led7 = new JRadioButton();
-		led7.setEnabled(false);
-
-		led0.setOpaque(false);
-		led1.setOpaque(false);
-		led2.setOpaque(false);
-		led3.setOpaque(false);
-		led4.setOpaque(false);
-		led4a.setOpaque(false);
-		led5.setOpaque(false);
-		led6.setOpaque(false);
-		led7.setOpaque(false);
+		led0 = initLED();
+		led1 = initLED();
+		led2 = initLED();
+		led3 = initLED();
+		led4 = initLED();
+		led4a = initLED();
+		led5 = initLED();
+		led6 = initLED();
+		led7 = initLED();
 
 		MotorModel mm1 = new MotorModel(-1000, 1000, 0);
 		MotorSpinnerModel msm1 = new MotorSpinnerModel(mm1);
 		MotorModel mm2 = new MotorModel(-1000, 1000, 0);
 		MotorSpinnerModel msm2 = new MotorSpinnerModel(mm2);
 
-		motor1slider = new JSlider(mm1);
-		motor2slider = new JSlider(mm2);
-		motor1slider.setOrientation(SwingConstants.VERTICAL);
-		motor2slider.setOrientation(SwingConstants.VERTICAL);
-		motor1slider.setOpaque(false);
-		motor2slider.setOpaque(false);
-		motor1slider.setEnabled(false);
-		motor2slider.setEnabled(false);
+		motor1slider = initMotorSlider(mm1);
+		motor2slider = initMotorSlider(mm2);
 
 		motor1spinner = new JSpinner(msm1);
 		motor2spinner = new JSpinner(msm2);
 		motor1spinner.setEnabled(false);
 		motor2spinner.setEnabled(false);
+	}
+
+	private JRadioButton initLED() {
+		JRadioButton led = new JRadioButton();
+		led.setEnabled(false);
+		led.setOpaque(false);
+		return led;
+	}	
+	
+	private JSlider initMotorSlider(MotorModel mm) {
+		JSlider motorslider = new JSlider(mm);
+		motorslider.setOrientation(SwingConstants.VERTICAL);
+		motorslider.setOpaque(false);
+		motorslider.setEnabled(false);
+		return motorslider;
 	}
 
 	public void updateView() {
