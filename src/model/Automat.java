@@ -22,7 +22,7 @@ public class Automat extends Observable implements Runnable {
 	public static Automat runningAutomat = null;
 	public static int progDelay = 50;
 	public static boolean loopsAllowed = false;
-	public static boolean changeableTransSeq = false;
+	public static boolean changeableTransSeq = true;
 
 	private AbstractRobot robot;
 	private final ArrayList<State> states;

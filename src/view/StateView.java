@@ -41,11 +41,7 @@ public class StateView extends JDialog implements ActionListener, DocumentListen
 		this.state = state;
 		this.wasInitialState = state.isInitialState();
 		setLayout(new BorderLayout());
-		//BackgroundPanel panel = new BackgroundPanel(BackgroundPanel.state_background);
-		//panel.setLayout(null);
 		initComponents();
-		//setValues();
-		//setComponentBounds();
 		JPanel labelPanel = new JPanel();
 		labelPanel.add(new JLabel("Bezeichnung: "));
 		labelPanel.add(label);

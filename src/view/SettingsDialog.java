@@ -17,50 +17,78 @@ import javax.swing.JTextField;
 import model.AbstractRobot;
 import model.Automat;
 
+/**
+ * @author ida
+ * 
+ *         Settings dialog for general robot configuration allowing the user to
+ *         set EVA-frequency, robot type and allow loops, editable transition
+ *         order and debug messages
+ */
 public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 4333492082030324369L;
 	private JTextField evaFreq;
-	private JComboBox robot;
+	private JComboBox<String> robot;
 	private JCheckBox allowLoops;
 	private JCheckBox allowTransSeq;
 	private JCheckBox debugging;
 	private JButton okButton;
 	private JButton cancelButton;
 
+	/**
+	 * Constructor for the settings dialog adding all necessary checkboxes,
+	 * menus and buttons
+	 */
 	public SettingsDialog() {
 		super(MainFrame.mainFrame, "Automateneinstellungen", true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		Container cPane = this.getContentPane();
 		cPane.setLayout(new GridLayout(6, 2));
-		cPane.add(new JLabel(" EVA Frequenz (Hz): "));
-		evaFreq = new JTextField("" + 1000 / Automat.progDelay, 5);
-		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
-		cPane.add(evaFreq);
-		cPane.add(new JLabel(" Roboter: "));
-		robot = new JComboBox(getRobots());
-		cPane.add(robot);
-		cPane.add(new JLabel(" Schlaufen: "));
-		allowLoops = new JCheckBox("erlauben", Automat.loopsAllowed);
-		cPane.add(allowLoops);
-		cPane.add(new JLabel(" Transitionenreihenfolge: "));
-		allowTransSeq = new JCheckBox("einstellbar", Automat.changeableTransSeq);
-		cPane.add(allowTransSeq);
-		cPane.add(new JLabel(" Debugausgaben: "));
-		debugging = new JCheckBox("ausgeben (auf Konsole)", MainFrame.DEBUG);
-		cPane.add(debugging);
-		okButton = new JButton("OK");
-		okButton.addActionListener(this);
-		cancelButton = new JButton("Abbrechen");
-		cancelButton.addActionListener(this);
-		cPane.add(okButton);
-		cPane.add(cancelButton);
+		addEVAFrequencyBox(cPane);
+		addRobotTypeChooser(cPane);
+		allowLoops = addCheckbox(cPane, "Schlaufen:", "erlauben",
+				Automat.loopsAllowed);
+		allowTransSeq = addCheckbox(cPane, "Transitionsreihenfolge:",
+				"einstellbar", Automat.changeableTransSeq);
+		debugging = addCheckbox(cPane, "Debugausgaben:",
+				"ausgeben (auf Konsole)", MainFrame.DEBUG);
+		okButton = makeButton(cPane, "OK");
+		cancelButton = makeButton(cPane, "Abbrechen");
 		pack();
 		setLocationRelativeTo(MainFrame.mainFrame);
 	}
 
+	private JButton makeButton(Container cPane, String label) {
+		JButton button = new JButton(label);
+		button.addActionListener(this);
+		cPane.add(button);
+		return button;
+	}
+
+	private JCheckBox addCheckbox(Container cPane, String label, String action,
+			boolean target) {
+		cPane.add(new JLabel(label));
+		JCheckBox checkBox = new JCheckBox(action, target);
+		cPane.add(checkBox);
+		return checkBox;
+	}
+
+	private void addRobotTypeChooser(Container cPane) {
+		cPane.add(new JLabel(" Roboter: "));
+		robot = new JComboBox<String>(getRobots());
+		cPane.add(robot);
+	}
+
+	private void addEVAFrequencyBox(Container cPane) {
+		cPane.add(new JLabel(" EVA Frequenz (Hz): "));
+		evaFreq = new JTextField("" + 1000 / Automat.progDelay, 5);
+		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
+		cPane.add(evaFreq);
+	}
+
 	private String[] getRobots() {
-		File robotDir = new File(SettingsDialog.class.getResource("../robots").getFile().replace("%20", " "));
+		File robotDir = new File(SettingsDialog.class.getResource("../robots")
+				.getFile().replace("%20", " "));
 		File[] robotDirs = robotDir.listFiles();
 		String[] robotClassNames = new String[robotDirs.length];
 		int foundRobots = 0;
@@ -70,7 +98,8 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			for (File file : robotFiles) {
 				String name = file.getName();
 				if (name.endsWith("Robot.class")) {
-					robotClassNames[foundRobots] = dir.getName() + "." + file.getName().substring(0, name.length() - 6);
+					robotClassNames[foundRobots] = dir.getName() + "."
+							+ file.getName().substring(0, name.length() - 6);
 					foundRobots++;
 				}
 			}
@@ -89,7 +118,8 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked") // Typsicherheit manuell sichergestellt.
+	@SuppressWarnings("unchecked")
+	// Typsicherheit manuell sichergestellt.
 	private boolean setSettings() {
 		try {
 			// Frequenz
@@ -99,10 +129,12 @@ public class SettingsDialog extends JDialog implements ActionListener {
 				throw new Exception("Frequenz nicht im zulässigen Bereich.");
 			}
 			// Roboter
-			String robotClassName = "robots." + robot.getSelectedItem().toString();
+			String robotClassName = "robots."
+					+ robot.getSelectedItem().toString();
 			Class<?> robotClass = Class.forName(robotClassName);
 			if (!(robotClass.newInstance() instanceof AbstractRobot)) {
-				throw new ClassCastException("Gewählter Roboter ist inkompatibel.");
+				throw new ClassCastException(
+						"Gewählter Roboter ist inkompatibel.");
 			}
 			// Schlaufen
 			boolean allow = allowLoops.isSelected();
@@ -117,7 +149,12 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			Automat.changeableTransSeq = transSeq;
 			MainFrame.DEBUG = debug;
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "<html>Es trat folgender Fehler auf:<br>" + e + "</html>", "Fehler beim Setzen der Werte", JOptionPane.WARNING_MESSAGE);
+			JOptionPane
+					.showMessageDialog(this,
+							"<html>Es trat folgender Fehler auf:<br>" + e
+									+ "</html>",
+							"Fehler beim Setzen der Werte",
+							JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;

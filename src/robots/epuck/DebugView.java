@@ -36,7 +36,7 @@ public class DebugView extends JDialog {
 
 	public DebugView(EPuckSensorI robot) {
 		super(MainFrame.mainFrame, "Debugansicht", false);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		this.robot = robot;
 		panel = new BackgroundPanel(BackgroundPanel.debug_background);
 		panel.setLayout(null);

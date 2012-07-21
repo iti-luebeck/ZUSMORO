@@ -21,9 +21,7 @@ public class AboutDialog extends JDialog {
 		super(MainFrame.mainFrame, "About...", true);
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder("About"));
-		//panel.setLayout(new GridLayout(2, 1));
 		panel.add(new JLabel(aboutText));
-		//panel.add(new JLabel("20.08.2009"));
 		this.add(panel);
 		this.pack();
 		this.setLocationRelativeTo(MainFrame.mainFrame);
