@@ -47,7 +47,7 @@ public class TransmitAutomat implements TransmissionJob {
 		numberOfStates = states.size();
 		numberOfTransitions = trans.size();
 		numberOfGuards = guards.size();
-		// numberOfGuards = 0;
+		//numberOfGuards = 0;
 
 		initialState = states.indexOf(a.getInitialState());
 		sequence.addAll(stateListStrings(false));
@@ -56,7 +56,7 @@ public class TransmitAutomat implements TransmissionJob {
 		// transitionListStrings
 		sequence.addAll(guardListStrings(false));
 		sequence.add("A" + initialState);
-		MainFrame.automat = automat;
+		MainFrame.automat=automat;
 		pointer = 0;
 	}
 
@@ -73,12 +73,12 @@ public class TransmitAutomat implements TransmissionJob {
 			a.addState(s);
 		}
 		for (State s2 : automat.getStates()) {
-			State s = mapState(automat, a, s2);
+			State s=mapState(automat, a, s2);
 			ArrayList<Transition> extraTransitions = new ArrayList<Transition>();
 			for (Transition t3 : s2.getTransitions()) {
-				Transition t = new Transition(mapState(automat, a,
-						t3.getRootState()), mapState(automat, a,
-						t3.getFollowerState()));
+				Transition t = new Transition(mapState(automat, a, t3
+						.getRootState()), mapState(automat, a, t3
+						.getFollowerState()));
 				t.setGuard(t3.getGuard());
 				HugeAnd operands = new HugeAnd();
 				if (t.getGuard() instanceof HugeAnd) {
@@ -97,54 +97,112 @@ public class TransmitAutomat implements TransmissionJob {
 						if (useTimer) {
 							Operator op = timerVar.getOperator();
 							int compValue = timerVar.getCompValue();
-							
-							//TODO: Muss vielleicht überall der guard hinzugefügt werden?
-							if (op == Operator.EQUAL) {
-								int timerms = compValue % 30000;
-								int timer30s = compValue / 30000;
+							int timerms = compValue % 30000;
+							int timer30s = compValue / 30000;
+
+							switch (op) {
+							case BIGGER: {
+								Transition t2 = new Transition(
+										t.getRootState(), t.getFollowerState());
+								HugeAnd op2 = new HugeAnd();
+								for (BooleanExpression b2 : operands
+										.getOperands()) {
+									op2.addOperand(b2);
+								}
+								op2.addOperand(new Variable("TIMER30S",
+										Operator.EQUAL, timer30s));
+								op2.addOperand(new Variable("TIMERMS",
+										Operator.BIGGER, timerms));
+								t2.setGuard(op2);
+								extraTransitions.add(t2);
+								operands.addOperand(new Variable("TIMER30S",
+										Operator.BIGGER, timer30s));
+								break;
+							}
+							case BIGGER_EQUAL: {
+								Transition t2 = new Transition(
+										t.getRootState(), t.getFollowerState());
+								HugeAnd op2 = new HugeAnd();
+								for (BooleanExpression b2 : operands
+										.getOperands()) {
+									op2.addOperand(b2);
+								}
+								op2.addOperand(new Variable("TIMER30S",
+										Operator.EQUAL, timer30s));
+								op2.addOperand(new Variable("TIMERMS",
+										Operator.BIGGER_EQUAL, timerms));
+								t2.setGuard(op2);
+								extraTransitions.add(t2);
+
+								operands.addOperand(new Variable("TIMER30S",
+										Operator.BIGGER, timer30s));
+								break;
+							}
+							case EQUAL: {
 								operands.addOperand(new Variable("TIMERMS",
 										Operator.EQUAL, timerms));
 								operands.addOperand(new Variable("TIMER30S",
 										Operator.EQUAL, timer30s));
 								break;
-							} else {
+							}
+							case NOT_EQUAL: {
 								Transition t2 = new Transition(
 										t.getRootState(), t.getFollowerState());
 								HugeAnd op2 = new HugeAnd();
+								for (BooleanExpression b2 : operands
+										.getOperands()) {
+									op2.addOperand(b2);
+								}
+								op2.addOperand(new Variable("TIMERMS",
+										Operator.NOT_EQUAL, timerms));
+								t2.setGuard(op2);
+								extraTransitions.add(t2);
 
-								switch (op) {
-								case BIGGER: {
-									transformTimer(operands, op2, Operator.EQUAL, compValue);
-									t2.setGuard(op2);
-									extraTransitions.add(t2);
-									break;
+								operands.addOperand(new Variable("TIMER30S",
+										Operator.NOT_EQUAL, timer30s));
+								break;
+							}
+							case SMALLER_EQUAL: {
+								Transition t2 = new Transition(
+										t.getRootState(), t.getFollowerState());
+								HugeAnd op2 = new HugeAnd();
+								for (BooleanExpression b2 : operands
+										.getOperands()) {
+									op2.addOperand(b2);
 								}
-								case BIGGER_EQUAL: {
-									transformTimer(operands, op2, Operator.BIGGER_EQUAL, compValue);
-									extraTransitions.add(t2);
-									break;
+								op2.addOperand(new Variable("TIMER30S",
+										Operator.EQUAL, timer30s));
+								op2.addOperand(new Variable("TIMERMS",
+										Operator.SMALLER_EQUAL, timerms));
+								t2.setGuard(op2);
+								extraTransitions.add(t2);
+
+								operands.addOperand(new Variable("TIMER30S",
+										Operator.SMALLER, timer30s));
+								break;
+							}
+							case SMALLER: {
+								Transition t2 = new Transition(
+										t.getRootState(), t.getFollowerState());
+								HugeAnd op2 = new HugeAnd();
+								for (BooleanExpression b2 : operands
+										.getOperands()) {
+									op2.addOperand(b2);
 								}
-								case NOT_EQUAL: {
-									transformTimer(operands, op2, Operator.NOT_EQUAL, compValue);
-									t2.setGuard(op2);
-									extraTransitions.add(t2);
-									break;
-								}
-								case SMALLER_EQUAL: {
-									transformTimer(operands, op2, Operator.SMALLER_EQUAL, compValue);
-									t2.setGuard(op2);
-									extraTransitions.add(t2);
-									break;
-								}
-								case SMALLER: {
-									transformTimer(operands, op2, Operator.SMALLER, compValue);
-									t2.setGuard(op2);
-									extraTransitions.add(t2);
-									break;
-								}
-								default:
-									break;
-								}
+								op2.addOperand(new Variable("TIMER30S",
+										Operator.EQUAL, timer30s));
+								op2.addOperand(new Variable("TIMERMS",
+										Operator.SMALLER, timerms));
+								t2.setGuard(op2);
+								extraTransitions.add(t2);
+
+								operands.addOperand(new Variable("TIMER30S",
+										Operator.SMALLER, timer30s));
+								break;
+							}
+
+							default:
+								break;
 							}
 						}
 					}
@@ -157,28 +215,12 @@ public class TransmitAutomat implements TransmissionJob {
 			for (Transition t : extraTransitions) {
 				s.addTransition(t);
 			}
-			// a.addState(s);
+			//a.addState(s);
 
 		}
 		a.setInitialState(a.getStates().get(
 				automat.getStates().indexOf(automat.getInitialState())));
 		return a;
-	}
-
-	private void transformTimer(HugeAnd operands, HugeAnd op2, Operator type, int compValue) {
-		int timerms = compValue % 30000;
-		int timer30s = compValue / 30000;
-		for (BooleanExpression b2 : operands
-				.getOperands()) {
-			op2.addOperand(b2);
-		}
-		op2.addOperand(new Variable("TIMER30S",
-				type, timer30s));
-		op2.addOperand(new Variable("TIMERMS",
-				type, timerms));
-		operands.addOperand(new Variable(
-				"TIMER30S", Operator.BIGGER,
-				timer30s));
 	}
 
 	public void printTest() {
@@ -209,14 +251,13 @@ public class TransmitAutomat implements TransmissionJob {
 
 	@Override
 	public boolean check(String lastMsgRec, String lastMsgSent) {
-		System.out.println("ALARM");
+		System.out.println(lastMsgRec + "!=" + lastMsgSent);
 		String compareString = null;
 
 		char firstChar = lastMsgSent.charAt(0);
-		int n = Integer.parseInt(lastMsgSent.substring(1,
-				lastMsgSent.length() - 1));
-		System.out.println("n:" + n);
+		int n = Integer.parseInt(lastMsgSent.substring(1));
 		int restartAt = -1;
+		// TODO geht das besser als switch case?
 
 		switch (firstChar) {
 		case 'y': {
@@ -262,20 +303,14 @@ public class TransmitAutomat implements TransmissionJob {
 		default:
 			break;
 		}
-
-		compareString += "\r";
-		System.out.println("CompareString: " + compareString);
-
-		// TODO Hier nicht gleich, warum?? An manachen Stellen 5 oder 555 statt
-		// 0
-		/*if (compareString == null || !lastMsgRec.equals(compareString)) {
-			System.out.println("Error hier");
+		// TODO ende switch case
+		if (compareString == null || !lastMsgRec.equals(compareString)) {
+			System.out.println("Error");
 			pointer = restartAt;
-		}*/
+		}
 
 		System.out.println("Correct:" + compareString);
-		//return lastMsgRec.equals(compareString);
-		return true;
+		return lastMsgRec.equals(compareString);
 	}
 
 	protected String concatStringList(List<String> sl) {

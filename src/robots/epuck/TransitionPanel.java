@@ -93,7 +93,7 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 		setLayout(null);
 		initComponents();
 		setValues();
-		setPreferredSize(new Dimension(400, 800));
+		setPreferredSize(new Dimension(400, 600));
 	}
 
 	private void initComponents() {
