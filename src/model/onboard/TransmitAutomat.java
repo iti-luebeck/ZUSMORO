@@ -114,13 +114,14 @@ public class TransmitAutomat implements TransmissionJob {
 
 								switch (op) {
 								case BIGGER: {
-									transformTimer(operands, op2, Operator.EQUAL, compValue);
+									transformTimer(operands, op2, Operator.BIGGER, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
 								case BIGGER_EQUAL: {
 									transformTimer(operands, op2, Operator.BIGGER_EQUAL, compValue);
+									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
@@ -209,7 +210,9 @@ public class TransmitAutomat implements TransmissionJob {
 
 	@Override
 	public boolean check(String lastMsgRec, String lastMsgSent) {
-		System.out.println("ALARM");
+		System.out.println(">>>>>>>>>>ALARM");
+		System.out.println("lastMsgRec: " + lastMsgRec);
+		System.out.println("lastMsgSent: " + lastMsgSent);
 		String compareString = null;
 
 		char firstChar = lastMsgSent.charAt(0);
@@ -275,6 +278,7 @@ public class TransmitAutomat implements TransmissionJob {
 
 		System.out.println("Correct:" + compareString);
 		//return lastMsgRec.equals(compareString);
+		System.out.println(">>>>>>>>>>ALARM");
 		return true;
 	}
 
