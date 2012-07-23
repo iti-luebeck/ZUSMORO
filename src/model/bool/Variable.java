@@ -9,7 +9,7 @@ public class Variable extends BooleanExpression {
 	}
 
 	public enum Operator implements Eval {
-		BIGGER(">", "&gt;", 5,"BIGGER_EQUAL", new Eval() {
+		BIGGER(">", "&gt;", 5,"BIGGER", new Eval() {
 			@Override
 			public boolean eval(int current, int compare) {
 				return current > compare;
@@ -36,7 +36,7 @@ public class Variable extends BooleanExpression {
 			public boolean eval(int current, int compare) {
 				return current <= compare;
 			}
-		}), SMALLER("<", "&lt;", 0,"SMALLER_EQUAL", new Eval() {
+		}), SMALLER("<", "&lt;", 0,"SMALLER", new Eval() {
 			@Override
 			public boolean eval(int current, int compare) {
 				return current < compare;
