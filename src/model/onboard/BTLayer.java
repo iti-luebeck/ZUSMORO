@@ -12,7 +12,7 @@ public class BTLayer implements Observer {
 
 	private String lastMsgSent;
 
-	private final String VERSION = "Vzusmoro1.1.0";
+	private final String VERSION = "Vzusmoro1.2.0";
 
 	private Communicator comm;
 	private TransmissionJob job;
