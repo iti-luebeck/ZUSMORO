@@ -89,6 +89,7 @@ public class TransitionView extends JDialog implements ActionListener, DocumentL
 		} else if (e.getSource() == acceptButton) {
 			transition.setLabel(label.getText());
 			transition.setGuard(transPanel.getGuard());
+			//System.out.println("trans: " + transPanel.getGuard());
 			//transition.setToolTipText("<html><pre>" + transition.getGuard().toString().replace("\r\n", "<br>")
 			//		+ "</pre></html>");
 			ArrayList<Transition> transList = transition.getRootState().getTransitions();
