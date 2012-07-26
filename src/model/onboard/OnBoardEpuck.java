@@ -84,10 +84,17 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 		} else {
 			transmitted=false;
 			ta = new TransmitAutomat(a);
+			clearBTLayer(btl);
 			btl = new BTLayer(comm, ta);
 			boolean ok = btl.start();
 			memoryError = false;
 			return ok;
+		}
+	}
+	
+	private void clearBTLayer(BTLayer btl){
+		if(btl != null){
+			btl.deattachObserver();
 		}
 	}
 
@@ -173,16 +180,22 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 				updateView = true;
 			}
 			if (s.startsWith("z")) {
-				s = s.replaceFirst(".*L", "");
-				//s = s.replaceAll("G.*", "");
-				System.out.println("Motor" + motorData[0] + "," + motorData[1] + "LEDS:" + s);
-				ledData = LEDSet.getLEDArray(Integer.parseInt(s));
+
 				updateView = true;
 
 				s = (String) arg;
 				s = s.substring(1);
 				s = s.replaceAll(",.*", "");
 				setState(Integer.parseInt(s));
+
+			}
+			if (s.startsWith("L")) {
+				s = s.replaceFirst(".*L", "");
+				//s = s.replaceAll("G.*", "");
+				System.out.println("Motor" + motorData[0] + "," + motorData[1] + "LEDS:" + s);
+				ledData = LEDSet.getLEDArray(Integer.parseInt(s));
+				updateView = true;
+
 
 			}
 			if (s.startsWith("A")) {

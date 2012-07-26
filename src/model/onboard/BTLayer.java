@@ -18,18 +18,24 @@ public class BTLayer implements Observer {
 	private TransmissionJob job;
 
 	boolean started;
-	boolean ok;
+	boolean ok_version;
+	boolean start_jobs;
+	
+	private int notif = 0;
+	
+	private int initCounter = 0;
 
-	public BTLayer(String portName, TransmissionJob job) {
+	/*public BTLayer(String portName, TransmissionJob job) {
 		comm = new Communicator(portName);
 		comm.addObserver(this);
 		lastMsgSent = null;
 		lastMsgRec = "";
 		this.job = job;
 		started = false;
-	}
+	}*/
 
 	public BTLayer(Communicator comm, TransmissionJob job) {
+		System.out.println("CREATING BT!!!!");
 		this.comm = comm;
 		comm.addObserver(this);
 		lastMsgSent = null;
@@ -37,28 +43,49 @@ public class BTLayer implements Observer {
 		this.job = job;
 
 		started = false;
-		ok = false;
+		ok_version = false;
+		start_jobs = false;
+	}
+	
+	public void deattachObserver(){
+		if(comm != null){
+			comm.deleteObserver(this);
+		}
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-
-		if (arg.equals(VERSION)) {
-			ok = true;
-		}
-		started = true;
-
+		System.out.println("Initcounter: " + initCounter);
 		lastMsgRec = (String) arg + "\r";
 		System.out.println("Ret:" + lastMsgRec);
-		if (lastMsgSent.equals(lastMsgRec)) {
-			job.removeFirst();
+		if (arg.equals("vx") && !ok_version) {//arg.equals(VERSION)
+			ok_version = true;
 			send();
-		} else {
-			//check if job is complete and if last unit has been transfered correctly
-			if (!job.isComplete() && !job.check(lastMsgRec, lastMsgSent)) {
-				send();
-			}
+			return;
+		}
+		
+		if(!ok_version && initCounter < 5){//version hat nicht gelappt, nochmal. aber maximal 5 mal
+			sendingInit();
+			return;
+		}
+		/*if (arg.equals("vx")) {
+			start_jobs = true;
+		}*/
+		started = true;
 
+//		lastMsgRec = (String) arg + "\r";
+//		System.out.println("Ret:" + lastMsgRec);
+		if(lastMsgSent != null){
+			if (lastMsgSent.equals(lastMsgRec)) {
+				job.removeFirst();
+				send();
+			} else {
+				//check if job is complete and if last unit has been transfered correctly
+				if (!job.isComplete() /*&& !job.check(lastMsgRec, lastMsgSent)*/) {
+					send();
+				}
+	
+			}
 		}
 
 	}
@@ -70,7 +97,7 @@ public class BTLayer implements Observer {
 				lastMsgSent = job.getFirst() + "\r";
 				System.out.println("Sending:" + lastMsgSent);
 				comm.writeToStream(lastMsgSent);
-			} else {
+			} else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gelöscht!
 				comm.deleteObserver(this);
 			}
 
@@ -80,12 +107,27 @@ public class BTLayer implements Observer {
 		}
 
 	}
+	
+	private void sendingInit(){
+		System.out.println("Sending inital VX");
+		try {
+			initCounter++;
+			comm.writeToStream("vx\r");
+			//Thread.sleep(1000);//200
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}//catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+		//}
+	}
 
 	public boolean start() {
-		for (int i = 0; i < 5 && !ok; i++) {
+		/*for (int i = 0; i < 5 && !ok_version && !start_jobs; i++) {
 			try {
+				System.out.println("Sending inital VX");
 				comm.writeToStream("vx\r");
-				Thread.sleep(200);
+				Thread.sleep(200);//200
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -95,13 +137,26 @@ public class BTLayer implements Observer {
 				return false;
 			}
 
+		}*/
+		
+		sendingInit();
+		/*try{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+		}*/
+		
+		if(initCounter > 5){
+			return false;
 		}
 		
-		if(ok){
+		/*if(ok_version){
 			send();
-		}
+		}*/
 		
-		return ok;
+//		return ok_version;
+		return true;
 	}
 
 }

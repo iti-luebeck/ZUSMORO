@@ -8,12 +8,16 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.TooManyListenersException;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
@@ -28,6 +32,12 @@ public class Communicator extends Observable implements SerialPortEventListener 
 	private WriteThread writeThread;
 	private volatile boolean isConnected = false;
 	private final Object writeSignal = new Object();
+	private final static int eva = 100;
+	private final static int stringBuilderLength = 100;
+	private StringBuilder readBuffer = new StringBuilder(stringBuilderLength);
+	private int serialCounter = 0;
+	//private Scanner in;
+	private BufferedReader d;
 
 	public Communicator(String portName) {
 		if (MainFrame.DEBUG) {
@@ -37,6 +47,8 @@ public class Communicator extends Observable implements SerialPortEventListener 
 			portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
 			serialPort = (SerialPort) portIdentifier.open("Communicator", 2000);
 			inStream = serialPort.getInputStream();
+			//in  = new Scanner( inStream );
+			d = new BufferedReader(new InputStreamReader(inStream));
 			outStream = serialPort.getOutputStream();
 			initSerialPort();
 			isConnected = true;
@@ -79,11 +91,14 @@ public class Communicator extends Observable implements SerialPortEventListener 
 		serialPort.notifyOnDataAvailable(true);
 		serialPort
 				.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+		//serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
 		serialPort.setDTR(true);
 		serialPort.setRTS(true);
+		//serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
 	}
 
 	public void serialEvent(SerialPortEvent event) {
+		//System.out.println("EVENT: " + event.getEventType());
 		switch (event.getEventType()) {
 		// case SerialPortEvent.BI:
 		// case SerialPortEvent.OE:
@@ -96,24 +111,62 @@ public class Communicator extends Observable implements SerialPortEventListener 
 		case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
 			break;
 		case SerialPortEvent.DATA_AVAILABLE:
-			StringBuilder readBuffer = new StringBuilder();
-			//System.out.println("DATA_AVAILABLE");
+			//StringBuilder readBuffer = new StringBuilder(stringBuilderLength);
+			System.out.println("DATA_AVAILABLE: " + serialCounter);
 			int c;
 			try {
+				//System.out.println(in.read());
+				//System.out.println("ddddd: " + d.readLine());
+				String scannedInput = null;
+	
+				while( (scannedInput = d.readLine()) != null){//solange wir noch nicht alle readlines abgearbeitet haben müssen wir weiter machen
+					
+				//}
+				//scannedInput = d.readLine();
+					//if(scannedInput != null){
+						if(!scannedInput.equals("")){
+							System.out.println("scannedInput for " + serialCounter + ":" + scannedInput);
+							setChanged();
+							System.out.println("countObservers(): " + countObservers());
+							notifyObservers(scannedInput);
+						}else{
+							setChanged();
+							System.out.println("Void string..." + serialCounter);
+							notifyObservers(scannedInput);
+						}
+					//}else{
+					//	System.out.println("Nothing to read..." + serialCounter);
+					//}
+				}
+				/*
 				while ((c = inStream.read()) > -1) {
+					if (c == 13 || c == 10) {
+						System.out.println("c"+ serialCounter + ": " + (byte) c);
+					}
 					if (c != 13 && c != 10) {
 						readBuffer.append((char) c);
-						//System.out.print((char) c);
+						System.out.print((byte) c);
 					} else if (c == 10) {
 						String scannedInput = readBuffer.toString();
-						readBuffer = new StringBuilder();
+						byte[] ret = scannedInput.getBytes();
+						System.out.print("scannedInput " + serialCounter + ": ");
+						for(int j = 0;j < ret.length;j++){
+							System.out.print(ret[j]);
+						}
+						System.out.println("");
+						readBuffer = new StringBuilder(stringBuilderLength);
 						setChanged();
 						notifyObservers(scannedInput);
 					}
-				}
+				}*/
 			} catch (IOException e) {
 				// TODO hier etwas tun?
+				System.out.println(e.getMessage());
+				//setChanged();
+				//notifyObservers("ZERO");
+				
 			}
+			serialCounter++;
 			break;
 		}
 	}
@@ -127,7 +180,7 @@ public class Communicator extends Observable implements SerialPortEventListener 
 		if (MainFrame.DEBUG) {
 		System.out.println("Queue size: " + queueSize);
 		}
-		if (queueSize >= 20) {
+		if (queueSize >= eva) {
 			writeThread.stopThread();
 			throw new IOException(
 					"<html>Fehler bei der Ãœbertragung der Befehle,<br>evtl. ist die EVA-Frequenz zu hoch eingestellt");
@@ -211,7 +264,7 @@ public class Communicator extends Observable implements SerialPortEventListener 
 
 		public WriteThread() {
 			super("Communicator.WriteThread");
-			messages = new ArrayList<String>(20);
+			messages = new ArrayList<String>(eva);//20
 			stop = false;
 			setDaemon(true);
 		}
@@ -251,6 +304,12 @@ public class Communicator extends Observable implements SerialPortEventListener 
 					try {
 						if (MainFrame.DEBUG) {
 							System.out.println("Writing to Stream: "+msg);
+							System.out.print("Writing to Stream2: ");
+							byte[] ret = msg.getBytes();
+							for(int j = 0;j < ret.length;j++){
+								System.out.print(ret[j]);
+							}
+							System.out.println("");
 						}
 						//byte[] bytes = msg.getBytes();
 						//outStream.write((msg + (msg.endsWith("\r\n") ? "" : "\r\n")).getBytes());
