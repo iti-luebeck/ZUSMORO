@@ -68,12 +68,16 @@ public class RunMenuListener implements ActionListener {
 		public void doEvent(ActionEvent e) {
 			double status = MainFrame.onBoard.completionStatus();
 			if (!MainFrame.onBoard.transmissionIsComplete()) {
+				MainFrame.toolPanel.enableStart(false);
+				MainFrame.toolPanel.enableTransmit(false);
 				JOptionPane.showMessageDialog((Component) e.getSource(),
 						"<html>Die Übertragung ist noch nicht abgechlossen." +
 						"<br>Übertragung bei " + status * 100 + "%",
 						"Der EPuck kann noch nicht gestartet werden!",
 						JOptionPane.WARNING_MESSAGE);
 			} else if (MainFrame.onBoard.hasMemoryError()) {
+				MainFrame.toolPanel.enableStart(false);
+				MainFrame.toolPanel.enableTransmit(true);
 				JOptionPane.showMessageDialog((Component) e.getSource(),
 						"<html>Die Übertragung ist fehlgeschlagen." +
 						"<br>Der Automat ist zu groß um in den" +
@@ -81,6 +85,8 @@ public class RunMenuListener implements ActionListener {
 						"Der EPuck sollte nicht gestartet werden!",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
+				MainFrame.toolPanel.enableStart(true);
+				MainFrame.toolPanel.enableTransmit(true);
 				if (MainFrame.onBoard.start()) {
 					Automat.runningAutomat = MainFrame.automat;
 				} else {

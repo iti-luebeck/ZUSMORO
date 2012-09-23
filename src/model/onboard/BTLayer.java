@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import robots.epuck.Communicator;
+import view.MainFrame;
 
 public class BTLayer implements Observer {
 
@@ -94,11 +95,16 @@ public class BTLayer implements Observer {
 		try {
 
 			if (!job.isComplete()) {
+				MainFrame.toolPanel.enableStart(false);
+				MainFrame.toolPanel.enableTransmit(false);
 				lastMsgSent = job.getFirst() + "\r";
 				System.out.println("Sending:" + lastMsgSent);
 				comm.writeToStream(lastMsgSent);
-			} else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gelöscht!
+			} else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gelï¿½scht!
 				comm.deleteObserver(this);
+				MainFrame.toolPanel.enableStart(true);
+				MainFrame.toolPanel.enableTransmit(true);
+				MainFrame.toolPanel.enableDebug(true);
 			}
 
 		} catch (IOException e) {

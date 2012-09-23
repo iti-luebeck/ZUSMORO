@@ -106,6 +106,7 @@ public class MainFrame extends JFrame {
 			e.printStackTrace();
 			// robotClass = EPuckRobot.class;
 		}
+		onBoard = new OnBoardEpuck();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("ZUSMORO - ZUstandbasierte Steuerung für MObile ROboter v"
 				+ VERSION);
@@ -123,7 +124,7 @@ public class MainFrame extends JFrame {
 		cPane.add(MainFrame.statusBar, BorderLayout.SOUTH);
 		this.setLocationRelativeTo(null);
 
-		onBoard = new OnBoardEpuck();
+		
 
 	}
 

@@ -19,8 +19,8 @@ import view.listeners.RunMenuListener;
 
 /**
  * @author ida
- *
- * Panel on the left side containing all buttons
+ * 
+ *         Panel on the left side containing all buttons
  */
 public class ToolPanel extends JPanel implements ActionListener {
 
@@ -40,6 +40,11 @@ public class ToolPanel extends JPanel implements ActionListener {
 
 	/**
 	 * Constructor for the ToolPannel
+	 * 
+	 * @param connected
+	 *            Is the robot connected to the computer?
+	 * @param transmitted 
+	 * 			  Is the automat transmitted completely?
 	 */
 	public ToolPanel() {
 		super();
@@ -48,24 +53,23 @@ public class ToolPanel extends JPanel implements ActionListener {
 		JPanel toolPanel = new JPanel(new GridLayout(4, 1));
 		toolPanel.setBorder(BorderFactory.createTitledBorder("Werkzeuge:"));
 		buttonGroup = new ButtonGroup();
-		
+
 		createMoveButton(toolPanel);
 		createStateButton(toolPanel);
 		createTransitionButton(toolPanel);
 		createDeleteButton(toolPanel);
-		
+
 		buttonGroup.setSelected(moveButton.getModel(), true);
 
-		JPanel controlPanel = new JPanel(new GridLayout(3,1));
+		JPanel controlPanel = new JPanel(new GridLayout(3, 1));
 		ActionListener runListener = new RunMenuListener();
 		controlPanel.setBorder(BorderFactory.createTitledBorder("Programm:"));
-		
+
 		createConnectButton(controlPanel, runListener);
 		createTransmitButton(controlPanel, runListener);
 		createStartButton(controlPanel, runListener);
 		createStopButton(controlPanel, runListener);
 		createDebugButton(controlPanel, runListener);
-
 		add(toolPanel, BorderLayout.NORTH);
 		add(controlPanel, BorderLayout.SOUTH);
 	}
@@ -77,6 +81,7 @@ public class ToolPanel extends JPanel implements ActionListener {
 		debugButton.addMouseListener(mouseListener);
 		debugButton.addActionListener(runListener);
 		controlPanel.add(debugButton);
+		debugButton.setEnabled(false);
 	}
 
 	private void createStopButton(JPanel controlPanel,
@@ -86,6 +91,7 @@ public class ToolPanel extends JPanel implements ActionListener {
 		stopButton.addMouseListener(mouseListener);
 		stopButton.addActionListener(runListener);
 		controlPanel.add(stopButton);
+		stopButton.setEnabled(false);
 	}
 
 	private void createStartButton(JPanel controlPanel,
@@ -95,6 +101,7 @@ public class ToolPanel extends JPanel implements ActionListener {
 		startButton.addMouseListener(mouseListener);
 		startButton.addActionListener(runListener);
 		controlPanel.add(startButton);
+		startButton.setEnabled(false);
 	}
 
 	private void createTransmitButton(JPanel controlPanel,
@@ -104,6 +111,7 @@ public class ToolPanel extends JPanel implements ActionListener {
 		transmitButton.addMouseListener(mouseListener);
 		transmitButton.addActionListener(runListener);
 		controlPanel.add(transmitButton);
+		transmitButton.setEnabled(false);
 	}
 
 	private void createConnectButton(JPanel controlPanel,
@@ -120,7 +128,8 @@ public class ToolPanel extends JPanel implements ActionListener {
 		deleteButton.setActionCommand("deleteTool");
 		deleteButton.addMouseListener(mouseListener);
 		deleteButton.addActionListener(this);
-		deleteButton.setToolTipText("Transition oder Zustand zum Löschen anklicken");
+		deleteButton
+				.setToolTipText("Transition oder Zustand zum Löschen anklicken");
 		toolPanel.add(deleteButton);
 		buttonGroup.add(deleteButton);
 	}
@@ -130,7 +139,8 @@ public class ToolPanel extends JPanel implements ActionListener {
 		transitionButton.setActionCommand("transitionTool");
 		transitionButton.addMouseListener(mouseListener);
 		transitionButton.addActionListener(this);
-		transitionButton.setToolTipText("<html>Auf einem Zustand linke Maustaste drücken,<br>halten und über Endzustand loslassen</html>");
+		transitionButton
+				.setToolTipText("<html>Auf einem Zustand linke Maustaste drücken,<br>halten und über Endzustand loslassen</html>");
 		toolPanel.add(transitionButton);
 		buttonGroup.add(transitionButton);
 	}
@@ -140,7 +150,8 @@ public class ToolPanel extends JPanel implements ActionListener {
 		stateButton.setActionCommand("stateTool");
 		stateButton.addMouseListener(mouseListener);
 		stateButton.addActionListener(this);
-		stateButton.setToolTipText("Zustand durch klicken auf die Arbeitsfläche hinzufügen");
+		stateButton
+				.setToolTipText("Zustand durch klicken auf die Arbeitsfläche hinzufügen");
 		toolPanel.add(stateButton);
 		buttonGroup.add(stateButton);
 	}
@@ -151,19 +162,45 @@ public class ToolPanel extends JPanel implements ActionListener {
 		moveButton.setActionCommand("moveTool");
 		moveButton.addMouseListener(mouseListener);
 		moveButton.addActionListener(this);
-		moveButton.setToolTipText("Mit gedrückter Maustaste Transitionen oder Zustände verschieben");
+		moveButton
+				.setToolTipText("Mit gedrückter Maustaste Transitionen oder Zustände verschieben");
 		toolPanel.add(moveButton);
 		buttonGroup.add(moveButton);
 	}
 
 	/**
-	 * @param connected is there an active connection?
+	 * @param connected
+	 *            is there an active connection?
 	 * 
-	 * Set connection status
+	 *            Set connection status
 	 */
 	public void setConnected(boolean connected) {
 		connectButton.setIcon(connected ? Images.DISCONNECT : Images.CONNECT);
 		connectButton.setActionCommand(connected ? "disconnect" : "connect");
+		enableTransmit(connected);
+	}
+	
+	public void enableTransmit(boolean enable) {
+		transmitButton.setEnabled(enable);
+	}
+	
+	public void enableStart(boolean enable) {
+		startButton.setEnabled(enable);
+	}
+	
+	public void enableDebug(boolean enable) {
+		debugButton.setEnabled(enable);
+	}
+	
+	public void enableStop(boolean enable) {
+		stopButton.setEnabled(enable);
+	}
+	
+	public void enableEditing(boolean enable) {
+		transitionButton.setEnabled(enable);
+		moveButton.setEnabled(enable);
+		stateButton.setEnabled(enable);
+		deleteButton.setEnabled(enable);
 	}
 
 	public void actionPerformed(ActionEvent event) {
