@@ -251,10 +251,16 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 				}
 			}
 		} else {
+			int i = (int) (completionStatus() * 100);
 			MainFrame.statusBar
 					.setInfoText(hasMemoryError() ? "Fehler bei Übertragung: Der Automat ist zu groß. Nicht genügend Speicher auf dem EPuck."
-							: "Übertragung bei " + completionStatus() * 100
-									+ "%");
+							: "Übertragung bei " + i + "%");
+			if (i == 100) {
+				MainFrame.statusBar.hideProgressBar();
+			} else {
+				MainFrame.statusBar.setProgressBar(i);
+			}
+
 			transmitted = transmissionIsComplete();
 		}
 	}

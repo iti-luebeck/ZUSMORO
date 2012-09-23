@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -19,6 +20,7 @@ public class StatusBar extends JPanel {
 	private static final long serialVersionUID = -7960319300551657388L;
 	private JLabel infoLabel;
 	private JLabel eModeLabel;
+	private JProgressBar progressBar;
 
 	/**
 	 * Constructor for status bar setting default text before any selection has
@@ -31,6 +33,9 @@ public class StatusBar extends JPanel {
 		infoLabel = new JLabel("Willkommen");
 		eModeLabel = new JLabel();
 		add(infoLabel);
+		progressBar = new JProgressBar(0, 100);
+		add(progressBar);
+		progressBar.setVisible(false);
 		add(new JSeparator(SwingConstants.VERTICAL));
 		add(new JLabel("EditorMode: "));
 		add(eModeLabel);
@@ -54,5 +59,23 @@ public class StatusBar extends JPanel {
 	 */
 	public void setEditorMode(EditorPanel.EditorMode mode) {
 		eModeLabel.setText(mode.toString());
+	}
+
+	/**
+	 * Hide the progress bar because there is no transmission
+	 */
+	public void hideProgressBar() {
+		progressBar.setVisible(false);
+	}
+
+	/**
+	 * Show Progress bar and add progress value to be displayed
+	 * 
+	 * @param i
+	 *            the progress value to be set
+	 */
+	public void setProgressBar(int i) {
+		progressBar.setVisible(true);
+		progressBar.setValue(i);
 	}
 }
