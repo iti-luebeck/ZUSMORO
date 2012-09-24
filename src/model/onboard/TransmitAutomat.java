@@ -1,8 +1,11 @@
 package model.onboard;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import view.MainFrame;
 
@@ -30,34 +33,42 @@ public class TransmitAutomat implements TransmissionJob {
 	protected List<Variable> guards;
 
 	public TransmitAutomat(Automat automat) {
-		Automat a = transform(automat);
-		states = a.getStates();
-		sequence = new LinkedList<String>();
-		trans = new LinkedList<Transition>();
-		guards = new LinkedList<Variable>();
-		for (State s : states) {
-			for (Transition t : s.getTransitions()) {
-				trans.add(t);
-				for (BooleanExpression b : ((HugeAnd) t.getGuard())
-						.getOperands()) {
-					guards.add((Variable) b);
+		if (automat.getStateCount() == 0) {
+			JOptionPane
+					.showMessageDialog(
+							MainFrame.mainFrame,
+							"Es existiert kein Automat, der übertragen werden könnte. \n Bitte entweder einen neuen Automaten anlegen \n oder einen gespeicherten Automaten laden.",
+							"Kein Automat voranden", JOptionPane.OK_OPTION);
+		} else {
+			Automat a = transform(automat);
+			states = a.getStates();
+			sequence = new LinkedList<String>();
+			trans = new LinkedList<Transition>();
+			guards = new LinkedList<Variable>();
+			for (State s : states) {
+				for (Transition t : s.getTransitions()) {
+					trans.add(t);
+					for (BooleanExpression b : ((HugeAnd) t.getGuard())
+							.getOperands()) {
+						guards.add((Variable) b);
+					}
 				}
 			}
-		}
-		numberOfStates = states.size();
-		numberOfTransitions = trans.size();
-		numberOfGuards = guards.size();
-		// numberOfGuards = 0;
+			numberOfStates = states.size();
+			numberOfTransitions = trans.size();
+			numberOfGuards = guards.size();
+			// numberOfGuards = 0;
 
-		initialState = states.indexOf(a.getInitialState());
-		sequence.addAll(stateListStrings(false));
-		sequence.addAll(transitionListStrings(false));
-		// numberOfGuards = maxGuardIndex +1; implizit durch
-		// transitionListStrings
-		sequence.addAll(guardListStrings(false));
-		sequence.add("A" + initialState);
-		MainFrame.automat = automat;
-		pointer = 0;
+			initialState = states.indexOf(a.getInitialState());
+			sequence.addAll(stateListStrings(false));
+			sequence.addAll(transitionListStrings(false));
+			// numberOfGuards = maxGuardIndex +1; implizit durch
+			// transitionListStrings
+			sequence.addAll(guardListStrings(false));
+			sequence.add("A" + initialState);
+			MainFrame.automat = automat;
+			pointer = 0;
+		}
 	}
 
 	private State mapState(Automat a1, Automat a2, State s1) {
@@ -97,8 +108,9 @@ public class TransmitAutomat implements TransmissionJob {
 						if (useTimer) {
 							Operator op = timerVar.getOperator();
 							int compValue = timerVar.getCompValue();
-							
-							//TODO: Muss vielleicht überall der guard hinzugefügt werden?
+
+							// TODO: Muss vielleicht überall der guard
+							// hinzugefügt werden?
 							if (op == Operator.EQUAL) {
 								int timerms = compValue % 30000;
 								int timer30s = compValue / 30000;
@@ -114,31 +126,36 @@ public class TransmitAutomat implements TransmissionJob {
 
 								switch (op) {
 								case BIGGER: {
-									transformTimer(operands, op2, Operator.BIGGER, compValue);
+									transformTimer(operands, op2,
+											Operator.BIGGER, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
 								case BIGGER_EQUAL: {
-									transformTimer(operands, op2, Operator.BIGGER_EQUAL, compValue);
+									transformTimer(operands, op2,
+											Operator.BIGGER_EQUAL, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
 								case NOT_EQUAL: {
-									transformTimer(operands, op2, Operator.NOT_EQUAL, compValue);
+									transformTimer(operands, op2,
+											Operator.NOT_EQUAL, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
 								case SMALLER_EQUAL: {
-									transformTimer(operands, op2, Operator.SMALLER_EQUAL, compValue);
+									transformTimer(operands, op2,
+											Operator.SMALLER_EQUAL, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
 								}
 								case SMALLER: {
-									transformTimer(operands, op2, Operator.SMALLER, compValue);
+									transformTimer(operands, op2,
+											Operator.SMALLER, compValue);
 									t2.setGuard(op2);
 									extraTransitions.add(t2);
 									break;
@@ -166,20 +183,16 @@ public class TransmitAutomat implements TransmissionJob {
 		return a;
 	}
 
-	private void transformTimer(HugeAnd operands, HugeAnd op2, Operator type, int compValue) {
+	private void transformTimer(HugeAnd operands, HugeAnd op2, Operator type,
+			int compValue) {
 		int timerms = compValue % 30000;
 		int timer30s = compValue / 30000;
-		for (BooleanExpression b2 : operands
-				.getOperands()) {
+		for (BooleanExpression b2 : operands.getOperands()) {
 			op2.addOperand(b2);
 		}
-		op2.addOperand(new Variable("TIMER30S",
-				type, timer30s));
-		op2.addOperand(new Variable("TIMERMS",
-				type, timerms));
-		operands.addOperand(new Variable(
-				"TIMER30S", Operator.BIGGER,
-				timer30s));
+		op2.addOperand(new Variable("TIMER30S", type, timer30s));
+		op2.addOperand(new Variable("TIMERMS", type, timerms));
+		operands.addOperand(new Variable("TIMER30S", Operator.BIGGER, timer30s));
 	}
 
 	public void printTest() {
@@ -271,13 +284,13 @@ public class TransmitAutomat implements TransmissionJob {
 
 		// TODO Hier nicht gleich, warum?? An manachen Stellen 5 oder 555 statt
 		// 0
-		/*if (compareString == null || !lastMsgRec.equals(compareString)) {
-			System.out.println("Error hier");
-			pointer = restartAt;
-		}*/
+		/*
+		 * if (compareString == null || !lastMsgRec.equals(compareString)) {
+		 * System.out.println("Error hier"); pointer = restartAt; }
+		 */
 
 		System.out.println("Correct:" + compareString);
-		//return lastMsgRec.equals(compareString);
+		// return lastMsgRec.equals(compareString);
 		System.out.println(">>>>>>>>>>ALARM");
 		return true;
 	}
