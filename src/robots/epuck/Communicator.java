@@ -119,7 +119,7 @@ public class Communicator extends Observable implements SerialPortEventListener 
 				//System.out.println("ddddd: " + d.readLine());
 				String scannedInput = null;
 	
-				while( (scannedInput = d.readLine()) != null){//solange wir noch nicht alle readlines abgearbeitet haben müssen wir weiter machen
+				while( (scannedInput = d.readLine()) != null){//solange wir noch nicht alle readlines abgearbeitet haben mÃ¼ssen wir weiter machen
 					
 				//}
 				//scannedInput = d.readLine();
