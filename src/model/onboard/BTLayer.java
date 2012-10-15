@@ -100,11 +100,8 @@ public class BTLayer implements Observer {
 				lastMsgSent = job.getFirst() + "\r";
 				System.out.println("Sending:" + lastMsgSent);
 				comm.writeToStream(lastMsgSent);
-<<<<<<< HEAD
-			} else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gelöscht!
-=======
-			} else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gel�scht!
->>>>>>> ec52bcdb357cbe5d22b9de1624b19c4931de9a4a
+                        } else {//wenn job nicht completed wird damm kann man zwar noch resenden aber observer wird nicht gel�scht!
+
 				comm.deleteObserver(this);
 				MainFrame.toolPanel.enableStart(true);
 				MainFrame.toolPanel.enableTransmit(true);
