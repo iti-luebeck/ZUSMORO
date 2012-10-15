@@ -18,9 +18,18 @@ import javax.swing.event.DocumentListener;
 
 import model.Automat;
 import model.Transition;
+
 ;
 
-public class TransitionView extends JDialog implements ActionListener, DocumentListener {
+/**
+ * The dialog to edit a specific transition, including the transition's name and
+ * its rank
+ * 
+ * @author ida
+ * 
+ */
+public class TransitionView extends JDialog implements ActionListener,
+		DocumentListener {
 
 	private static final long serialVersionUID = 1652072051432599068L;
 
@@ -32,8 +41,15 @@ public class TransitionView extends JDialog implements ActionListener, DocumentL
 	private Transition transition;
 	private AbstractTransitionPanel transPanel;
 
+	/**
+	 * Constructor adding all components
+	 * 
+	 * @param trans
+	 *            the transition's name
+	 */
 	public TransitionView(Transition trans) {
-		super(MainFrame.mainFrame, "Transition " + trans.getLabel() + " bearbeiten...", true);
+		super(MainFrame.mainFrame, "Transition " + trans.getLabel()
+				+ " bearbeiten...", true);
 		this.transition = trans;
 		setLayout(new BorderLayout());
 		// panel = new BackgroundPanel(BackgroundPanel.trans_background);
@@ -64,12 +80,15 @@ public class TransitionView extends JDialog implements ActionListener, DocumentL
 	private void initComponents() {
 		label = new JTextField(transition.getLabel(), 15);
 		label.getDocument().addDocumentListener(this);
-		ArrayList<Transition> transList = transition.getRootState().getTransitions();
+		ArrayList<Transition> transList = transition.getRootState()
+				.getTransitions();
 		int transPos = transList.indexOf(transition);
 		int listSize = transList.size();
-		priority = new JSpinner(new SpinnerNumberModel(transPos, 0, listSize - 1, 1));
+		priority = new JSpinner(new SpinnerNumberModel(transPos, 0,
+				listSize - 1, 1));
 		try {
-			transPanel = MainFrame.robotClass.newInstance().getTransitionPanel(transition);
+			transPanel = MainFrame.robotClass.newInstance().getTransitionPanel(
+					transition);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -89,10 +108,12 @@ public class TransitionView extends JDialog implements ActionListener, DocumentL
 		} else if (e.getSource() == acceptButton) {
 			transition.setLabel(label.getText());
 			transition.setGuard(transPanel.getGuard());
-			//System.out.println("trans: " + transPanel.getGuard());
-			//transition.setToolTipText("<html><pre>" + transition.getGuard().toString().replace("\r\n", "<br>")
-			//		+ "</pre></html>");
-			ArrayList<Transition> transList = transition.getRootState().getTransitions();
+			// System.out.println("trans: " + transPanel.getGuard());
+			// transition.setToolTipText("<html><pre>" +
+			// transition.getGuard().toString().replace("\r\n", "<br>")
+			// + "</pre></html>");
+			ArrayList<Transition> transList = transition.getRootState()
+					.getTransitions();
 			if (transList.size() > 1) {
 				Transition[] transis = new Transition[transList.size() - 1];
 				transList.remove(transition);

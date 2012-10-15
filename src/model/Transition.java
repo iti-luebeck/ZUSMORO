@@ -20,7 +20,8 @@ import view.MainFrame;
 import view.TransitionView;
 import view.EditorPanel.EditorMode;
 
-public class Transition extends JButton implements MouseListener, MouseMotionListener, KeyListener {
+public class Transition extends JButton implements MouseListener,
+		MouseMotionListener, KeyListener {
 
 	public static int createdTransitions = 0;
 
@@ -48,15 +49,17 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 		this.rootState = root;
 		this.guard = BooleanExpression.TRUE;
 		this.followerState = follower;
-		this.xOffset = (int) ((root.getTransitions().size())*-30*Math.pow(-1.0, root.getTransitions().size()));
+		this.xOffset = (int) ((root.getTransitions().size()) * -30 * Math.pow(
+				-1.0, root.getTransitions().size()));
 		this.buildPath(0);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		addKeyListener(this);
-		setToolTipText("<html><b>"+label+"</b><br>true</html>");
+		setToolTipText("<html><b>" + label + "</b><br>true</html>");
 	}
 
-	Transition(State root, State follower, String label, int offset, BooleanExpression guard) {
+	Transition(State root, State follower, String label, int offset,
+			BooleanExpression guard) {
 		super();
 		Transition.createdTransitions++;
 		this.label = label;
@@ -101,13 +104,14 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 	}
 
 	public Path2D buildPath(int offset) {
-		//System.out.println(offset);
+		// System.out.println(offset);
 		Point point = rootState.getLocation();
 		point.x = point.x + State.STATE_WIDTH / 2;
 		point.y = point.y + State.STATE_HEIGHT;
 		Point fpoint = followerState.getLocation();
 		fpoint.x = fpoint.x + State.STATE_WIDTH / 2;
-		if (!point.equals(rootStateLocation) || !fpoint.equals(followerStateLocation) || rebuildPath) {
+		if (!point.equals(rootStateLocation)
+				|| !fpoint.equals(followerStateLocation) || rebuildPath) {
 			rebuildPath = false;
 			rootStateLocation = point;
 			followerStateLocation = fpoint;
@@ -132,12 +136,24 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 			stringY = point.y + deltaY / 2;
 			path.moveTo(stringX - 20, stringY);
 			path.lineTo(stringX, stringY);
+			arrowtips(fpoint);
 			Rectangle bounds = path.getBounds();
-			bounds = new Rectangle(bounds.x - 2, bounds.y - 2, bounds.width + 4, bounds.height + 4);
+			bounds = new Rectangle(bounds.x - 2, bounds.y - 2,
+					bounds.width + 4, bounds.height + 4);
 			// System.out.println(bounds);
 			setBounds(bounds);
 		}
 		return path;
+	}
+
+	private void arrowtips(Point fpoint) {
+		double tipX = fpoint.x - 7;
+		double tipY = fpoint.y - 7;
+		path.moveTo(tipX, tipY);
+		path.lineTo(fpoint.x, fpoint.y);
+		tipX = fpoint.x + 7;
+		path.moveTo(tipX, tipY);
+		path.lineTo(fpoint.x, fpoint.y);
 	}
 
 	private void bottomUpPath(Point point, Point fpoint) {
@@ -148,17 +164,21 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 		if (deltaX >= 0) {
 			Point nextPoint = new Point(point.x + maxX, point.y);
 			Point nextfPoint = new Point(fpoint.x - maxX, fpoint.y);
-			path.curveTo(point.x, point.y + minY, nextPoint.x, point.y + minY, nextPoint.x, nextPoint.y);
+			path.curveTo(point.x, point.y + minY, nextPoint.x, point.y + minY,
+					nextPoint.x, nextPoint.y);
 			bezierPath(nextPoint, nextfPoint);
-			//straightDownPath(nextPoint, nextfPoint);
-			path.curveTo(nextfPoint.x, nextfPoint.y - minY, fpoint.x, fpoint.y - minY, fpoint.x, fpoint.y);
+			// straightDownPath(nextPoint, nextfPoint);
+			path.curveTo(nextfPoint.x, nextfPoint.y - minY, fpoint.x, fpoint.y
+					- minY, fpoint.x, fpoint.y);
 		} else {
 			Point nextPoint = new Point(point.x - maxX, point.y);
 			Point nextfPoint = new Point(fpoint.x + maxX, fpoint.y);
-			path.curveTo(point.x, point.y + minY, nextPoint.x, point.y + minY, nextPoint.x, nextPoint.y);
+			path.curveTo(point.x, point.y + minY, nextPoint.x, point.y + minY,
+					nextPoint.x, nextPoint.y);
 			bezierPath(nextPoint, nextfPoint);
-			//straightDownPath(nextPoint, nextfPoint);
-			path.curveTo(nextfPoint.x, nextfPoint.y - minY, fpoint.x, fpoint.y - minY, fpoint.x, fpoint.y);
+			// straightDownPath(nextPoint, nextfPoint);
+			path.curveTo(nextfPoint.x, nextfPoint.y - minY, fpoint.x, fpoint.y
+					- minY, fpoint.x, fpoint.y);
 		}
 	}
 
@@ -175,7 +195,8 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 		pathPoints.add(new Point(point.x + deltaX / 2 + xOffset, point.y + 10));
 
 		path.lineTo(point.x + deltaX / 2 + xOffset, fpoint.y - 10);
-		pathPoints.add(new Point(point.x + deltaX / 2 + xOffset, fpoint.y - 10));
+		pathPoints
+				.add(new Point(point.x + deltaX / 2 + xOffset, fpoint.y - 10));
 
 		path.lineTo(fpoint.x, fpoint.y - 10);
 		pathPoints.add(new Point(fpoint.x, fpoint.y - 10));
@@ -187,8 +208,8 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 	private void bezierPath(Point point, Point fpoint) {
 		int deltaY = fpoint.y - point.y;
 		int deltaX = fpoint.x - point.x;
-		path.curveTo(point.x + xOffset, point.y + deltaY / 2, point.x + deltaX + xOffset, point.y + deltaY / 2,
-				fpoint.x, fpoint.y);
+		path.curveTo(point.x + xOffset, point.y + deltaY / 2, point.x + deltaX
+				+ xOffset, point.y + deltaY / 2, fpoint.x, fpoint.y);
 
 	}
 
@@ -215,13 +236,13 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 		// System.out.println("contains ("+x+","+y+")");
 		boolean contained = path.intersects(absX - 2, absY - 2, 4, 4);
 		contained = contained && (xOffset == 0 || pathContains(absX, absY));
-//		if (contained && !mouseOnMe) {
-//			mouseOnMe = true;
-//			((JPanel) getParent()).repaint(getBounds());
-//		} else if (!contained && mouseOnMe) {
-//			mouseOnMe = false;
-//			((JPanel) getParent()).repaint(getBounds());
-//		}
+		// if (contained && !mouseOnMe) {
+		// mouseOnMe = true;
+		// ((JPanel) getParent()).repaint(getBounds());
+		// } else if (!contained && mouseOnMe) {
+		// mouseOnMe = false;
+		// ((JPanel) getParent()).repaint(getBounds());
+		// }
 		return contained;
 	}
 
@@ -237,26 +258,31 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 			Point lineEnd;
 			for (int i = 1; i < pathPoints.size(); i++) {
 				lineEnd = pathPoints.get(i);
-				distance = Math.min(distance, lineDistance(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y, x, y));
+				distance = Math.min(
+						distance,
+						lineDistance(lineStart.x, lineStart.y, lineEnd.x,
+								lineEnd.y, x, y));
 				lineStart = lineEnd;
 			}
 		}
 		return distance <= 5.0;
 	}
 
-	private double lineDistance(int lx1,int ly1, int lx2, int ly2, int px, int py) {
+	private double lineDistance(int lx1, int ly1, int lx2, int ly2, int px,
+			int py) {
 		double a1 = lx2 - lx1;
 		double a2 = ly2 - ly1;
 		double b1 = px - lx1;
 		double b2 = py - ly1;
-		double alpha = (a1*b1 + a2*b2)/(a1*a1 + a2*a2);
+		double alpha = (a1 * b1 + a2 * b2) / (a1 * a1 + a2 * a2);
 		double result;
 		if (alpha > 1.0 || alpha < 0.0) {
 			result = Double.MAX_VALUE;
 		} else {
 			a1 = alpha * a1;
 			a2 = alpha * a2;
-			result = Math.sqrt(Math.pow((a1-b1), 2.0) + Math.pow((a2-b2), 2.0));
+			result = Math.sqrt(Math.pow((a1 - b1), 2.0)
+					+ Math.pow((a2 - b2), 2.0));
 		}
 		return result != result ? Double.MAX_VALUE : result;
 	}
@@ -269,24 +295,25 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 	public void mouseClicked(MouseEvent e) {
 		// System.out.println("event" + e);
 		if (e.getClickCount() == 2 && Automat.runningAutomat == null) {
-//			if (MainFrame.programm.getRobot() != null) {
-//				MainFrame.programm.getRobot().getTransitionView(this).setVisible(true);
-//			} else {
-//				try {
-//					MainFrame.robotClass.newInstance().getTransitionView(this).setVisible(true);
-//				} catch (InstantiationException e1) {
-//					// Auto-generated catch block
-//					e1.printStackTrace();
-//				} catch (IllegalAccessException e1) {
-//					// Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//			}
+			// if (MainFrame.programm.getRobot() != null) {
+			// MainFrame.programm.getRobot().getTransitionView(this).setVisible(true);
+			// } else {
+			// try {
+			// MainFrame.robotClass.newInstance().getTransitionView(this).setVisible(true);
+			// } catch (InstantiationException e1) {
+			// // Auto-generated catch block
+			// e1.printStackTrace();
+			// } catch (IllegalAccessException e1) {
+			// // Auto-generated catch block
+			// e1.printStackTrace();
+			// }
+			// }
 			new TransitionView(this).setVisible(true);
 		} else if (e.getClickCount() == 1 && Automat.runningAutomat == null
 				&& MainFrame.editorPanel.getMode() == EditorMode.DELETE) {
 			rootState.removeTransition(this);
-			MainFrame.automat.setChanged(new ChangeEvent(ChangeEventType.TRANSITION_DELETE, this, false));
+			MainFrame.automat.setChanged(new ChangeEvent(
+					ChangeEventType.TRANSITION_DELETE, this, false));
 		}
 	}
 
@@ -294,14 +321,14 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 		mouseOnMe = true;
 		((JPanel) getParent()).repaint(getBounds());
 		requestFocusInWindow();
-		//System.out.println("event"+e);
+		// System.out.println("event"+e);
 	}
 
 	public void mouseExited(MouseEvent e) {
 		mouseOnMe = false;
 		((JPanel) getParent()).repaint(getBounds());
 		getParent().requestFocusInWindow();
-		//System.out.println("event"+e);
+		// System.out.println("event"+e);
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -314,12 +341,12 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		//System.out.println("xOffset = " + xOffset);
+		// System.out.println("xOffset = " + xOffset);
 		xOffset += e.getXOnScreen() - startX;
 		startX = e.getXOnScreen();
 		rebuildPath = true;
 		this.buildPath(0);
-		//Rectangle bounds = getBounds();
+		// Rectangle bounds = getBounds();
 		((JPanel) this.getParent()).repaint();
 	}
 
@@ -332,9 +359,11 @@ public class Transition extends JButton implements MouseListener, MouseMotionLis
 	}
 
 	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_DELETE && Automat.runningAutomat == null) {
+		if (e.getKeyCode() == KeyEvent.VK_DELETE
+				&& Automat.runningAutomat == null) {
 			rootState.removeTransition(this);
-			MainFrame.automat.setChanged(new ChangeEvent(ChangeEventType.TRANSITION_DELETE, this, false));
+			MainFrame.automat.setChanged(new ChangeEvent(
+					ChangeEventType.TRANSITION_DELETE, this, false));
 		}
 	}
 

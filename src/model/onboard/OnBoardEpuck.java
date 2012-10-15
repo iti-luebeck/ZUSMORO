@@ -57,7 +57,8 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 		return debugLevel;
 	}
 
-	public void setDebugLevel(boolean debugOnState, boolean debugPeriodicState, boolean debugSensorData) {
+	public void setDebugLevel(boolean debugOnState, boolean debugPeriodicState,
+			boolean debugSensorData) {
 		debugLevel = 0;
 		if (debugSensorData) {
 			debugLevel += 4;
@@ -82,7 +83,7 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 		if (!connected) {
 			return false;
 		} else {
-			transmitted=false;
+			transmitted = false;
 			ta = new TransmitAutomat(a);
 			clearBTLayer(btl);
 			btl = new BTLayer(comm, ta);
@@ -91,19 +92,21 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 			return ok;
 		}
 	}
-	
-	private void clearBTLayer(BTLayer btl){
-		if(btl != null){
+
+	private void clearBTLayer(BTLayer btl) {
+		if (btl != null) {
 			btl.deattachObserver();
 		}
 	}
 
 	public boolean start() {
-		if (connected&&
-				transmissionIsComplete()) {
+		if (connected && transmissionIsComplete()) {
 			try {
 				comm.writeToStream("Sx\r");
-
+				MainFrame.toolPanel.enableStop(true);
+				MainFrame.toolPanel.enableStart(false);
+				MainFrame.toolPanel.enableEditing(false);
+				MainFrame.toolPanel.enableTransmit(false);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -124,12 +127,35 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 			try {
 				comm.writeToStream("d0\r");
 				comm.writeToStream("sx\r");
+				MainFrame.toolPanel.enableStop(false);
+				MainFrame.toolPanel.enableStart(true);
+				MainFrame.toolPanel.enableEditing(true);
+				MainFrame.toolPanel.enableTransmit(true);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
+	}
+
+	/**
+	 * @return connected
+	 * 
+	 *         Getter for connected-variable to check for a standing connection
+	 */
+	public boolean getConnected() {
+		return this.connected;
+	}
+
+	/**
+	 * @return transmitted
+	 * 
+	 *         Getter for the compeltion of the transmission job to check for a
+	 *         complete transmission
+	 */
+	public boolean getTransmissionComplete() {
+		return ta == null;
 	}
 
 	public void connect(String comPort) {
@@ -170,7 +196,7 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 		}
 
 		if (transmitted) {
-			System.out.println(System.currentTimeMillis()+":Debug:" + s);
+			System.out.println(System.currentTimeMillis() + ":Debug:" + s);
 			if (s.startsWith("D")) {
 				s = s.substring(1);
 				String[] split = s.split(",");
@@ -191,23 +217,23 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 			}
 			if (s.startsWith("L")) {
 				s = s.replaceFirst(".*L", "");
-				//s = s.replaceAll("G.*", "");
-				System.out.println("Motor" + motorData[0] + "," + motorData[1] + "LEDS:" + s);
+				// s = s.replaceAll("G.*", "");
+				System.out.println("Motor" + motorData[0] + "," + motorData[1]
+						+ "LEDS:" + s);
 				ledData = LEDSet.getLEDArray(Integer.parseInt(s));
 				updateView = true;
-
 
 			}
 			if (s.startsWith("A")) {
 				s = s.substring(1);
 				setState(Integer.parseInt(s));
 			}
-			if(s.startsWith("M")){
-				s=s.substring(1);
-				String[] split=s.split(",");
-				updateView=true;
-				motorData[0]=Integer.parseInt(split[0]);
-				motorData[1]=Integer.parseInt(split[1]);
+			if (s.startsWith("M")) {
+				s = s.substring(1);
+				String[] split = s.split(",");
+				updateView = true;
+				motorData[0] = Integer.parseInt(split[0]);
+				motorData[1] = Integer.parseInt(split[1]);
 
 			}
 
@@ -225,16 +251,24 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 				}
 			}
 		} else {
-			MainFrame.statusBar.setInfoText(hasMemoryError()?
-					"Fehler bei Übertragung: Der Automat ist zu groß. Nicht genügend Speicher auf dem EPuck."
-					:"Übertragung bei " + completionStatus() * 100 + "%");
-					transmitted=transmissionIsComplete();
+			int i = (int) (completionStatus() * 100);
+			MainFrame.statusBar
+					.setInfoText(hasMemoryError() ? "Fehler bei Übertragung: Der Automat ist zu groß. Nicht genügend Speicher auf dem EPuck."
+							: "Übertragung bei " + i + "%");
+			if (i == 100) {
+				MainFrame.statusBar.hideProgressBar();
+			} else {
+				MainFrame.statusBar.setProgressBar(i);
+			}
+
+			transmitted = transmissionIsComplete();
 		}
 	}
 
 	private void setState(int state) {
 		if (state != activeState && state >= 0) {
-			Automat.runningAutomat.setActiveState(Automat.runningAutomat.getStates().get(state));
+			Automat.runningAutomat.setActiveState(Automat.runningAutomat
+					.getStates().get(state));
 		}
 	}
 
@@ -246,13 +280,14 @@ public class OnBoardEpuck implements Observer, EPuckSensorI {
 
 	@Override
 	public int[] getIrDistances() {
-		int[] res = { sensordata[0], sensordata[1], sensordata[2], sensordata[3], sensordata[4], sensordata[5],
-				sensordata[6], sensordata[7] };
+		int[] res = { sensordata[0], sensordata[1], sensordata[2],
+				sensordata[3], sensordata[4], sensordata[5], sensordata[6],
+				sensordata[7] };
 		return res;
 	}
 
-	public int getTimerState(){
-		return 30000*sensordata[12]+sensordata[11];
+	public int getTimerState() {
+		return 30000 * sensordata[12] + sensordata[11];
 	}
 
 	@Override
