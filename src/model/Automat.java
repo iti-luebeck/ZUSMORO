@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Observable;
 
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ import javax.swing.SwingUtilities;
 
 import model.ChangeEvent.ChangeEventType;
 import model.bool.BooleanExpression;
+import smachGenerator.ISmachableAction;
 import view.MainFrame;
 
 public class Automat extends Observable implements Runnable {
@@ -49,6 +51,12 @@ public class Automat extends Observable implements Runnable {
 			if (newState.isInitialState()) {
 				setInitialState(newState);
 			}
+			for (State s : states) {
+				if (s.getText().equals(newState.getText())) {
+					newState.setText(getUniqueStateName(newState.getText()));
+					break;
+				}
+			}
 			states.add(newState);
 			fileIsInSync = false;
 			this.setChanged();
@@ -69,6 +77,7 @@ public class Automat extends Observable implements Runnable {
 		for (int i = 0; i < transis.size(); i++) {
 			MainFrame.automat.setChanged(new ChangeEvent(
 					ChangeEventType.TRANSITION_DELETE, transis.get(i), true));
+			state.getTransitions().get(i).setLabel("");
 		}
 		transis.clear();
 		for (State stat : states) {
@@ -158,10 +167,37 @@ public class Automat extends Observable implements Runnable {
 									+ "Öffnen Sie einen Zustand und markieren Sie ihn als Startzustand.</html>",
 							"Automat kann nicht ausgeführt werden!",
 							JOptionPane.WARNING_MESSAGE);
+		}else if (!checkNames()){
+			JOptionPane
+			.showMessageDialog(
+					MainFrame.mainFrame,
+					"<html>Es gibt gleichnamige Zust�nde!<br>"
+							+ "Öffnen Sie einen dieser Zust�nde und geben Sie ihm einen eindeutigen Namen.</html>",
+					"Automat kann nicht ausgeführt werden!",
+					JOptionPane.WARNING_MESSAGE);
 		} else {
 			checked = true;
 		}
 		return checked;
+	}
+	
+	public boolean checkNames(){
+		LinkedList<String> transNames = new LinkedList<>();
+		for(State s1: states){
+			for (Transition t : s1.getTransitions()){
+				if(transNames.contains(t.getLabel())){ //Check for double transition names
+					return false;
+				}else{
+					transNames.add(t.getLabel());
+				}
+			}
+			for(State s2 : states){
+				if(!s1.equals(s2) && s1.getText().equals(s2.getText())){ //Check for double State Name
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public void setChanged(ChangeEvent event) {
@@ -356,6 +392,21 @@ public class Automat extends Observable implements Runnable {
 		return true;
 	}
 
+	public String getUniqueStateName(String oldName) {
+		boolean unique;
+		int i = 2;
+		do {
+			unique = true;
+			for (State s : states) {
+				if (s.getText().equals(oldName + "(" + i + ")")) {
+					unique = false;
+					i++;
+				}
+			}
+		} while (!unique);
+		return oldName + "(" + i + ")";
+	}
+
 	private void saveState(State state, RandomAccessFile saveFile)
 			throws IOException {
 		saveFile.writeBytes("<State>\r\n");
@@ -364,7 +415,7 @@ public class Automat extends Observable implements Runnable {
 		saveFile.writeBytes("<label> " + state.getText() + " </label>\r\n");
 		saveFile.writeBytes("<location> " + state.getX() + " " + state.getY()
 				+ " </location>\r\n");
-		for (Action action : state.getActions()) {
+		for (ISmachableAction action : state.getActions()) {
 			saveFile.writeBytes("<action> " + action.toString()
 					+ " </action>\r\n");
 		}

@@ -12,6 +12,7 @@ import model.Action;
 import model.Automat;
 import model.State;
 import model.Transition;
+import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
 import view.MainFrame;
@@ -69,7 +70,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		int motor0Value = 0;
 		int motor1Value = 0;
 		int[] ledValues = new int[8];
-		for (Action action : actions) {
+		for (ISmachableAction action : actions) {
 			String key = action.getKey();
 			int value =action.getValue();
 			if (key.startsWith("LED")) { // LEDS setzen

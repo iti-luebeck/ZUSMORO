@@ -18,12 +18,15 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolTip;
 
 import model.ChangeEvent.ChangeEventType;
+import smachGenerator.ISmachableAction;
+import smachGenerator.ISmachableState;
+import smachGenerator.ISmachableTransition;
 import view.EditorPanel;
 import view.MainFrame;
 import view.StateView;
 import view.EditorPanel.EditorMode;
 
-public class State extends JToggleButton implements MouseMotionListener, MouseListener, KeyListener {
+public class State extends JToggleButton implements MouseMotionListener, MouseListener, KeyListener, ISmachableState {
 
 	public static final int STATE_WIDTH = 80;
 	public static final int STATE_HEIGHT = 60;
@@ -77,6 +80,10 @@ public class State extends JToggleButton implements MouseMotionListener, MouseLi
 		this.setToolTipText(toString());
 	}
 
+	/* (non-Javadoc)
+	 * @see model.ISmachableState#getActions()
+	 */
+	@Override
 	public ArrayList<Action> getActions() {
 		return actions;
 	}
@@ -84,7 +91,10 @@ public class State extends JToggleButton implements MouseMotionListener, MouseLi
 	public void setActions(ArrayList<Action> actions) {
 		this.actions = actions;
 	}
-
+	/* (non-Javadoc)
+	 * @see model.ISmachableState#getTransitions()
+	 */
+	@Override
 	public ArrayList<Transition> getTransitions() {
 		return transitions;
 	}
@@ -97,10 +107,15 @@ public class State extends JToggleButton implements MouseMotionListener, MouseLi
 	}
 
 	public void removeTransition(Transition transition) {
+		transition.setLabel("");
 		this.transitions.remove(transition);
 //		MainFrame.automat.setChanged(new ChangeEvent(ChangeEventType.TRANSITION_DELETE, transition, false));
 	}
 
+	/* (non-Javadoc)
+	 * @see model.ISmachableState#isInitialState()
+	 */
+	@Override
 	public boolean isInitialState() {
 		return initialState;
 	}
@@ -250,7 +265,7 @@ public class State extends JToggleButton implements MouseMotionListener, MouseLi
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("<html><b>" + getText() + "</b>");
-		for (Action action : actions) {
+		for (ISmachableAction action : actions) {
 			buffer.append("<br>" + action.toString());
 		}
 		buffer.append("</html>");

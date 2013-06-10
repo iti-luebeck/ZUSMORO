@@ -95,6 +95,7 @@ public class StateView extends JDialog implements ActionListener, DocumentListen
 				}
 			}
 			if (label.getText().trim().length() >= 1) {
+				
 				state.setText(label.getText());
 				state.setActions(statePanel.getActions());
 				dispose();

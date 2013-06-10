@@ -16,12 +16,14 @@ import javax.swing.JPanel;
 
 import model.ChangeEvent.ChangeEventType;
 import model.bool.BooleanExpression;
+import smachGenerator.ISmachableGuard;
+import smachGenerator.ISmachableTransition;
 import view.MainFrame;
 import view.TransitionView;
 import view.EditorPanel.EditorMode;
 
 public class Transition extends JButton implements MouseListener,
-		MouseMotionListener, KeyListener {
+		MouseMotionListener, KeyListener, ISmachableTransition {
 
 	public static int createdTransitions = 0;
 
@@ -44,8 +46,8 @@ public class Transition extends JButton implements MouseListener,
 
 	public Transition(State root, State follower) {
 		super();
-		Transition.createdTransitions++;
-		this.label = "T" + Transition.createdTransitions;
+		createdTransitions++;
+		setLabel("T" + createdTransitions);
 		this.rootState = root;
 		this.guard = BooleanExpression.TRUE;
 		this.followerState = follower;
@@ -73,6 +75,12 @@ public class Transition extends JButton implements MouseListener,
 		addKeyListener(this);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see model.ISmachableTransition#getFollowerState()
+	 */
+	@Override
 	public State getFollowerState() {
 		return this.followerState;
 	}
@@ -84,6 +92,15 @@ public class Transition extends JButton implements MouseListener,
 	public BooleanExpression getGuard() {
 		return this.guard;
 	}
+	
+	@Override
+	public ISmachableGuard getSmachableGuard() {
+		if (guard instanceof ISmachableGuard) {
+			return (ISmachableGuard) guard;
+		} else {
+			return null;
+		}
+	}
 
 	public void setGuard(BooleanExpression guard) {
 		this.guard = guard;
@@ -93,12 +110,10 @@ public class Transition extends JButton implements MouseListener,
 		return guard.eval();
 	}
 
-	@Override
 	public String getLabel() {
 		return this.label;
 	}
 
-	@Override
 	public void setLabel(String label) {
 		this.label = label;
 	}

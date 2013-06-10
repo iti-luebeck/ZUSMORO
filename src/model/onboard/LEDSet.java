@@ -3,6 +3,8 @@ package model.onboard;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import smachGenerator.ISmachableAction;
+
 import model.Action;
 
 public class LEDSet {
@@ -27,7 +29,7 @@ public class LEDSet {
 	}
 
 	public void set(ArrayList<Action> actions){
-		for (Action a : actions) {
+		for (ISmachableAction a : actions) {
 			if (a.getKey().startsWith("LED")||a.getKey().equals("BEEP")) {
 				leds.set(ledIndexOf(a.getKey()), a.getValue() == 1);
 			}

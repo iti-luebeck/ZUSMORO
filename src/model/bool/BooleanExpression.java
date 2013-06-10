@@ -2,6 +2,8 @@ package model.bool;
 
 import java.io.BufferedReader;
 
+import smachGenerator.ISmachableGuard;
+
 import model.bool.Variable.Operator;
 
 public abstract class BooleanExpression {
@@ -30,7 +32,7 @@ public abstract class BooleanExpression {
 			Neg neg = new Neg(BooleanExpression.parseExpr(reader));
 			reader.readLine();
 			expr = neg;
-		} else if (line.equalsIgnoreCase("<true>")) {
+		} else if (line.equalsIgnoreCase("true")) {//INFO Changed from <true> to true
 			expr = TRUE;
 		} else if (line.equalsIgnoreCase("<false>")) {
 			expr = FALSE;

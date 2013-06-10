@@ -12,6 +12,8 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import smachGenerator.ISmachableTransition;
+
 import model.Transition;
 import model.bool.BooleanExpression;
 import model.bool.HugeAnd;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import smachGenerator.ISmachableAction;
+import smachGenerator.ISmachableState;
 import view.MainFrame;
 
 import model.Action;
@@ -60,7 +62,7 @@ public class TransmitAutomat implements TransmissionJob {
 		pointer = 0;
 	}
 
-	private State mapState(Automat a1, Automat a2, State s1) {
+	private State mapState(Automat a1, Automat a2, ISmachableState s1) {
 		return a2.getStates().get(a1.getStates().indexOf(s1));
 	}
 
@@ -338,7 +340,7 @@ public class TransmitAutomat implements TransmissionJob {
 
 	protected int searchActions(List<Action> actions, String string) {
 		int value = 0;
-		for (Action a : actions) {
+		for (ISmachableAction a : actions) {
 			if (a.getKey().equals(string)) {
 				value = a.getValue();
 				break;
@@ -410,7 +412,7 @@ public class TransmitAutomat implements TransmissionJob {
 					stateStrings.add((j == 2 ? "r" : "l") + offset
 							+ ",0,0,0,0,0");
 				} else {
-					for (Action a : actions) {
+					for (ISmachableAction a : actions) {
 						if (a.getKey().equalsIgnoreCase(
 								"motor" + j + "controller")) {
 							stateStrings

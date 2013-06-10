@@ -1,7 +1,9 @@
 package model;
 
+import smachGenerator.ISmachableAction;
 
-public class Action {
+
+public class Action implements ISmachableAction {
 
 	private String key;
 	private int value;
@@ -11,6 +13,10 @@ public class Action {
 		this.value = value;
 	}
 
+	/* (non-Javadoc)
+	 * @see model.ISmachableAction#getKey()
+	 */
+	@Override
 	public String getKey() {
 		return key;
 	}
@@ -19,6 +25,10 @@ public class Action {
 		this.key = key;
 	}
 
+	/* (non-Javadoc)
+	 * @see model.ISmachableAction#getValue()
+	 */
+	@Override
 	public int getValue() {
 		return value;
 	}
@@ -29,7 +39,7 @@ public class Action {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Action) {
-			Action action = (Action) o;
+			ISmachableAction action = (ISmachableAction) o;
 			return key.equals(action.getKey()) && (value==action.getValue());
 		} else {
 			return false;

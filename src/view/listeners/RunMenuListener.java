@@ -3,10 +3,16 @@ package view.listeners;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.AlreadyBoundException;
 import java.util.TreeMap;
 
+import javax.naming.directory.NoSuchAttributeException;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+
+import robots.beep.BeepSensor;
+import smachGenerator.SmachableSensors;
+import smachGenerator.SmachAutomat;
 
 import model.Automat;
 import view.MainFrame;
@@ -147,15 +153,41 @@ public class RunMenuListener implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		Method m = methods.get(e.getActionCommand());
-		try {
-			m.doEvent(e);
-		} catch (NullPointerException ex) {
-			System.out.println("ActionCommand nicht gefunden:"
-					+ e.getActionCommand());
-			ex.printStackTrace();
-
+		if (e.getActionCommand().equals("connect")) {
+			if (MainFrame.automat.checkNames()) {
+				SmachableSensors sensors = new SmachableSensors();
+				sensors.add(new BeepSensor("IR0", "topic/IR", "int", "std_msgs.msg","distance0"));
+				sensors.add(new BeepSensor("IR1", "topic/IR", "int", "std_msgs.msg","distance1"));
+				sensors.add(new BeepSensor("IR2", "topic/IR", "int", "std_msgs.msg","distance2"));
+				sensors.add(new BeepSensor("IR3", "topic/IR", "int", "std_msgs.msg","distance3"));
+				sensors.add(new BeepSensor("imu_x", "topic/imu", "Imu", "sensor_msgs.msg","linear.x"));
+				sensors.add(new BeepSensor("imu_y", "topic/imu", "Imu", "sensor_msgs.msg","linear.y"));
+				sensors.add(new BeepSensor("imu_z", "topic/imu", "Imu", "sensor_msgs.msg","linear.z"));
+				
+				SmachAutomat sa;
+				try {
+					sa = new SmachAutomat(
+							MainFrame.automat.getStates(),sensors);
+					sa.saveToFile("test");
+				} catch (NoSuchAttributeException | AlreadyBoundException e1) {
+					JOptionPane
+					.showMessageDialog(
+							MainFrame.mainFrame,
+							e1,
+							"Automat kann nicht ausgeführt werden!",
+							JOptionPane.WARNING_MESSAGE);
+				}
+			}
 		}
+		Method m = methods.get(e.getActionCommand());//TODO wieder einkommentieren
+		// try {			
+		// m.doEvent(e);
+		// } catch (NullPointerException ex) {
+		// System.out.println("ActionCommand nicht gefunden:"
+		// + e.getActionCommand());
+		// ex.printStackTrace();
+		//
+		// }
 
 	}
 }

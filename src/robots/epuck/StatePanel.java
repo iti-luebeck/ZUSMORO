@@ -21,13 +21,15 @@ import javax.swing.event.ChangeListener;
 import model.Action;
 import model.ActionController;
 import model.State;
+import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 
-public class StatePanel extends AbstractStatePanel implements ChangeListener, MouseListener {
+public class StatePanel extends AbstractStatePanel implements ChangeListener,
+		MouseListener {
 
 	private static final long serialVersionUID = -278302991810159232L;
-	private final Image state_background = new ImageIcon(StatePanel.class.getResource("e-puck-background.png"))
-			.getImage();
+	private final Image state_background = new ImageIcon(
+			StatePanel.class.getResource("e-puck-background.png")).getImage();
 
 	private JRadioButton led0;
 	private JRadioButton led1;
@@ -162,7 +164,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener, Mo
 
 	private void setValues() {
 		ArrayList<Action> actions = state.getActions();
-		for (Action action : actions) {
+		for (ISmachableAction action : actions) {
 			if (action.getKey().equals("LED0")) {
 				led0.setSelected(action.getValue() == 1);
 			} else if (action.getKey().equals("LED1")) {
@@ -273,27 +275,25 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener, Mo
 			ac = new ActionController("MOTOR2CONTROLLER");
 		}
 
-		int index=-1;
+		int index = -1;
 		if (ac != null) {
-			for (int i=0;i<actions.size();i++) {
-				Action a=actions.get(i);
+			for (int i = 0; i < actions.size(); i++) {
+				ISmachableAction a = actions.get(i);
 				if (a.getKey().equals(ac.getKey())) {
 					ac = (ActionController) a;
-					index=i;
+					index = i;
 				}
 			}
-			MotorControllerPanel cp=new MotorControllerPanel();
-			ac=cp.showPanel(e,ac);
+			MotorControllerPanel cp = new MotorControllerPanel();
+			ac = cp.showPanel(e, ac);
 			if (index >= 0) {
 				actions.remove(index);
 			}
-			if(ac!=null) {
+			if (ac != null) {
 				actions.add(ac);
 			}
 			state.setActions(actions);
 		}
-
-
 
 	}
 

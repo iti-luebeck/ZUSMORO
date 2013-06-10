@@ -17,6 +17,9 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
+import smachGenerator.ISmachableState;
+import smachGenerator.ISmachableTransition;
+
 import model.AbstractRobot;
 import model.Automat;
 import model.ChangeEvent;

@@ -8,7 +8,7 @@ public class False extends BooleanExpression {
 
 	@Override
 	public String toString() {
-		return "<false>";
+		return "false";
 	}
 
 	@Override
