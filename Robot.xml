@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beepRobot>
+    <sensor>
+        <topic>top</topic>
+        <name>IR1</name>
+        <objectInMessage>obj1</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </sensor>
+    <sensor>
+        <topic>top</topic>
+        <name>IR2</name>
+        <objectInMessage>obj2</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </sensor>
+	<sensor>
+        <topic>top</topic>
+        <name>IR3</name>
+        <objectInMessage>obj3</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </sensor>
+	<sensor>
+        <topic>top</topic>
+        <name>IR5</name>
+        <objectInMessage>obj5</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </sensor>
+    <actuator>
+        <topic>top</topic>
+        <name>Motor1</name>
+        <objectInMessage>obj1</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </actuator>
+    <actuator>
+        <topic>top</topic>
+        <name>Motor2</name>
+        <objectInMessage>obj2</objectInMessage>
+        <topicType>topTyp</topicType>
+        <topicPackage>myPack</topicPackage>
+    </actuator>
+</beepRobot>

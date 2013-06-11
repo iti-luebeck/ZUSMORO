@@ -4,9 +4,15 @@ package model;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.ws.ServiceMode;
+
+import robots.beep.BeepRobot;
+
 import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
 
+@XmlSeeAlso({BeepRobot.class})
 public abstract class AbstractRobot {
 	public AbstractRobot() {
 		//nothing

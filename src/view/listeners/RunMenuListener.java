@@ -3,14 +3,15 @@ package view.listeners;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.rmi.AlreadyBoundException;
 import java.util.TreeMap;
 
 import javax.naming.directory.NoSuchAttributeException;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-
 import robots.beep.BeepDevice;
+import robots.beep.BeepRobot;
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import smachGenerator.SmachAutomat;
@@ -157,42 +158,67 @@ public class RunMenuListener implements ActionListener {
 		if (e.getActionCommand().equals("connect")) {
 			if (MainFrame.automat.checkNames()) {
 				SmachableSensors sensors = new SmachableSensors();
-				sensors.add(new BeepDevice("IR0", "topic/IR0", "Int8", "std_msgs.msg","data"));
-				sensors.add(new BeepDevice("IR1", "topic/IR1", "Int8", "std_msgs.msg","data"));
-				sensors.add(new BeepDevice("IR2", "topic/IR2", "Int8", "std_msgs.msg","data"));
-				sensors.add(new BeepDevice("IR3", "topic/IR3", "Int8", "std_msgs.msg","data"));
-				sensors.add(new BeepDevice("imu_x", "topic/imu", "Imu", "sensor_msgs.msg","linear_acceleration.x"));
-				sensors.add(new BeepDevice("imu_y", "topic/imu", "Imu", "sensor_msgs.msg","linear_acceleration.y"));
-				sensors.add(new BeepDevice("imu_z", "topic/imu", "Imu", "sensor_msgs.msg","linear_acceleration.z"));
+				sensors.add(new BeepDevice("IR0", "topic/IR0", "Int8",
+						"std_msgs.msg", "data"));
+				sensors.add(new BeepDevice("IR1", "topic/IR1", "Int8",
+						"std_msgs.msg", "data"));
+				sensors.add(new BeepDevice("IR2", "topic/IR2", "Int8",
+						"std_msgs.msg", "data"));
+				sensors.add(new BeepDevice("IR3", "topic/IR3", "Int8",
+						"std_msgs.msg", "data"));
+				sensors.add(new BeepDevice("imu_x", "topic/imu", "Imu",
+						"sensor_msgs.msg", "linear_acceleration.x"));
+				sensors.add(new BeepDevice("imu_y", "topic/imu", "Imu",
+						"sensor_msgs.msg", "linear_acceleration.y"));
+				sensors.add(new BeepDevice("imu_z", "topic/imu", "Imu",
+						"sensor_msgs.msg", "linear_acceleration.z"));
 				SmachableActuators actuators = new SmachableActuators();
-				actuators.add(new BeepDevice("MOTOR1", "topic/motors", "Motors", "beep.msg", "links"));
-				actuators.add(new BeepDevice("MOTOR2", "topic/motors", "Motors", "beep.msg", "rechts"));
-				actuators.add(new BeepDevice("LED1", "topic/LED1", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED2", "topic/LED2", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED3", "topic/LED3", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED4", "topic/LED4", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED5", "topic/LED5", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED6", "topic/LED6", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED7", "topic/LED7", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("LED0", "topic/LED0", "Int8", "std_msgs.msg", "data"));
-				actuators.add(new BeepDevice("BEEP", "topic/beep", "Int8", "std_msgs.msg", "data"));
-				SmachAutomat sa;
+				actuators.add(new BeepDevice("MOTOR1", "topic/motors",
+						"Motors", "beep.msg", "links"));
+				actuators.add(new BeepDevice("MOTOR2", "topic/motors",
+						"Motors", "beep.msg", "rechts"));
+				actuators.add(new BeepDevice("LED1", "topic/LED1", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED2", "topic/LED2", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED3", "topic/LED3", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED4", "topic/LED4", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED5", "topic/LED5", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED6", "topic/LED6", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED7", "topic/LED7", "Int8",
+						"std_msgs.msg", "data"));
+				actuators.add(new BeepDevice("LED0", "topic/LED0", "Int8",
+						"std_msgs.msg", "data"));
+				BeepDevice beep = new BeepDevice("BEEP", "topic/beep", "Int8",
+						"std_msgs.msg", "data");
+				actuators.add(beep);
+
+				// XML datei erstellen
+				BeepRobot rob = new BeepRobot();
+				File file = new File("Robot.xml");
+				//BeepRobot.saveBeepRobot(rob, file);
+				BeepRobot xmlRobot = BeepRobot.loadBeepRobot("Robot.xml");
+				
+				SmachAutomat sa;			
+				
 				try {
-					sa = new SmachAutomat(
-							MainFrame.automat.getStates(),sensors,actuators);
+					sa = new SmachAutomat(MainFrame.automat.getStates(),
+							sensors, actuators);
 					sa.saveToFile("test");
 				} catch (NoSuchAttributeException | AlreadyBoundException e1) {
-					JOptionPane
-					.showMessageDialog(
-							MainFrame.mainFrame,
-							e1,
+					JOptionPane.showMessageDialog(MainFrame.mainFrame, e1,
 							"Automat kann nicht ausgeführt werden!",
 							JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		}
-		Method m = methods.get(e.getActionCommand());//TODO wieder einkommentieren
-		// try {			
+		Method m = methods.get(e.getActionCommand());// TODO wieder
+														// einkommentieren
+		// try {
 		// m.doEvent(e);
 		// } catch (NullPointerException ex) {
 		// System.out.println("ActionCommand nicht gefunden:"
@@ -202,4 +228,7 @@ public class RunMenuListener implements ActionListener {
 		// }
 
 	}
+
+	
+
 }

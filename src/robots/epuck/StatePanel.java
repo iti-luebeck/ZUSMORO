@@ -1,8 +1,11 @@
 package robots.epuck;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -21,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import model.Action;
 import model.ActionController;
 import model.State;
+import robots.beep.CirclePanel;
 import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 
@@ -60,6 +65,24 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		initComponents();
 		setValues();
 		setComponentBounds();
+		
+		//TODO remove, tests for beep
+		led0.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Geklickt");
+				Color color = JColorChooser.showDialog(StatePanel.this, "Wähle eine Farbe", Color.WHITE);
+				StatePanel.this.setBackground(color);
+			}
+		});
+		CirclePanel circ = new CirclePanel();
+		circ.setBounds(10, 10, 10, 10);
+		add(circ);
+		
+		JButton b = new JButton();
+		add(b);
+		
 		add(this.led0);
 		add(this.led1);
 		add(this.led2);

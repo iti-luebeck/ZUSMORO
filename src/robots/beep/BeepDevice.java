@@ -1,6 +1,11 @@
 package robots.beep;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
 import smachGenerator.ISmachableDevice;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 
 public class BeepDevice implements ISmachableDevice {
 
@@ -8,15 +13,19 @@ public class BeepDevice implements ISmachableDevice {
 	private String name;
 	private String objectInMessage;
 	private String topicType;
-	private String topicImport;
+	private String topicPackage;
 
 	public BeepDevice(String name, String topic, String topicType,
-			String topicImport, String objectInMessage) {
+			String topicPackage, String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
 		this.topicType = topicType;
-		this.topicImport = topicImport;
+		this.topicPackage = topicPackage;
 		this.objectInMessage = objectInMessage;
+	}
+	
+	public BeepDevice(){
+		//TODO
 	}
 
 	@Override
@@ -39,7 +48,7 @@ public class BeepDevice implements ISmachableDevice {
 	}
 
 	public String getTopicPackage() {
-		return topicImport;
+		return topicPackage;
 	}
 
 	public boolean equals(Object o) {
@@ -51,5 +60,4 @@ public class BeepDevice implements ISmachableDevice {
 					.equals(s.getObejctInMessage())));
 		}
 	}
-
 }

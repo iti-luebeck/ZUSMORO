@@ -1,3 +1,4 @@
+
 package smachGenerator;
 
 import java.io.File;
@@ -46,13 +47,7 @@ public class SmachAutomat {
 				initialStateIndex = states.indexOf(s);
 			}
 			smachStates.add(getSmachState(s));
-		}
-		try {
-			for (String cb : sensors.getCallbacks())
-				System.out.println(cb);
-		} catch (AlreadyBoundException e) {
-			e.printStackTrace();
-		}
+		}		
 	}
 
 	private String getImports() {
