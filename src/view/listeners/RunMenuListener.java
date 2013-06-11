@@ -200,19 +200,21 @@ public class RunMenuListener implements ActionListener {
 				// XML datei erstellen
 				BeepRobot rob = new BeepRobot();
 				File file = new File("Robot.xml");
-				//BeepRobot.saveBeepRobot(rob, file);
+				// BeepRobot.saveBeepRobot(rob, file);
 				BeepRobot xmlRobot = BeepRobot.loadBeepRobot("Robot.xml");
-				
-				SmachAutomat sa;			
-				
+
+				SmachAutomat sa = null;
+
 				try {
-					sa = new SmachAutomat(MainFrame.automat.getStates(),
-							sensors, actuators);
-					sa.saveToFile("test");
-				} catch (NoSuchAttributeException | AlreadyBoundException e1) {
-					JOptionPane.showMessageDialog(MainFrame.mainFrame, e1,
-							"Automat kann nicht ausgeführt werden!",
-							JOptionPane.WARNING_MESSAGE);
+					sa = new SmachAutomat(MainFrame.automat.getStates(), sensors,
+							actuators);
+					if (!sa.saveToFile("test")) {
+						JOptionPane.showMessageDialog(MainFrame.mainFrame,
+								"Error!", "Automat kann nicht ausgeführt werden!",
+								JOptionPane.WARNING_MESSAGE);
+					}
+				} catch (NoSuchAttributeException e1) {
+					e1.printStackTrace();
 				}
 			}
 		}
@@ -228,7 +230,5 @@ public class RunMenuListener implements ActionListener {
 		// }
 
 	}
-
-	
 
 }

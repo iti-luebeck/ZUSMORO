@@ -2,8 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib32/rtxt/RXTXcomm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib32/hamcrest-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib32/junit.jar"/>
+	<classpathentry kind="lib" path="lib64/rxtx/RXTXcomm.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="zusmoro/lib64/rxtx"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib64/hamcrest-core.jar"/>
+	<classpathentry kind="lib" path="lib64/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

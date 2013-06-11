@@ -1,11 +1,8 @@
 package robots.epuck;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -13,7 +10,6 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -22,11 +18,11 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import robots.beep.CirclePanel;
+
 import model.Action;
 import model.ActionController;
 import model.State;
-import robots.beep.CirclePanel;
-import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 
 public class StatePanel extends AbstractStatePanel implements ChangeListener,
@@ -65,24 +61,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		initComponents();
 		setValues();
 		setComponentBounds();
-		
-		//TODO remove, tests for beep
-		led0.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Geklickt");
-				Color color = JColorChooser.showDialog(StatePanel.this, "Wähle eine Farbe", Color.WHITE);
-				StatePanel.this.setBackground(color);
-			}
-		});
-		CirclePanel circ = new CirclePanel();
-		circ.setBounds(10, 10, 10, 10);
-		add(circ);
-		
-		JButton b = new JButton();
-		add(b);
-		
+
 		add(this.led0);
 		add(this.led1);
 		add(this.led2);
@@ -92,6 +71,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		add(this.led5);
 		add(this.led6);
 		add(this.led7);
+		
 		add(this.motor1slider);
 		add(this.motor2slider);
 		add(this.motor1spinner);
@@ -125,29 +105,18 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		this.led6.setOpaque(false);
 		this.led7.setOpaque(false);
 
-		// MotorModel mm1 = new MotorModel(-1000, 1000, 0);
-		// MotorSpinnerModel msm1 = new MotorSpinnerModel(mm1);
-		// MotorModel mm2 = new MotorModel(-1000, 1000, 0);
-		// MotorSpinnerModel msm2 = new MotorSpinnerModel(mm2);
 
-		// this.motor1slider = new JSlider(mm1);
-		// this.motor2slider = new JSlider(mm2);
 		motor1slider = new JSlider(SwingConstants.VERTICAL, -1000, 1000, 0);
 		motor2slider = new JSlider(SwingConstants.VERTICAL, -1000, 1000, 0);
 		motor1slider.addChangeListener(this);
 		motor2slider.addChangeListener(this);
-		// this.motor1slider.setOrientation(SwingConstants.VERTICAL);
-		// this.motor2slider.setOrientation(SwingConstants.VERTICAL);
 		motor1slider.setOpaque(false);
 		motor2slider.setOpaque(false);
 
-		// this.motor1spinner = new JSpinner(msm1);
-		// this.motor2spinner = new JSpinner(msm2);
 		motor1spinner = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 1));
 		motor2spinner = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 1));
 		motor1spinner.addChangeListener(this);
 		motor2spinner.addChangeListener(this);
-		// this.motor1spinner.getEditor().setEnabled(true);
 
 		this.beeper = new JCheckBox();
 		controllerLeft = new JButton("Motor Links Regler");
@@ -187,7 +156,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 
 	private void setValues() {
 		ArrayList<Action> actions = state.getActions();
-		for (ISmachableAction action : actions) {
+		for (Action action : actions) {
 			if (action.getKey().equals("LED0")) {
 				led0.setSelected(action.getValue() == 1);
 			} else if (action.getKey().equals("LED1")) {
@@ -230,6 +199,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 	public ArrayList<Action> getActions() {
 		ArrayList<Action> actions = new ArrayList<Action>(11);
 		actions.add(new Action("LED0", convertBool(led0.isSelected())));
+
 		actions.add(new Action("LED1", convertBool(led1.isSelected())));
 		actions.add(new Action("LED2", convertBool(led2.isSelected())));
 		actions.add(new Action("LED3", convertBool(led3.isSelected())));
@@ -238,6 +208,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		actions.add(new Action("LED5", convertBool(led5.isSelected())));
 		actions.add(new Action("LED6", convertBool(led6.isSelected())));
 		actions.add(new Action("LED7", convertBool(led7.isSelected())));
+
 		Action left = null;
 		Action right = null;
 		for (Action a : state.getActions()) {
@@ -301,7 +272,7 @@ public class StatePanel extends AbstractStatePanel implements ChangeListener,
 		int index = -1;
 		if (ac != null) {
 			for (int i = 0; i < actions.size(); i++) {
-				ISmachableAction a = actions.get(i);
+				Action a = actions.get(i);
 				if (a.getKey().equals(ac.getKey())) {
 					ac = (ActionController) a;
 					index = i;

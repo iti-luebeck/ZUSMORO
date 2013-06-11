@@ -16,7 +16,6 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 
 import model.Transition;
 import model.bool.BooleanExpression;
@@ -52,6 +51,7 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 
 	private SensorPanel[] sensorPanels;
 	private final Shape[] sensorShapes = {
+			//IR sensors
 			new Rectangle2D.Double(229, 33, 31, 38),
 			new Rectangle2D.Double(292, 81, 44, 28),
 			new Rectangle2D.Double(336, 186, 35, 30),
@@ -60,12 +60,15 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 			new Rectangle2D.Double(29, 184, 33, 31),
 			new Rectangle2D.Double(60, 83, 38, 28),
 			new Rectangle2D.Double(137, 41, 35, 27),
+			//Ground Sensors
 			new Rectangle2D.Double(134, 102, 32, 40),
 			new Rectangle2D.Double(185, 102, 32, 40),
 			new Rectangle2D.Double(234, 102, 32, 40),
+			//Timer
 			new Rectangle2D.Double(160, 238, 80, 32) };
 
 	private ValuePosition[] labelPos = {
+			//IR sensors
 			new ValuePosition(220, 61, Math.PI / 9.5),
 			new ValuePosition(290, 93, Math.PI / 3.5),
 			new ValuePosition(339, 180, Math.PI / 2),
@@ -74,8 +77,12 @@ public class TransitionPanel extends AbstractTransitionPanel implements
 			new ValuePosition(60, 226, Math.PI / -2),
 			new ValuePosition(83, 126, Math.PI / -3.5),
 			new ValuePosition(136, 75, Math.PI / -10),
-			new ValuePosition(126, 143, 0), new ValuePosition(179, 143, 0),
-			new ValuePosition(232, 143, 0), new ValuePosition(165, 260, 0) };
+			//Ground sensors
+			new ValuePosition(126, 143, 0), 
+			new ValuePosition(179, 143, 0),
+			new ValuePosition(232, 143, 0),
+			//Timer
+			new ValuePosition(165, 260, 0) };
 
 	private Transition transition;
 	private DifferencePanel differencePanel;

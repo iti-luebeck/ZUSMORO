@@ -27,4 +27,18 @@ public class CirclePanel extends JPanel {
 		g.fillArc(0, 0, this.getWidth(), this.getHeight(), 0, 360);
 	}
 	
+	@Override
+	public void setBackground(Color arg0){
+		color = arg0;
+		Graphics g = this.getGraphics();
+		if(g!=null){		
+			paint(this.getGraphics());
+		}
+	}
+	
+	@Override
+	public Color getBackground(){
+		return color;
+	}
+	
 }

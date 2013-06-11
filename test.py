@@ -31,10 +31,31 @@ pub_topic_motors = rospy.Publisher('topic/motors', Motors)
 
 class State1(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=[])
+		smach.State.__init__(self, outcomes=['T1','T2','T3'])
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 1')
+		global IR2
+		global DIFFERENCE_IR3_IR0
+		global DIFFERENCE_IR1_IR0
+		global IR0
+		global IR3
+
+		while not rospy.is_shutdown():
+			if(IR2<=4 and IR3-IR0>5):
+				return 'T1'
+			if(IR1-IR0>0):
+				return 'T2'
+			if(IR0>1 and IR3>4):
+				return 'T3'
+			rospy.sleep(0.01)
+
+class State2(smach.State):
+	def __init__(self):
+		smach.State.__init__(self, outcomes=[])
+
+	def execute(self, userdata):
+		rospy.loginfo('Executing state State 2')
 
 		while not rospy.is_shutdown():
 			rospy.sleep(0.01)
@@ -72,7 +93,8 @@ if __name__ == '__main__':
 	rospy.Subscriber('topic/IR2', Int8, callback_topic_IR2)
 	sm = smach.StateMachine(outcomes=[])
 	with sm:
-		smach.StateMachine.add('State1', State1(), transitions={})
+		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2','T2':'State2','T3':'State2'})
+		smach.StateMachine.add('State2', State2(), transitions={})
 	sis = smach.ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()
 	sm.execute()

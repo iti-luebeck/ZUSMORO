@@ -12,6 +12,7 @@ import model.Action;
 import model.Automat;
 import model.State;
 import model.Transition;
+import robots.beep.BeepStatePanel;
 import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
@@ -330,7 +331,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public AbstractStatePanel getStatePanel(State state) {
-		return new StatePanel(state);
+		return new BeepStatePanel(state);
 	}
 
 	@Override

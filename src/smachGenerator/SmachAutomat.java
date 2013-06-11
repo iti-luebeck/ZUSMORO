@@ -1,4 +1,3 @@
-
 package smachGenerator;
 
 import java.io.File;
@@ -38,7 +37,8 @@ public class SmachAutomat {
 	 *             {@link ISmachableSensors} object.
 	 */
 	public SmachAutomat(ArrayList<? extends ISmachableState> states,
-			SmachableSensors sensors, SmachableActuators actuators) throws NoSuchAttributeException {
+			SmachableSensors sensors, SmachableActuators actuators)
+			throws NoSuchAttributeException {
 		this.states = states;
 		this.sensors = sensors;
 		this.actuators = actuators;
@@ -47,7 +47,7 @@ public class SmachAutomat {
 				initialStateIndex = states.indexOf(s);
 			}
 			smachStates.add(getSmachState(s));
-		}		
+		}
 	}
 
 	private String getImports() {
@@ -58,7 +58,7 @@ public class SmachAutomat {
 		imports += "import rospy\n";
 		imports += "import smach\n";
 		imports += "import smach_ros\n\n";
-		
+
 		// messege dependencies
 		HashSet<String> deps = sensors.getMsgDeps();
 		deps.addAll(actuators.getMsgDeps());
@@ -102,19 +102,25 @@ public class SmachAutomat {
 				state += "\t\tglobal " + sensor + "\n";
 			}
 		}
-		// TODO publish all actions to correct topics
 		LinkedList<String> msgs = new LinkedList<>();
 		HashSet<String> publish = new HashSet<>();
 		for (ISmachableAction a : s.getActions()) {
 			ISmachableDevice actuator = actuators.getActuator(a.getKey());
-			if (!msgs.contains(actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()")){
-				msgs.add(actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()");
-				state += "\t\t"+actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()\n";
+			if (!msgs.contains(actuator.getTopic().replace("/", "_") + " = "
+					+ actuator.getTopicType() + "()")) {
+				msgs.add(actuator.getTopic().replace("/", "_") + " = "
+						+ actuator.getTopicType() + "()");
+				state += "\t\t" + actuator.getTopic().replace("/", "_") + " = "
+						+ actuator.getTopicType() + "()\n";
 			}
-			state += "\t\t"+actuator.getTopic().replace("/", "_")+"."+actuator.getObejctInMessage()+" = "+a.getValue()+"\n";
-			publish.add("\t\tpub_"+actuator.getTopic().replace("/", "_")+".publish("+actuator.getTopic().replace("/", "_")+")\n");
+			state += "\t\t" + actuator.getTopic().replace("/", "_") + "."
+					+ actuator.getObejctInMessage() + " = " + a.getValue()
+					+ "\n";
+			publish.add("\t\tpub_" + actuator.getTopic().replace("/", "_")
+					+ ".publish(" + actuator.getTopic().replace("/", "_")
+					+ ")\n");
 		}
-		for(String pub : publish){
+		for (String pub : publish) {
 			state += pub;
 		}
 
@@ -122,21 +128,28 @@ public class SmachAutomat {
 		state += "\n\t\twhile not rospy.is_shutdown():\n";
 		for (ISmachableTransition t : s.getTransitions()) {
 			ISmachableGuard guard = t.getSmachableGuard();
-			if (guard instanceof True) {//TODO 
-				state += "\t\t\treturn '" + t.getLabel() + "'\n";
-				break;
-			} else if (guard.getSensorNames().size() > 0) {
+			if (guard.getSensorNames().size() > 0) {
 				state += "\t\t\tif(";
 				for (int i = 0; i < guard.getSensorNames().size(); i++) {
-					if (sensors.getSensorTopic(guard.getSensorNames().get(i)) != "") {
+					if (guard.getSensorNames().get(i).startsWith("DIFFERENCE_")) {
+						String sensorNames[] = guard.getSensorNames().get(i)
+								.replace("DIFFERENCE_", "").split("_");
+						if (sensors.getSensorTopic(sensorNames[0]) != ""
+								&& sensors.getSensorTopic(sensorNames[1]) != "") {
+							state += sensorNames[0] + "-" + sensorNames[1]
+									+ guard.getOperators().get(i)
+									+ guard.getCompValues().get(i) + " and ";
+						}
+					} else if (sensors.getSensorTopic(guard.getSensorNames()
+							.get(i)) != "") {
 						state += guard.getSensorNames().get(i)
 								+ guard.getOperators().get(i)
 								+ guard.getCompValues().get(i) + " and ";
 					}
 				}
-				state = state.substring(0, state.length() - 5) + "):\n";
+				state = state.substring(0, state.length() - 5) + "):\n\t";
 			}
-			state += "\t\t\t\treturn '" + t.getLabel() + "'\n";
+			state += "\t\t\treturn '" + t.getLabel() + "'\n";
 		}
 		state += "\t\t\trospy.sleep(0.01)\n";
 		return state;
@@ -182,45 +195,55 @@ public class SmachAutomat {
 			main += "\t" + subSetup;
 		}
 		main += getSmachStateMachine("sm");
-		//including possibility to use Smach_viewer
+		// including possibility to use Smach_viewer
 		main += "\tsis = smach.ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
 		main += "\tsis.start()\n\tsm.execute()\n";
 		main += "\trospy.spin()\n\tsis.stop()";
 		return main;
 	}
 
-	public boolean saveToFile(String fileName) throws NoSuchAttributeException,
-			AlreadyBoundException {
-		String pythonNode = getImports() + "\n\n";
-		//define global sensor variables 
-		for (ISmachableDevice sensor : sensors) {
-			pythonNode += sensor.getName() + " = 0\n";
-		}
-		//define global actuator publisher
-		for(String pub : actuators.getPublisherSetups()){
-			pythonNode += pub+"\n";
-		}
-		
-		pythonNode += "\n\n";
-
-		for (int i = 0; i < smachStates.size(); i++) {
-			pythonNode += smachStates.get(i) + "\n";
-		}
-		for (String cb : sensors.getCallbacks()) {
-			pythonNode += cb + "\n";
-		}
-		pythonNode += getMainMethode();
+	/**
+	 * Stores the smach automat as an executable python-program to the given
+	 * filename
+	 * 
+	 * @param fileName
+	 *            the python-programm will be stored in.
+	 * @return true, if constructing and saving was successfully. False if there
+	 *         were problems with Topics, names, or the saving progress.
+	 * @throws NoSuchAttributeException
+	 * @throws AlreadyBoundException
+	 */
+	public boolean saveToFile(String fileName) {
 		try {
+			String pythonNode = getImports() + "\n\n";
+			// define global sensor variables
+			for (ISmachableDevice sensor : sensors) {
+				pythonNode += sensor.getName() + " = 0\n";
+			}
+			// define global actuator publisher
+			for (String pub : actuators.getPublisherSetups()) {
+				pythonNode += pub + "\n";
+			}
+
+			pythonNode += "\n\n";
+
+			for (int i = 0; i < smachStates.size(); i++) {
+				pythonNode += smachStates.get(i) + "\n";
+			}
+			for (String cb : sensors.getCallbacks()) {
+				pythonNode += cb + "\n";
+			}
+			pythonNode += getMainMethode();
 			PrintWriter out = new PrintWriter(fileName + ".py");
 			out.print(pythonNode);
 			out.close();
 			File py = new File(fileName + ".py");
 			py.setExecutable(true);
-			return true;
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
+		return true;
 	}
 
 }
