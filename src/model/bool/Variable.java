@@ -1,9 +1,8 @@
 package model.bool;
 
-import smachGenerator.ISmachableVariable;
 import model.Automat;
 
-public class Variable extends BooleanExpression implements ISmachableVariable {
+public class Variable extends BooleanExpression {
 
 	private interface Eval {
 		public boolean eval(int current, int compare);
@@ -113,26 +112,15 @@ public class Variable extends BooleanExpression implements ISmachableVariable {
 		return op.eval(currentValue, compValue);
 	}
 
-	/* (non-Javadoc)
-	 * @see model.bool.ISmachableVariable#getCompValue()
-	 */
-	@Override
 	public int getCompValue() {
 		return this.compValue;
 	}
 
-	/* (non-Javadoc)
-	 * @see model.bool.ISmachableVariable#getOperator()
-	 */
-	@Override
+	
 	public Operator getOperator() {
 		return this.op;
 	}
-
-	/* (non-Javadoc)
-	 * @see model.bool.ISmachableVariable#getVariableName()
-	 */
-	@Override
+	
 	public String getVariableName() {
 		return this.variable;
 	}

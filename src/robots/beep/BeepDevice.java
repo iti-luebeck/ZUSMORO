@@ -1,8 +1,8 @@
 package robots.beep;
 
-import smachGenerator.ISmachableSensor;
+import smachGenerator.ISmachableDevice;
 
-public class BeepSensor implements ISmachableSensor {
+public class BeepDevice implements ISmachableDevice {
 
 	private String topic;
 	private String name;
@@ -10,7 +10,7 @@ public class BeepSensor implements ISmachableSensor {
 	private String topicType;
 	private String topicImport;
 
-	public BeepSensor(String name, String topic, String topicType,
+	public BeepDevice(String name, String topic, String topicType,
 			String topicImport, String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
@@ -38,15 +38,15 @@ public class BeepSensor implements ISmachableSensor {
 		return topicType;
 	}
 
-	public String getTopicImport() {
+	public String getTopicPackage() {
 		return topicImport;
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof BeepSensor)) {
+		if (!(o instanceof BeepDevice)) {
 			return false;
 		} else {
-			BeepSensor s = (BeepSensor) o;
+			BeepDevice s = (BeepDevice) o;
 			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
 					.equals(s.getObejctInMessage())));
 		}

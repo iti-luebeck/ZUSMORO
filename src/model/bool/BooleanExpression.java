@@ -2,8 +2,6 @@ package model.bool;
 
 import java.io.BufferedReader;
 
-import smachGenerator.ISmachableGuard;
-
 import model.bool.Variable.Operator;
 
 public abstract class BooleanExpression {

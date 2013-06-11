@@ -23,16 +23,16 @@ public class True extends BooleanExpression implements ISmachableGuard{
 
 	@Override
 	public LinkedList<String> getSensorNames() {
-		return null;
+		return new LinkedList<>();
 	}
 
 	@Override
 	public LinkedList<Operator> getOperators() {
-		return null;
+		return new LinkedList<>();
 	}
 
 	@Override
 	public LinkedList<Integer> getCompValues() {
-		return null;
+		return new LinkedList<>();
 	}
 }

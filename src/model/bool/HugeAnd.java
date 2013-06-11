@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import model.bool.Variable.Operator;
 
 import smachGenerator.ISmachableGuard;
-import smachGenerator.ISmachableHugeAnd;
 
-public class HugeAnd extends BooleanExpression implements ISmachableHugeAnd, ISmachableGuard {
+public class HugeAnd extends BooleanExpression implements ISmachableGuard {
 
 	private ArrayList<BooleanExpression> operands;
 
@@ -23,10 +22,6 @@ public class HugeAnd extends BooleanExpression implements ISmachableHugeAnd, ISm
 		this.operands.add(expr);
 	}
 
-	/* (non-Javadoc)
-	 * @see model.bool.ISmachableHugeAnd#getOperands()
-	 */
-	@Override
 	public BooleanExpression[] getOperands() {
 		return operands.toArray(new BooleanExpression[operands.size()]);
 	}

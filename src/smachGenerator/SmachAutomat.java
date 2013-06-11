@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.AlreadyBoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import javax.naming.directory.NoSuchAttributeException;
@@ -24,6 +25,7 @@ public class SmachAutomat {
 	private LinkedList<String> smachStates = new LinkedList<>();
 	private int initialStateIndex;
 	private SmachableSensors sensors;
+	private SmachableActuators actuators;
 
 	/**
 	 * Constructs a Smach state machine form the given states
@@ -35,9 +37,10 @@ public class SmachAutomat {
 	 *             {@link ISmachableSensors} object.
 	 */
 	public SmachAutomat(ArrayList<? extends ISmachableState> states,
-			SmachableSensors sensors) throws NoSuchAttributeException {
+			SmachableSensors sensors, SmachableActuators actuators) throws NoSuchAttributeException {
 		this.states = states;
 		this.sensors = sensors;
+		this.actuators = actuators;
 		for (ISmachableState s : states) {
 			if (s.isInitialState()) {
 				initialStateIndex = states.indexOf(s);
@@ -48,7 +51,6 @@ public class SmachAutomat {
 			for (String cb : sensors.getCallbacks())
 				System.out.println(cb);
 		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -61,8 +63,11 @@ public class SmachAutomat {
 		imports += "import rospy\n";
 		imports += "import smach\n";
 		imports += "import smach_ros\n\n";
+		
 		// messege dependencies
-		for (String dep : sensors.getMsgDeps()) {
+		HashSet<String> deps = sensors.getMsgDeps();
+		deps.addAll(actuators.getMsgDeps());
+		for (String dep : deps) {
 			imports += dep + "\n";
 		}
 		return imports;
@@ -95,38 +100,50 @@ public class SmachAutomat {
 
 		// create execute function for the state
 		state += "\tdef execute(self, userdata):\n";
-		state += "\t\trospy.loginfo('Executing state " + s.getText() + "')";
-		//TODO declare all (needed) variables global
+		state += "\t\trospy.loginfo('Executing state " + s.getText() + "')\n";
+		for (ISmachableTransition t : s.getTransitions()) {
+			ISmachableGuard g = t.getSmachableGuard();
+			for (String sensor : g.getSensorNames()) {
+				state += "\t\tglobal " + sensor + "\n";
+			}
+		}
 		// TODO publish all actions to correct topics
+		LinkedList<String> msgs = new LinkedList<>();
+		HashSet<String> publish = new HashSet<>();
 		for (ISmachableAction a : s.getActions()) {
-			state += "\n\t\t" + a.getKey() + " " + a.getValue();
+			ISmachableDevice actuator = actuators.getActuator(a.getKey());
+			if (!msgs.contains(actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()")){
+				msgs.add(actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()");
+				state += "\t\t"+actuator.getTopic().replace("/", "_")+" = "+actuator.getTopicType()+"()\n";
+			}
+			state += "\t\t"+actuator.getTopic().replace("/", "_")+"."+actuator.getObejctInMessage()+" = "+a.getValue()+"\n";
+			publish.add("\t\tpub_"+actuator.getTopic().replace("/", "_")+".publish("+actuator.getTopic().replace("/", "_")+")\n");
+		}
+		for(String pub : publish){
+			state += pub;
 		}
 
 		// check for transition
-		state += "\n\t\twhile True:\n";
+		state += "\n\t\twhile not rospy.is_shutdown():\n";
 		for (ISmachableTransition t : s.getTransitions()) {
-			if (t.getSmachableGuard() != null) {
-				ISmachableGuard guard = t.getSmachableGuard();
-				if (t.getSmachableGuard() instanceof True) {
-					state += "\t\t\treturn '" + t.getLabel() + "'\n";
-					break;
-				}
-				if (guard.getSensorNames().size() > 0) {
-					state += "\t\t\tif(";
-					for (int i = 0; i < guard.getSensorNames().size(); i++) {
-						if (sensors.getSensorTopic(guard.getSensorNames()
-								.get(i)) != "") {
-							state += guard.getSensorNames().get(i)
-									+ guard.getOperators().get(i)
-									+ guard.getCompValues().get(i) + " and ";
-						}
+			ISmachableGuard guard = t.getSmachableGuard();
+			if (guard instanceof True) {//TODO 
+				state += "\t\t\treturn '" + t.getLabel() + "'\n";
+				break;
+			} else if (guard.getSensorNames().size() > 0) {
+				state += "\t\t\tif(";
+				for (int i = 0; i < guard.getSensorNames().size(); i++) {
+					if (sensors.getSensorTopic(guard.getSensorNames().get(i)) != "") {
+						state += guard.getSensorNames().get(i)
+								+ guard.getOperators().get(i)
+								+ guard.getCompValues().get(i) + " and ";
 					}
-					state = state.substring(0, state.length() - 5) + "):\n";
 				}
-				state += "\t\t\t\treturn '" + t.getLabel() + "'\n";
+				state = state.substring(0, state.length() - 5) + "):\n";
 			}
+			state += "\t\t\t\treturn '" + t.getLabel() + "'\n";
 		}
-		state += "\t\t\ttime.sleep(0.01)\n";
+		state += "\t\t\trospy.sleep(0.01)\n";
 		return state;
 	}
 
@@ -170,18 +187,27 @@ public class SmachAutomat {
 			main += "\t" + subSetup;
 		}
 		main += getSmachStateMachine("sm");
-		main += "\tsm.execute()";
+		//including possibility to use Smach_viewer
+		main += "\tsis = smach.ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
+		main += "\tsis.start()\n\tsm.execute()\n";
+		main += "\trospy.spin()\n\tsis.stop()";
 		return main;
 	}
 
 	public boolean saveToFile(String fileName) throws NoSuchAttributeException,
 			AlreadyBoundException {
 		String pythonNode = getImports() + "\n\n";
-		for(ISmachableSensor sensor : sensors){
-			pythonNode += sensor.getName()+"\n";
+		//define global sensor variables 
+		for (ISmachableDevice sensor : sensors) {
+			pythonNode += sensor.getName() + " = 0\n";
 		}
-		pythonNode+="\n\n";
+		//define global actuator publisher
+		for(String pub : actuators.getPublisherSetups()){
+			pythonNode += pub+"\n";
+		}
 		
+		pythonNode += "\n\n";
+
 		for (int i = 0; i < smachStates.size(); i++) {
 			pythonNode += smachStates.get(i) + "\n";
 		}
