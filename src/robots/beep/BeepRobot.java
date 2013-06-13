@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import robots.epuck.TransitionPanel;
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import view.AbstractStatePanel;
@@ -162,8 +163,7 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public AbstractStatePanel getStatePanel(State state) {
-		// TODO Auto-generated method stub
-		return null;
+		return new BeepStatePanel(state);
 	}
 
 	@Override
@@ -242,5 +242,6 @@ public class BeepRobot extends AbstractRobot {
 	public String toString() {
 		return "Beep Robot";
 	}
+	
 
 }

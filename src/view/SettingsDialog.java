@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.LinkedList;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -16,8 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import robots.beep.BeepRobot;
-
 import model.AbstractRobot;
 import model.Automat;
 
@@ -25,7 +22,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 4333492082030324369L;
 	private JTextField evaFreq;
-	private JComboBox<AbstractRobot> robot;
+	private JComboBox<Class<AbstractRobot>> robot;
 	private JCheckBox allowLoops;
 	private JCheckBox allowTransSeq;
 	private JCheckBox debugging;
@@ -42,15 +39,14 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
 		cPane.add(evaFreq);
 		cPane.add(new JLabel(" Roboter: "));
-		robot = new JComboBox<AbstractRobot>();
-		for (AbstractRobot rob : getRobots()) {
+		robot = new JComboBox<Class<AbstractRobot>>();
+		for (Class<AbstractRobot> rob : getRobots()) {
 			robot.addItem(rob);
 		}
-		if (MainFrame.robotClass != null){//TODO
-			System.out.println(MainFrame.robotClass);
+		cPane.add(robot);
+		if (MainFrame.robotClass != null) {
 			robot.setSelectedItem(MainFrame.robotClass);
 		}
-		cPane.add(robot);
 		cPane.add(new JLabel(" Schlaufen: "));
 		allowLoops = new JCheckBox("erlauben", Automat.loopsAllowed);
 		cPane.add(allowLoops);
@@ -70,18 +66,20 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(MainFrame.mainFrame);
 	}
 
-	private LinkedList<AbstractRobot> getRobots() {
+	private LinkedList<Class<AbstractRobot>> getRobots() {
 		File robotDir = new File(SettingsDialog.class.getResource("../robots")
 				.getFile().replace("%20", " "));
 		File[] robotDirs = robotDir.listFiles();
-		LinkedList<AbstractRobot> robots = new LinkedList<>();
+		LinkedList<Class<AbstractRobot>> robots = new LinkedList<>();
 		for (File dir : robotDirs) {
 			for (File file : dir.listFiles()) {
 				try {
 					Class<?> rob = Class.forName("robots." + dir.getName()
 							+ "." + file.getName().replace(".class", ""));
-					AbstractRobot r = (AbstractRobot) rob.newInstance();
-					robots.add(r);
+					if(rob.newInstance() instanceof AbstractRobot){
+						
+						robots.add((Class<AbstractRobot>) rob);
+					}		
 				} catch (Exception e) {
 				}
 			}
@@ -111,11 +109,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 				throw new Exception("Frequenz nicht im zulässigen Bereich.");
 			}
 			// Roboter
-			Class<?> robotClass = robot.getSelectedItem().getClass();
-			if (!(robotClass.newInstance() instanceof AbstractRobot)) {
-				throw new ClassCastException(
-						"Gewählter Roboter ist inkompatibel.");
-			}
+			Class<AbstractRobot> robotClass = (Class<AbstractRobot>) robot.getSelectedItem();
 			// Schlaufen
 			boolean allow = allowLoops.isSelected();
 			// Transitionsreihenfolge
@@ -124,8 +118,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			boolean debug = debugging.isSelected();
 			// Set values:
 			Automat.progDelay = delay;
-			MainFrame.robotClass = (Class<AbstractRobot>) robotClass;
-			System.out.println("gesetzt");
+			MainFrame.robotClass = robotClass;
 			Automat.loopsAllowed = allow;
 			Automat.changeableTransSeq = transSeq;
 			MainFrame.DEBUG = debug;

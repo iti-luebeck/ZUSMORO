@@ -331,7 +331,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public AbstractStatePanel getStatePanel(State state) {
-		return new BeepStatePanel(state);
+		return new EPuckStatePanel(state);
 	}
 
 	@Override
