@@ -386,4 +386,9 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	public int getUnAcknowledgedCmds() {
 		return unacknowledgedCmds;
 	}
+
+	@Override
+	public String toString() {
+		return "ePuck Robot";
+	}
 }

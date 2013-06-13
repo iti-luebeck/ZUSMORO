@@ -1,7 +1,6 @@
 package smachGenerator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.AlreadyBoundException;
 import java.util.ArrayList;
@@ -9,8 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import javax.naming.directory.NoSuchAttributeException;
-
-import model.bool.True;
 
 /**
  * Creates the python Source-Code for a Smach state machine for ROS (Robot
@@ -99,8 +96,21 @@ public class SmachAutomat {
 		for (ISmachableTransition t : s.getTransitions()) {
 			ISmachableGuard g = t.getSmachableGuard();
 			for (String sensor : g.getSensorNames()) {
+				if (sensor.startsWith("DIFFERENCE_")) {
+					String sensorNames[] = sensor.replace("DIFFERENCE_", "")
+							.split("_");
+					if (sensors.getSensorTopic(sensorNames[0]) != ""
+							&& sensors.getSensorTopic(sensorNames[1]) != "") {
+						state += "\t\tglobal " + sensorNames[0]
+								+ "\n\t\tglobal " + sensorNames[1] + "\n";
+					}
+				}
 				state += "\t\tglobal " + sensor + "\n";
 			}
+		}
+		for (ISmachableDevice actuator : actuators) {
+			state += "\t\tglobal pub_" + actuator.getTopic().replace("/", "_")
+					+ "\n";
 		}
 		LinkedList<String> msgs = new LinkedList<>();
 		HashSet<String> publish = new HashSet<>();

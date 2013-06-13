@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.ws.ServiceMode;
-
 import robots.beep.BeepRobot;
 
 import view.AbstractStatePanel;
@@ -27,4 +25,7 @@ public abstract class AbstractRobot {
 	public abstract AbstractStatePanel getStatePanel(State state);
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);
 	public abstract int getUnAcknowledgedCmds();
+	
+	@Override
+	public abstract String toString();
 }

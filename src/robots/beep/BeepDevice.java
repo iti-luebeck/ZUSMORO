@@ -6,11 +6,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import smachGenerator.ISmachableDevice;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-
 public class BeepDevice implements ISmachableDevice {
 
-	private String topic;
 	private String name;
+	private String topic;
 	private String objectInMessage;
 	private String topicType;
 	private String topicPackage;
@@ -19,13 +18,17 @@ public class BeepDevice implements ISmachableDevice {
 			String topicPackage, String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
+		this.objectInMessage = objectInMessage;
 		this.topicType = topicType;
 		this.topicPackage = topicPackage;
-		this.objectInMessage = objectInMessage;
 	}
-	
-	public BeepDevice(){
-		//TODO
+
+	public BeepDevice() {
+		name = null;
+		topic = null;
+		objectInMessage = null;
+		topicType = null;
+		topicPackage = null;
 	}
 
 	@Override

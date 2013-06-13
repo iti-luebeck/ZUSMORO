@@ -5,7 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.LinkedList;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -14,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import robots.beep.BeepRobot;
+
 import model.AbstractRobot;
 import model.Automat;
 
@@ -21,7 +25,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 4333492082030324369L;
 	private JTextField evaFreq;
-	private JComboBox robot;
+	private JComboBox<AbstractRobot> robot;
 	private JCheckBox allowLoops;
 	private JCheckBox allowTransSeq;
 	private JCheckBox debugging;
@@ -38,7 +42,14 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
 		cPane.add(evaFreq);
 		cPane.add(new JLabel(" Roboter: "));
-		robot = new JComboBox(getRobots());
+		robot = new JComboBox<AbstractRobot>();
+		for (AbstractRobot rob : getRobots()) {
+			robot.addItem(rob);
+		}
+		if (MainFrame.robotClass != null){//TODO
+			System.out.println(MainFrame.robotClass);
+			robot.setSelectedItem(MainFrame.robotClass);
+		}
 		cPane.add(robot);
 		cPane.add(new JLabel(" Schlaufen: "));
 		allowLoops = new JCheckBox("erlauben", Automat.loopsAllowed);
@@ -59,23 +70,23 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(MainFrame.mainFrame);
 	}
 
-	private String[] getRobots() {
-		File robotDir = new File(SettingsDialog.class.getResource("../robots").getFile().replace("%20", " "));
+	private LinkedList<AbstractRobot> getRobots() {
+		File robotDir = new File(SettingsDialog.class.getResource("../robots")
+				.getFile().replace("%20", " "));
 		File[] robotDirs = robotDir.listFiles();
-		String[] robotClassNames = new String[robotDirs.length];
-		int foundRobots = 0;
-		File[] robotFiles;
+		LinkedList<AbstractRobot> robots = new LinkedList<>();
 		for (File dir : robotDirs) {
-			robotFiles = dir.listFiles();
-			for (File file : robotFiles) {
-				String name = file.getName();
-				if (name.endsWith("Robot.class")) {
-					robotClassNames[foundRobots] = dir.getName() + "." + file.getName().substring(0, name.length() - 6);
-					foundRobots++;
+			for (File file : dir.listFiles()) {
+				try {
+					Class<?> rob = Class.forName("robots." + dir.getName()
+							+ "." + file.getName().replace(".class", ""));
+					AbstractRobot r = (AbstractRobot) rob.newInstance();
+					robots.add(r);
+				} catch (Exception e) {
 				}
 			}
 		}
-		return robotClassNames;
+		return robots;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -89,7 +100,8 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked") // Typsicherheit manuell sichergestellt.
+	@SuppressWarnings("unchecked")
+	// Typsicherheit manuell sichergestellt.
 	private boolean setSettings() {
 		try {
 			// Frequenz
@@ -99,10 +111,10 @@ public class SettingsDialog extends JDialog implements ActionListener {
 				throw new Exception("Frequenz nicht im zulässigen Bereich.");
 			}
 			// Roboter
-			String robotClassName = "robots." + robot.getSelectedItem().toString();
-			Class<?> robotClass = Class.forName(robotClassName);
+			Class<?> robotClass = robot.getSelectedItem().getClass();
 			if (!(robotClass.newInstance() instanceof AbstractRobot)) {
-				throw new ClassCastException("Gewählter Roboter ist inkompatibel.");
+				throw new ClassCastException(
+						"Gewählter Roboter ist inkompatibel.");
 			}
 			// Schlaufen
 			boolean allow = allowLoops.isSelected();
@@ -113,11 +125,17 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			// Set values:
 			Automat.progDelay = delay;
 			MainFrame.robotClass = (Class<AbstractRobot>) robotClass;
+			System.out.println("gesetzt");
 			Automat.loopsAllowed = allow;
 			Automat.changeableTransSeq = transSeq;
 			MainFrame.DEBUG = debug;
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "<html>Es trat folgender Fehler auf:<br>" + e + "</html>", "Fehler beim Setzen der Werte", JOptionPane.WARNING_MESSAGE);
+			JOptionPane
+					.showMessageDialog(this,
+							"<html>Es trat folgender Fehler auf:<br>" + e
+									+ "</html>",
+							"Fehler beim Setzen der Werte",
+							JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;
