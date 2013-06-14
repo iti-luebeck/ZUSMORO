@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import sun.org.mozilla.javascript.EcmaError;
+
 import model.AbstractRobot;
 import model.Automat;
 
@@ -22,7 +24,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 4333492082030324369L;
 	private JTextField evaFreq;
-	private JComboBox<Class<AbstractRobot>> robot;
+	private JComboBox<String> robot;
 	private JCheckBox allowLoops;
 	private JCheckBox allowTransSeq;
 	private JCheckBox debugging;
@@ -39,13 +41,22 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
 		cPane.add(evaFreq);
 		cPane.add(new JLabel(" Roboter: "));
-		robot = new JComboBox<Class<AbstractRobot>>();
+		robot = new JComboBox<String>();
 		for (Class<AbstractRobot> rob : getRobots()) {
-			robot.addItem(rob);
+			try {
+				robot.addItem(rob.newInstance().getRobotName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		cPane.add(robot);
 		if (MainFrame.robotClass != null) {
-			robot.setSelectedItem(MainFrame.robotClass);
+			try {
+				robot.setSelectedItem(MainFrame.robotClass.newInstance().getRobotName());
+			} catch (Exception e) {
+				System.err.println(MainFrame.robotClass.getName() +" konnte nicht instanziiert werden!");
+				e.printStackTrace();
+			}
 		}
 		cPane.add(new JLabel(" Schlaufen: "));
 		allowLoops = new JCheckBox("erlauben", Automat.loopsAllowed);
@@ -79,7 +90,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 					if(rob.newInstance() instanceof AbstractRobot){
 						
 						robots.add((Class<AbstractRobot>) rob);
-					}		
+					}
 				} catch (Exception e) {
 				}
 			}
@@ -109,7 +120,12 @@ public class SettingsDialog extends JDialog implements ActionListener {
 				throw new Exception("Frequenz nicht im zulässigen Bereich.");
 			}
 			// Roboter
-			Class<AbstractRobot> robotClass = (Class<AbstractRobot>) robot.getSelectedItem();
+			Class<AbstractRobot> robotClass = null;
+			for(Class<AbstractRobot> r : getRobots()){
+				if (r.newInstance().getRobotName().equals(robot.getSelectedItem())){
+					robotClass = (Class<AbstractRobot>) r;
+				}
+			}
 			// Schlaufen
 			boolean allow = allowLoops.isSelected();
 			// Transitionsreihenfolge

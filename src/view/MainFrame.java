@@ -100,7 +100,7 @@ public class MainFrame extends JFrame {
 		}
 		try {
 			robotClass = (Class<AbstractRobot>) Class
-					.forName("robots.epuck.EPuckRobot");
+					.forName("robots.beep.BeepRobot");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

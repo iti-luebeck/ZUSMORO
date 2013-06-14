@@ -11,6 +11,8 @@ public class SmachableSensors extends LinkedList<ISmachableDevice> {
 
 	private static final long serialVersionUID = -7460092781520543805L;
 
+	
+	
 	public String getSensorTopic(String sensorName)
 			throws NoSuchAttributeException {
 		for (ISmachableDevice sensor : this) {

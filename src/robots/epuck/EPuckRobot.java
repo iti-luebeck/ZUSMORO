@@ -336,7 +336,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public AbstractTransitionPanel getTransitionPanel(Transition trans) {
-		return new TransitionPanel(trans);
+		return new EPuckTransitionPanel(trans);
 	}
 
 
@@ -388,7 +388,8 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	}
 
 	@Override
-	public String toString() {
+	public String getRobotName() {
 		return "ePuck Robot";
 	}
+
 }

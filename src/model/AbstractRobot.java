@@ -26,6 +26,5 @@ public abstract class AbstractRobot {
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);
 	public abstract int getUnAcknowledgedCmds();
 	
-	@Override
-	public abstract String toString();
+	public abstract String getRobotName();
 }

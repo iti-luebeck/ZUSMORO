@@ -3,6 +3,8 @@ package robots.beep;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import model.bool.Variable.Operator;
+
 import smachGenerator.ISmachableDevice;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -63,4 +65,5 @@ public class BeepDevice implements ISmachableDevice {
 					.equals(s.getObejctInMessage())));
 		}
 	}
+	
 }
