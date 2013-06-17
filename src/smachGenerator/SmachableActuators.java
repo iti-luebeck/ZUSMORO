@@ -6,14 +6,14 @@ import java.util.LinkedList;
 
 import javax.naming.directory.NoSuchAttributeException;
 
-public class SmachableActuators extends LinkedList<ISmachableDevice>{
+public class SmachableActuators extends LinkedList<ISmachableActuator>{
 
 	
 	private static final long serialVersionUID = 4879265984143961788L;
 
-	public ISmachableDevice getActuator(String actuatorName)
+	public ISmachableActuator getActuator(String actuatorName)
 			throws NoSuchAttributeException {
-		for (ISmachableDevice actuator : this) {
+		for (ISmachableActuator actuator : this) {
 			if (actuator.getName().equals(actuatorName))
 				return actuator;
 		}
@@ -23,7 +23,7 @@ public class SmachableActuators extends LinkedList<ISmachableDevice>{
 
 	public HashSet<String> getPublisherSetups() {
 		HashSet<String> pubs = new HashSet<>();
-		for (ISmachableDevice actuator : this) {
+		for (ISmachableActuator actuator : this) {
 			pubs.add("pub_"+actuator.getTopic().replace("/", "_")+ " = rospy.Publisher('" + actuator.getTopic() + "', "
 					+ actuator.getTopicType() + ")");
 		}
@@ -32,7 +32,7 @@ public class SmachableActuators extends LinkedList<ISmachableDevice>{
 
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
-		for (ISmachableDevice actuator : this) {
+		for (ISmachableActuator actuator : this) {
 			deps.add("from " + actuator.getTopicPackage() + " import "
 					+ actuator.getTopicType());
 		}

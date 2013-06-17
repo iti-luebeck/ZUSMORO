@@ -1,14 +1,15 @@
 package robots.beep;
 
+import java.awt.Color;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 import model.bool.Variable.Operator;
-
-import smachGenerator.ISmachableDevice;
+import smachGenerator.ISmachableSensor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BeepDevice implements ISmachableDevice {
+public class BeepColorSensor implements ISmachableSensor {
 
 	private String name;
 	private String topic;
@@ -16,7 +17,7 @@ public class BeepDevice implements ISmachableDevice {
 	private String topicType;
 	private String topicPackage;
 
-	public BeepDevice(String name, String topic, String topicType,
+	public BeepColorSensor(String name, String topic, String topicType,
 			String topicPackage, String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
@@ -25,7 +26,7 @@ public class BeepDevice implements ISmachableDevice {
 		this.topicPackage = topicPackage;
 	}
 
-	public BeepDevice() {
+	public BeepColorSensor() {
 		name = null;
 		topic = null;
 		objectInMessage = null;
@@ -57,13 +58,21 @@ public class BeepDevice implements ISmachableDevice {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof BeepDevice)) {
+		if (!(o instanceof BeepIRSensor)) {
 			return false;
 		} else {
-			BeepDevice s = (BeepDevice) o;
+			BeepIRSensor s = (BeepIRSensor) o;
 			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
 					.equals(s.getObejctInMessage())));
 		}
 	}
-	
+
+	@Override
+	public String getTransitionCondition(Operator op, int compVal) {
+		Color col = new Color(compVal);
+		float[] hsbCol =  Color.RGBtoHSB(col.getRed(), col.getGreen(), col.getBlue(), null);
+		
+		return name + ">" + (hsbCol[0]-0.1+1)%1 + " and " + name + "<" + (hsbCol[0]+0.1)%1;
+	}
+
 }

@@ -96,12 +96,12 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	}
 
 	private void initComponents() {
-		//IR and Timer
+		// IR and Timer
 		sensorPanels = new SensorPanel[10];
 		for (int i = 0; i < sensorPanels.length; i++) {
 			sensorPanels[i] = new SensorPanel();
 		}
-		//groundSensors
+		// groundSensors
 		for (int i = 0; i < 3; i++) {
 			CirclePanel c = new CirclePanel();
 			ValuePosition pos = labelPos[i + 9];
@@ -126,16 +126,16 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					e.getComponent().setBackground(
-							JColorChooser.showDialog(BeepTransitionPanel.this,
-									"Wähle eine Farbe", e.getComponent()
-											.getBackground()));
+					Color col = JColorChooser.showDialog(BeepTransitionPanel.this,
+							"Wähle eine Farbe", e.getComponent()
+							.getBackground());
+					e.getComponent().setBackground(col);
 				}
 			});
 			groundSensors[i] = c;
 			add(c);
 		}
-		
+
 		differencePanel = new DifferencePanel(transition);
 	}
 

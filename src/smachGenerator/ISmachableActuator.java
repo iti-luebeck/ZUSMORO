@@ -1,8 +1,7 @@
 package smachGenerator;
 
-import model.bool.Variable.Operator;
 
-public interface ISmachableDevice {
+public interface ISmachableActuator {
 	
 	public abstract String getTopic();
 	public abstract String getName();

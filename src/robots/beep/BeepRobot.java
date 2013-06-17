@@ -31,84 +31,81 @@ import model.Transition;
 @XmlAccessorType(XmlAccessType.NONE)
 public class BeepRobot extends AbstractRobot {
 
-	@XmlElement(name = "sensor")
-	List<BeepDevice> sensors = new ArrayList<BeepDevice>();// Schöner als
-															// SmachableSensor
-															// aber wird nicht
-															// als XML
-															// gespeichert
+	@XmlElement(name = "IR_Sensor")
+	List<BeepIRSensor> sensorsIR = new ArrayList<BeepIRSensor>();
+	
+	@XmlElement(name = "Color_Sensor")
+	List<BeepColorSensor> sensorsCol = new ArrayList<BeepColorSensor>();
 
 	@XmlElement(name = "actuator")
-	List<BeepDevice> actuators = new ArrayList<BeepDevice>();// Schöner als
-																// SmachableActuators
-																// aber wird
-																// nicht als XML
-																// gespeichert
+	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
 
 	public BeepRobot() {
 		// Define default Beep sensors
-		sensors.add(new BeepDevice("IR0", "topic/IR0", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR1", "topic/IR1", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR2", "topic/IR2", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR3", "topic/IR3", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR4", "topic/IR4", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR5", "topic/IR5", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR6", "topic/IR6", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("IR7", "topic/IR7", "Int8", "std_msgs.msg",
+		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("UIR0", "topic/UIR0", "Int8", "std_msgs.msg",
+		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("UIR1", "topic/UIR2", "Int8", "std_msgs.msg",
+		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("UIR2", "topic/UIR3", "Int8", "std_msgs.msg",
+		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int8", "std_msgs.msg",
 				"data"));
-		sensors.add(new BeepDevice("imu_x", "topic/imu", "Imu",
-				"sensor_msgs.msg", "linear_acceleration.x"));
-		sensors.add(new BeepDevice("imu_y", "topic/imu", "Imu",
-				"sensor_msgs.msg", "linear_acceleration.y"));
-		sensors.add(new BeepDevice("imu_z", "topic/imu", "Imu",
-				"sensor_msgs.msg", "linear_acceleration.z"));
-		sensors.add(new BeepDevice("timer", "topic/Timer", "Int8", "std_msgs.msg",
-				"data"));
+	
+//		sensorsIR.add(new BeepIRSensor("imu_x", "topic/imu", "Imu",
+//				"sensor_msgs.msg", "linear_acceleration.x"));
+//		sensorsIR.add(new BeepIRSensor("imu_y", "topic/imu", "Imu",
+//				"sensor_msgs.msg", "linear_acceleration.y"));
+//		sensorsIR.add(new BeepIRSensor("imu_z", "topic/imu", "Imu",
+//				"sensor_msgs.msg", "linear_acceleration.z"));
+//		sensorsIR.add(new BeepIRSensor("timer", "topic/Timer", "Int8", "std_msgs.msg",
+//				"data"));
 		
 		// Define default Beep actuators
-		actuators.add(new BeepDevice("MOTOR1", "topic/motors", "Motors",
+		actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
 				"beep.msg", "links"));
-		actuators.add(new BeepDevice("MOTOR2", "topic/motors", "Motors",
+		actuators.add(new BeepActuator("MOTOR2", "topic/motors", "Motors",
 				"beep.msg", "rechts"));
-		actuators.add(new BeepDevice("LED1", "topic/LED1", "Int8",
+		actuators.add(new BeepActuator("LED1", "topic/LED1", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED2", "topic/LED2", "Int8",
+		actuators.add(new BeepActuator("LED2", "topic/LED2", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED3", "topic/LED3", "Int8",
+		actuators.add(new BeepActuator("LED3", "topic/LED3", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED4", "topic/LED4", "Int8",
+		actuators.add(new BeepActuator("LED4", "topic/LED4", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED5", "topic/LED5", "Int8",
+		actuators.add(new BeepActuator("LED5", "topic/LED5", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED6", "topic/LED6", "Int8",
+		actuators.add(new BeepActuator("LED6", "topic/LED6", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED7", "topic/LED7", "Int8",
+		actuators.add(new BeepActuator("LED7", "topic/LED7", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED0", "topic/LED0", "Int8",
+		actuators.add(new BeepActuator("LED0", "topic/LED0", "Int8",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepDevice("LED8", "topic/LED8", "Int8",
+		actuators.add(new BeepActuator("LED8", "topic/LED8", "Int8",
 				"std_msgs.msg", "data"));
-		BeepDevice beep = new BeepDevice("BEEP", "topic/beep", "Int8",
+		BeepActuator beep = new BeepActuator("BEEP", "topic/beep", "Int8",
 				"std_msgs.msg", "data");
 		actuators.add(beep);
 	}
 
 	public SmachableSensors getSensors() {
 		SmachableSensors sen = new SmachableSensors();
-		sen.addAll(sensors);
+		sen.addAll(sensorsIR);
+		sen.addAll(sensorsCol);
 		return sen;
 	}
 
@@ -167,7 +164,6 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public AbstractTransitionPanel getTransitionPanel(Transition trans) {
-		// TODO Return/create beep transition
 		return new BeepTransitionPanel(trans);
 	}
 

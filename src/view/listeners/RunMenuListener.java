@@ -153,14 +153,13 @@ public class RunMenuListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("connect")) {
 			if (MainFrame.automat.checkNames()) {
-				
 
 				// XML datei erstellen
 				File file = new File("Robot.xml");
 				BeepRobot robot;
-				if (file.exists()){
+				if (file.exists()) {
 					robot = BeepRobot.loadBeepRobot("Robot.xml");
-				}else{
+				} else {
 					robot = new BeepRobot();
 					BeepRobot.saveBeepRobot(robot, file);
 					System.out.println("gespeichert");
@@ -169,20 +168,24 @@ public class RunMenuListener implements ActionListener {
 				SmachAutomat sa = null;
 
 				try {
-					sa = new SmachAutomat(MainFrame.automat.getStates(), robot.getSensors(),
-							robot.getActuators());
+					sa = new SmachAutomat(MainFrame.automat.getStates(),
+							robot.getSensors(), robot.getActuators());
 					if (!sa.saveToFile("test")) {
 						JOptionPane.showMessageDialog(MainFrame.mainFrame,
-								"Error!", "Automat kann nicht ausgeführt werden!",
+								"Error!",
+								"Automat kann nicht ausgeführt werden!",
 								JOptionPane.WARNING_MESSAGE);
 					}
 				} catch (NoSuchAttributeException e1) {
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(MainFrame.mainFrame,
+							e1.getMessage(), "Error!",
+							JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		}
-		//Method m = methods.get(e.getActionCommand());// TODO wieder
-														// einkommentieren
+		// Method m = methods.get(e.getActionCommand());// TODO wieder
+		// einkommentieren
 		// try {
 		// m.doEvent(e);
 		// } catch (NullPointerException ex) {

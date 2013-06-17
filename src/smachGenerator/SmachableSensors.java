@@ -7,36 +7,25 @@ import java.util.LinkedList;
 
 import javax.naming.directory.NoSuchAttributeException;
 
-public class SmachableSensors extends LinkedList<ISmachableDevice> {
+public class SmachableSensors extends LinkedList<ISmachableSensor> {
 
 	private static final long serialVersionUID = -7460092781520543805L;
 
 	
 	
-	public String getSensorTopic(String sensorName)
+	public ISmachableSensor getSensor(String sensorName)
 			throws NoSuchAttributeException {
-		for (ISmachableDevice sensor : this) {
+		for (ISmachableSensor sensor : this) {
 			if (sensor.getName().equals(sensorName))
-				return sensor.getTopic();
+				return sensor;
 		}
 		throw new NoSuchAttributeException("Zugriff auf unbekannten Sensor "
 				+ sensorName + ".");
 	}
 
-	public String getCallback(String topic) {
-		String cb = "def callback_" + topic.replace("/", "_") + "(msg)\n";
-		for (ISmachableDevice sensor : this) {
-			if (sensor.getTopic().equals(topic)) {
-				cb += "\t" + sensor.getName() + " = msg."
-						+ sensor.getObejctInMessage() + "\n";
-			}
-		}
-		return cb;
-	}
-
 	public LinkedList<String> getCallbacks() throws AlreadyBoundException {
 		HashMap<String, String> callbacks = new HashMap<>();
-		for (ISmachableDevice sensor : this) {
+		for (ISmachableSensor sensor : this) {
 			String cb;
 			if (callbacks.containsKey(sensor.getTopic())) {
 				cb = "\tglobal " + sensor.getName() + "\n\t" + sensor.getName()
@@ -68,7 +57,7 @@ public class SmachableSensors extends LinkedList<ISmachableDevice> {
 
 	public HashSet<String> getSubscriberSetups() {
 		HashSet<String> subs = new HashSet<>();
-		for (ISmachableDevice sensor : this) {
+		for (ISmachableSensor sensor : this) {
 			subs.add("rospy.Subscriber('" + sensor.getTopic() + "', "
 					+ sensor.getTopicType() + ", callback_"
 					+ sensor.getTopic().replace("/", "_") + ")\n");
@@ -78,7 +67,7 @@ public class SmachableSensors extends LinkedList<ISmachableDevice> {
 
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
-		for (ISmachableDevice sensor : this) {
+		for (ISmachableSensor sensor : this) {
 			deps.add("from " + sensor.getTopicPackage() + " import "
 					+ sensor.getTopicType());
 		}

@@ -99,8 +99,8 @@ public class SmachAutomat {
 				if (sensor.startsWith("DIFFERENCE_")) {
 					String sensorNames[] = sensor.replace("DIFFERENCE_", "")
 							.split("_");
-					if (sensors.getSensorTopic(sensorNames[0]) != ""
-							&& sensors.getSensorTopic(sensorNames[1]) != "") {
+					if (sensors.getSensor(sensorNames[0]) != null
+							&& sensors.getSensor(sensorNames[1]) != null) {
 						state += "\t\tglobal " + sensorNames[0]
 								+ "\n\t\tglobal " + sensorNames[1] + "\n";
 					}
@@ -108,14 +108,14 @@ public class SmachAutomat {
 				state += "\t\tglobal " + sensor + "\n";
 			}
 		}
-		for (ISmachableDevice actuator : actuators) {
+		for (ISmachableActuator actuator : actuators) {
 			state += "\t\tglobal pub_" + actuator.getTopic().replace("/", "_")
 					+ "\n";
 		}
 		LinkedList<String> msgs = new LinkedList<>();
 		HashSet<String> publish = new HashSet<>();
 		for (ISmachableAction a : s.getActions()) {
-			ISmachableDevice actuator = actuators.getActuator(a.getKey());
+			ISmachableActuator actuator = actuators.getActuator(a.getKey());
 			if (!msgs.contains(actuator.getTopic().replace("/", "_") + " = "
 					+ actuator.getTopicType() + "()")) {
 				msgs.add(actuator.getTopic().replace("/", "_") + " = "
@@ -144,17 +144,19 @@ public class SmachAutomat {
 					if (guard.getSensorNames().get(i).startsWith("DIFFERENCE_")) {
 						String sensorNames[] = guard.getSensorNames().get(i)
 								.replace("DIFFERENCE_", "").split("_");
-						if (sensors.getSensorTopic(sensorNames[0]) != ""
-								&& sensors.getSensorTopic(sensorNames[1]) != "") {
+						if (sensors.getSensor(sensorNames[0]) != null
+								&& sensors.getSensor(sensorNames[1]) != null) {
 							state += sensorNames[0] + "-" + sensorNames[1]
 									+ guard.getOperators().get(i)
 									+ guard.getCompValues().get(i) + " and ";
 						}
-					} else if (sensors.getSensorTopic(guard.getSensorNames()
-							.get(i)) != "") {
-						state += guard.getSensorNames().get(i)
-								+ guard.getOperators().get(i)
-								+ guard.getCompValues().get(i) + " and ";
+					} else if (sensors.getSensor(guard.getSensorNames().get(i)) != null) {
+						state += sensors.getSensor(
+								guard.getSensorNames().get(i))
+								.getTransitionCondition(
+										guard.getOperators().get(i),
+										guard.getCompValues().get(i))
+								+ " and ";
 					}
 				}
 				state = state.substring(0, state.length() - 5) + "):\n\t";
@@ -206,7 +208,7 @@ public class SmachAutomat {
 		}
 		main += getSmachStateMachine("sm");
 		// including possibility to use Smach_viewer
-		main += "\tsis = smach.ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
+		main += "\tsis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
 		main += "\tsis.start()\n\tsm.execute()\n";
 		main += "\trospy.spin()\n\tsis.stop()";
 		return main;
@@ -227,7 +229,7 @@ public class SmachAutomat {
 		try {
 			String pythonNode = getImports() + "\n\n";
 			// define global sensor variables
-			for (ISmachableDevice sensor : sensors) {
+			for (ISmachableSensor sensor : sensors) {
 				pythonNode += sensor.getName() + " = 0\n";
 			}
 			// define global actuator publisher
