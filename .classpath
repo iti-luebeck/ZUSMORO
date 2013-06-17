@@ -2,8 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib64/rxtx/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="lib64/hamcrest-core.jar"/>
-	<classpathentry kind="lib" path="lib64/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib64/rxtx/RXTXcomm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib64/hamcrest-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib64/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="ganymed-ssh2-build251beta1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/hanse/Downloads/ganymed-ssh2-build251beta1/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

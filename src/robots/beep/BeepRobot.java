@@ -18,6 +18,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.Session;
+
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import view.AbstractStatePanel;
@@ -33,47 +37,50 @@ public class BeepRobot extends AbstractRobot {
 
 	@XmlElement(name = "IR_Sensor")
 	List<BeepIRSensor> sensorsIR = new ArrayList<BeepIRSensor>();
-	
+
 	@XmlElement(name = "Color_Sensor")
 	List<BeepColorSensor> sensorsCol = new ArrayList<BeepColorSensor>();
 
 	@XmlElement(name = "actuator")
 	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
+	
+	Connection conn;
 
 	public BeepRobot() {
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int8", "std_msgs.msg",
-				"data"));
-		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int8", "std_msgs.msg",
-				"data"));
-	
-//		sensorsIR.add(new BeepIRSensor("imu_x", "topic/imu", "Imu",
-//				"sensor_msgs.msg", "linear_acceleration.x"));
-//		sensorsIR.add(new BeepIRSensor("imu_y", "topic/imu", "Imu",
-//				"sensor_msgs.msg", "linear_acceleration.y"));
-//		sensorsIR.add(new BeepIRSensor("imu_z", "topic/imu", "Imu",
-//				"sensor_msgs.msg", "linear_acceleration.z"));
-//		sensorsIR.add(new BeepIRSensor("timer", "topic/Timer", "Int8", "std_msgs.msg",
-//				"data"));
-		
+		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int8",
+				"std_msgs.msg", "data"));
+		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int8",
+				"std_msgs.msg", "data"));
+
+		// sensorsIR.add(new BeepIRSensor("imu_x", "topic/imu", "Imu",
+		// "sensor_msgs.msg", "linear_acceleration.x"));
+		// sensorsIR.add(new BeepIRSensor("imu_y", "topic/imu", "Imu",
+		// "sensor_msgs.msg", "linear_acceleration.y"));
+		// sensorsIR.add(new BeepIRSensor("imu_z", "topic/imu", "Imu",
+		// "sensor_msgs.msg", "linear_acceleration.z"));
+		// sensorsIR.add(new BeepIRSensor("timer", "topic/Timer", "Int8",
+		// "std_msgs.msg",
+		// "data"));
+
 		// Define default Beep actuators
 		actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
 				"beep.msg", "links"));
@@ -117,7 +124,35 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean connect(String connectTo) {
-		// TODO Auto-generated method stub
+		Connection conn = new Connection("141.83.158.207");
+		try {
+			conn.connect();
+			conn.authenticateWithPassword("pi", "beep");
+			 this.conn = conn;
+			 //TODO Übertragung und starten in andere function verschieben
+			 
+			
+			SCPClient client = new SCPClient(conn);
+			client.put("test.py", "Beep/Software/catkin_ws/src/beep_imu");//TODO
+			
+
+			Session sess = conn.openSession();
+			
+			
+			//sess.execCommand("screen -r test -X stuff 'rosrun beep_imu ir_distance.py\n'");
+			
+			//sess.execCommand("rosrun beep_imu ir_distance.py &> ~/ausgabe");			
+			
+			sess.execCommand("echo $PATH &> ~/ausgabe");
+			
+			//sess.close();
+			
+			
+			
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
@@ -237,6 +272,5 @@ public class BeepRobot extends AbstractRobot {
 	public String getRobotName() {
 		return "Beep Robot";
 	}
-	
 
 }

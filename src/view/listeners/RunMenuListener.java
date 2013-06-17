@@ -162,7 +162,6 @@ public class RunMenuListener implements ActionListener {
 				} else {
 					robot = new BeepRobot();
 					BeepRobot.saveBeepRobot(robot, file);
-					System.out.println("gespeichert");
 				}
 
 				SmachAutomat sa = null;
@@ -181,6 +180,11 @@ public class RunMenuListener implements ActionListener {
 					JOptionPane.showMessageDialog(MainFrame.mainFrame,
 							e1.getMessage(), "Error!",
 							JOptionPane.WARNING_MESSAGE);
+				}
+				if(robot.connect("")){
+					System.out.println("Verbunden");
+				}else{
+					System.out.println("nicht verbunden");
 				}
 			}
 		}
