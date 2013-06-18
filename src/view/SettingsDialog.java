@@ -50,11 +50,12 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			}
 		}
 		cPane.add(robot);
-		if (MainFrame.robotClass != null) {
+		if (MainFrame.robot != null && MainFrame.robotClass != null) {
 			try {
-				robot.setSelectedItem(MainFrame.robotClass.newInstance().getRobotName());
+				robot.setSelectedItem(MainFrame.robot.getRobotName());
 			} catch (Exception e) {
-				System.err.println(MainFrame.robotClass.getName() +" konnte nicht instanziiert werden!");
+				System.err.println(MainFrame.robotClass.getName()
+						+ " konnte nicht instanziiert werden!");
 				e.printStackTrace();
 			}
 		}
@@ -87,8 +88,8 @@ public class SettingsDialog extends JDialog implements ActionListener {
 				try {
 					Class<?> rob = Class.forName("robots." + dir.getName()
 							+ "." + file.getName().replace(".class", ""));
-					if(rob.newInstance() instanceof AbstractRobot){
-						
+					if (rob.newInstance() instanceof AbstractRobot) {
+
 						robots.add((Class<AbstractRobot>) rob);
 					}
 				} catch (Exception e) {
@@ -121,8 +122,9 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			}
 			// Roboter
 			Class<AbstractRobot> robotClass = null;
-			for(Class<AbstractRobot> r : getRobots()){
-				if (r.newInstance().getRobotName().equals(robot.getSelectedItem())){
+			for (Class<AbstractRobot> r : getRobots()) {
+				if (r.newInstance().getRobotName()
+						.equals(robot.getSelectedItem())) {
 					robotClass = (Class<AbstractRobot>) r;
 				}
 			}
@@ -135,6 +137,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			// Set values:
 			Automat.progDelay = delay;
 			MainFrame.robotClass = robotClass;
+			MainFrame.robot = robotClass.newInstance();
 			Automat.loopsAllowed = allow;
 			Automat.changeableTransSeq = transSeq;
 			MainFrame.DEBUG = debug;

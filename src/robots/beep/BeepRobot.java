@@ -1,8 +1,12 @@
 package robots.beep;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
+import ch.ethz.ssh2.StreamGobbler;
 
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
@@ -43,8 +48,11 @@ public class BeepRobot extends AbstractRobot {
 
 	@XmlElement(name = "actuator")
 	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
-	
+
 	Connection conn;
+	Session sess;
+
+	PrintWriter piCommand;
 
 	public BeepRobot() {
 		// Define default Beep sensors
@@ -71,21 +79,11 @@ public class BeepRobot extends AbstractRobot {
 		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int8",
 				"std_msgs.msg", "data"));
 
-		// sensorsIR.add(new BeepIRSensor("imu_x", "topic/imu", "Imu",
-		// "sensor_msgs.msg", "linear_acceleration.x"));
-		// sensorsIR.add(new BeepIRSensor("imu_y", "topic/imu", "Imu",
-		// "sensor_msgs.msg", "linear_acceleration.y"));
-		// sensorsIR.add(new BeepIRSensor("imu_z", "topic/imu", "Imu",
-		// "sensor_msgs.msg", "linear_acceleration.z"));
-		// sensorsIR.add(new BeepIRSensor("timer", "topic/Timer", "Int8",
-		// "std_msgs.msg",
-		// "data"));
-
 		// Define default Beep actuators
-		actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
-				"beep.msg", "links"));
-		actuators.add(new BeepActuator("MOTOR2", "topic/motors", "Motors",
-				"beep.msg", "rechts"));
+		// actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
+		// "beep.msg", "links"));
+		// actuators.add(new BeepActuator("MOTOR2", "topic/motors", "Motors",
+		// "beep.msg", "rechts"));
 		actuators.add(new BeepActuator("LED1", "topic/LED1", "Int8",
 				"std_msgs.msg", "data"));
 		actuators.add(new BeepActuator("LED2", "topic/LED2", "Int8",
@@ -124,33 +122,40 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean connect(String connectTo) {
-		Connection conn = new Connection("141.83.158.207");
+		conn = new Connection(connectTo);//beep: "141.83.158.207"
 		try {
+			//connect and authorize
 			conn.connect();
 			conn.authenticateWithPassword("pi", "beep");
-			 this.conn = conn;
-			 //TODO Übertragung und starten in andere function verschieben
-			 
-			
-			SCPClient client = new SCPClient(conn);
-			client.put("test.py", "Beep/Software/catkin_ws/src/beep_imu");//TODO
-			
 
-			Session sess = conn.openSession();
-			
-			
-			//sess.execCommand("screen -r test -X stuff 'rosrun beep_imu ir_distance.py\n'");
-			
-			//sess.execCommand("rosrun beep_imu ir_distance.py &> ~/ausgabe");			
-			
-			sess.execCommand("echo $PATH &> ~/ausgabe");
-			
-			//sess.close();
-			
-			
-			
+			//start a compatible shell
+			sess = conn.openSession();
+			sess.requestDumbPTY();
+			sess.startShell();
+			piCommand = new PrintWriter(sess.getStdin(), true);
+			//echo to recognize when shell is ready to use
+			piCommand.println("echo 'ready to start'");
+
+			//print output and block until shell is "ready to start"
+			InputStream stdout = new StreamGobbler(sess.getStdout());
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(stdout));
+			while (true) {
+				String line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				System.out.println(line);
+				if (line.equals("ready to start")) {
+					break;
+				}
+			}
+
+			br.close();
+			stdout.close();
+
 			return true;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -158,8 +163,12 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public void disconnect() {
-		// TODO Auto-generated method stub
-
+		piCommand.close();
+		piCommand = null;
+		sess.close();
+		sess = null;
+		conn.close();
+		conn = null;
 	}
 
 	@Override
@@ -184,6 +193,28 @@ public class BeepRobot extends AbstractRobot {
 	public void stop() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void transmit() {
+		SCPClient client = new SCPClient(conn);
+		try {
+			client.put("test.py", "~/Beep/Software/catkin_ws/src/beep_imu");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void play() {
+		if (conn != null && sess != null && piCommand != null) {
+			piCommand.println("mkdir -p ~/log");
+			piCommand
+					.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
+			piCommand
+					.println("nohup rosrun beep_imu ir_distance.py 2> ~/log/ir_distance-err.log 1> ~/log/ir_distance-out.log");
+		}
 	}
 
 	@Override

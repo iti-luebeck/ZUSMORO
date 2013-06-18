@@ -171,8 +171,8 @@ public class Automat extends Observable implements Runnable {
 			JOptionPane
 			.showMessageDialog(
 					MainFrame.mainFrame,
-					"<html>Es gibt gleichnamige Zustände!<br>"
-							+ "Ã–ffnen Sie einen dieser Zustände und geben Sie ihm einen eindeutigen Namen.</html>",
+					"<html>Es gibt gleichnamige Zustï¿½nde!<br>"
+							+ "Ã–ffnen Sie einen dieser Zustï¿½nde und geben Sie ihm einen eindeutigen Namen.</html>",
 					"Automat kann nicht ausgefÃ¼hrt werden!",
 					JOptionPane.WARNING_MESSAGE);
 		} else {

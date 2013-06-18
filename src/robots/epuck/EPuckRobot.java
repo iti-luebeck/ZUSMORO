@@ -12,7 +12,6 @@ import model.Action;
 import model.Automat;
 import model.State;
 import model.Transition;
-import robots.beep.BeepStatePanel;
 import smachGenerator.ISmachableAction;
 import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
@@ -390,6 +389,17 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	@Override
 	public String getRobotName() {
 		return "ePuck Robot";
+	}
+
+	@Override
+	public void transmit() {
+		//TODO wird nicht benötigt, da nie aufgerufen.
+		//Transmit aufruf über RunMenuListener (actionCommand: "transmit") 
+	}
+
+	@Override
+	public void play() {
+		MainFrame.automat.start();
 	}
 
 }

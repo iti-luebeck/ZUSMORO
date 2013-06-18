@@ -21,6 +21,8 @@ public abstract class AbstractRobot {
 	public abstract void executeActions(ArrayList<Action> actions) throws IOException;
 	public abstract void updateSensors() throws IOException;
 	public abstract void stop();
+	public abstract void transmit();
+	public abstract void play();
 	public abstract int getDesiredAdditionalTimeout();
 	public abstract AbstractStatePanel getStatePanel(State state);
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);

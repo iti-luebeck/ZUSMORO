@@ -61,6 +61,8 @@ public class MainFrame extends JFrame {
 	 */
 	public volatile static Class<AbstractRobot> robotClass;
 
+	public volatile static AbstractRobot robot;
+
 	// TODO: should be control?
 	/**
 	 * Interaction with EPuck: start & stop program, debug
@@ -101,7 +103,8 @@ public class MainFrame extends JFrame {
 		try {
 			robotClass = (Class<AbstractRobot>) Class
 					.forName("robots.beep.BeepRobot");
-		} catch (ClassNotFoundException e) {
+			robot = robotClass.newInstance();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			// robotClass = EPuckRobot.class;
@@ -123,8 +126,6 @@ public class MainFrame extends JFrame {
 		cPane.add(scrollPane, BorderLayout.CENTER);
 		cPane.add(MainFrame.statusBar, BorderLayout.SOUTH);
 		this.setLocationRelativeTo(null);
-
-		
 
 	}
 
@@ -168,17 +169,17 @@ public class MainFrame extends JFrame {
 							"<html>Soll das bestehende Programm<br>wirklich verworfen werden?</html>",
 							"Programm schließen", JOptionPane.YES_NO_OPTION);
 			if (confirm == JOptionPane.YES_OPTION) {
-				File f=new File("/var/lock/lockdev/LCK..rfcomm0");
-				if(f.exists() && f.isFile()){
+				File f = new File("/var/lock/lockdev/LCK..rfcomm0");
+				if (f.exists() && f.isFile()) {
 					f.delete();
-					}
+				}
 				System.exit(0);
 			}
 		} else {
-			File f=new File("/var/lock/lockdev/LCK..rfcomm0");
-			if(f.exists() && f.isFile()){
+			File f = new File("/var/lock/lockdev/LCK..rfcomm0");
+			if (f.exists() && f.isFile()) {
 				f.delete();
-				}
+			}
 			System.exit(0);
 		}
 	}
