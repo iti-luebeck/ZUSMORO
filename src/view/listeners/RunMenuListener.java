@@ -3,16 +3,10 @@ package view.listeners;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.TreeMap;
 
-import javax.naming.directory.NoSuchAttributeException;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import robots.beep.BeepRobot;
-import smachGenerator.SmachAutomat;
-
-import model.Automat;
 import view.MainFrame;
 
 public class RunMenuListener implements ActionListener {
@@ -23,23 +17,13 @@ public class RunMenuListener implements ActionListener {
 
 	private Method connect = new Method() {
 		public void doEvent(ActionEvent e) {
-			String comPort = JOptionPane.showInputDialog(
-					(Component) e.getSource(),
-					"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):",
-					lastInput);
-
-			// if (comPort != null && comPort.startsWith("COM")) {
-			if (comPort != null) {
-
-				lastInput = comPort;
-				MainFrame.onBoard.connect(comPort);
-				MainFrame.toolPanel.setConnected(MainFrame.onBoard
-						.isConnected());
-			}
+			boolean connected = MainFrame.robot.connect(null);
+			MainFrame.toolPanel.setConnected(connected);
 		}
 	};
 
-	private Method debug = new Method() {//TODO auslagern, Für beep smach viewer starten
+	private Method debug = new Method() {// TODO auslagern, Für beep smach
+											// viewer starten
 		@Override
 		public void doEvent(ActionEvent e) {
 			JCheckBox debug1 = new JCheckBox(
@@ -64,8 +48,6 @@ public class RunMenuListener implements ActionListener {
 		};
 	};
 
-	private String lastInput = "/dev/rfcomm1";
-
 	TreeMap<String, Method> methods;
 
 	private Method run = new Method() {
@@ -82,7 +64,8 @@ public class RunMenuListener implements ActionListener {
 
 	private Method transmit = new Method() {
 		public void doEvent(ActionEvent e) {
-			MainFrame.robot.transmit();
+			boolean transmitted = MainFrame.robot.transmit();
+			MainFrame.toolPanel.enableStart(transmitted);
 		}
 	};
 
@@ -97,53 +80,16 @@ public class RunMenuListener implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("connect")) {
-			if (MainFrame.automat.checkNames()) {
+		Method m = methods.get(e.getActionCommand());// TODO wieder
+														// einkommentieren
+		try {
+			m.doEvent(e);
+		} catch (NullPointerException ex) {
+			System.out.println("ActionCommand nicht gefunden:"
+					+ e.getActionCommand());
+			ex.printStackTrace();
 
-				// XML datei erstellen
-				File file = new File("Robot.xml");
-				BeepRobot robot;
-				if (file.exists()) {
-					robot = BeepRobot.loadBeepRobot("Robot.xml");
-				} else {
-					robot = new BeepRobot();
-					BeepRobot.saveBeepRobot(robot, file);
-				}
-
-				SmachAutomat sa = null;
-
-				try {
-					sa = new SmachAutomat(MainFrame.automat.getStates(),
-							robot.getSensors(), robot.getActuators());
-					if (!sa.saveToFile("test")) {
-						JOptionPane.showMessageDialog(MainFrame.mainFrame,
-								"Error!",
-								"Automat kann nicht ausgeführt werden!",
-								JOptionPane.WARNING_MESSAGE);
-					}
-				} catch (NoSuchAttributeException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(MainFrame.mainFrame,
-							e1.getMessage(), "Error!",
-							JOptionPane.WARNING_MESSAGE);
-				}
-				if(robot.connect("")){
-					System.out.println("Verbunden");
-				}else{
-					System.out.println("nicht verbunden");
-				}
-			}
 		}
-		// Method m = methods.get(e.getActionCommand());// TODO wieder
-		// einkommentieren
-		// try {
-		// m.doEvent(e);
-		// } catch (NullPointerException ex) {
-		// System.out.println("ActionCommand nicht gefunden:"
-		// + e.getActionCommand());
-		// ex.printStackTrace();
-		//
-		// }
 
 	}
 

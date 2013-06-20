@@ -1,6 +1,5 @@
 package robots.epuck;
 
-import java.awt.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -336,8 +335,6 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 			lastInput = comPort;
 			MainFrame.onBoard.connect(comPort);
-			MainFrame.toolPanel.setConnected(MainFrame.onBoard
-					.isConnected());
 		}
 
 		return commPort.isConnected();
@@ -431,7 +428,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	}
 
 	@Override
-	public void transmit() {
+	public boolean transmit() {
 		boolean ok = MainFrame.onBoard.transmit(MainFrame.automat);
 		if (!ok) {
 			MainFrame.showErrInfo("<html>Die Übertragung ist fehlgeschlagen."
@@ -440,6 +437,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 					+ "<br>der EPuck nicht verbunden ist.",
 					"Übertragung fehlgeschlagen!");
 		}
+		return ok;
 	}
 
 	@Override

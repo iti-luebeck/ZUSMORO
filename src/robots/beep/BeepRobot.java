@@ -31,6 +31,7 @@ import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
+import view.MainFrame;
 import model.AbstractRobot;
 import model.Action;
 import model.State;
@@ -49,12 +50,18 @@ public class BeepRobot extends AbstractRobot {
 	@XmlElement(name = "actuator")
 	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
 
+	boolean connected;
+
 	Connection conn;
 	Session sess;
 
-	PrintWriter piCommand;
+	PrintWriter piIn;
+
+	BufferedReader piOut;
 
 	public BeepRobot() {
+		connected = false;
+
 		// Define default Beep sensors
 		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int8",
 				"std_msgs.msg", "data"));
@@ -122,26 +129,28 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean connect(String connectTo) {
-		conn = new Connection(connectTo);//beep: "141.83.158.207"
+		if (connectTo == null) {
+			connectTo = "141.83.158.207";
+		}
+		conn = new Connection(connectTo);
 		try {
-			//connect and authorize
+			// connect and authorize
 			conn.connect();
 			conn.authenticateWithPassword("pi", "beep");
 
-			//start a compatible shell
+			// start a compatible shell
 			sess = conn.openSession();
 			sess.requestDumbPTY();
 			sess.startShell();
-			piCommand = new PrintWriter(sess.getStdin(), true);
-			//echo to recognize when shell is ready to use
-			piCommand.println("echo 'ready to start'");
+			piIn = new PrintWriter(sess.getStdin(), true);
+			// echo to recognize when shell is ready to use
+			piIn.println("echo 'ready to start'");
 
-			//print output and block until shell is "ready to start"
+			// print output and block until shell is "ready to start"
 			InputStream stdout = new StreamGobbler(sess.getStdout());
-			BufferedReader br = new BufferedReader(
-					new InputStreamReader(stdout));
+			piOut = new BufferedReader(new InputStreamReader(stdout));
 			while (true) {
-				String line = br.readLine();
+				String line = piOut.readLine();
 				if (line == null) {
 					break;
 				}
@@ -151,9 +160,7 @@ public class BeepRobot extends AbstractRobot {
 				}
 			}
 
-			br.close();
-			stdout.close();
-
+			connected = true;
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -163,8 +170,14 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public void disconnect() {
-		piCommand.close();
-		piCommand = null;
+		connected = false;
+		piIn.close();
+		piIn = null;
+		try {
+			piOut.close();
+		} catch (IOException e) {
+		}
+		piOut = null;
 		sess.close();
 		sess = null;
 		conn.close();
@@ -194,26 +207,30 @@ public class BeepRobot extends AbstractRobot {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
-	public void transmit() {
-		SCPClient client = new SCPClient(conn);
-		try {
-			client.put("test.py", "~/Beep/Software/catkin_ws/src/beep_imu");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public boolean transmit() {
+		System.out.println(isRoscoreRunning());
+		return false;
+		// SCPClient client = new SCPClient(conn);
+		// try {
+		// client.put("test.py", "~/Beep/Software/catkin_ws/src/beep_imu");
+		// return true;
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// MainFrame.showErrInfo(
+		// "Die generierte Datei konnte nicht übertragen werden.",
+		// "Übertragungsfehler");
+		// return false;
+		// }
 	}
 
 	@Override
 	public void play() {
-		if (conn != null && sess != null && piCommand != null) {
-			piCommand.println("mkdir -p ~/log");
-			piCommand
-					.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
-			piCommand
-					.println("nohup rosrun beep_imu ir_distance.py 2> ~/log/ir_distance-err.log 1> ~/log/ir_distance-out.log");
+		if (conn != null && sess != null && piIn != null) {
+			piIn.println("mkdir -p ~/log");
+			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
+			piIn.println("nohup rosrun beep_imu ir_distance.py 2> ~/log/ir_distance-err.log 1> ~/log/ir_distance-out.log");
 		}
 	}
 
@@ -237,6 +254,26 @@ public class BeepRobot extends AbstractRobot {
 	public int getUnAcknowledgedCmds() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	private boolean isRoscoreRunning() {
+		if (connected) {
+			piIn.println("ps -ef | grep 'roscore' | grep -v 'grep' | wc -l");
+			try {
+				piOut.readLine();
+				if (piOut.readLine().equals("1")) {
+					return true;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		return false;
+	}
+
+	private void startNewRoscore() {
+
 	}
 
 	/**
