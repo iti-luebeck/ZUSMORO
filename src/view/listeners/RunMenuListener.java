@@ -39,7 +39,7 @@ public class RunMenuListener implements ActionListener {
 		}
 	};
 
-	private Method debug = new Method() {
+	private Method debug = new Method() {//TODO auslagern, Für beep smach viewer starten
 		@Override
 		public void doEvent(ActionEvent e) {
 			JCheckBox debug1 = new JCheckBox(
@@ -60,18 +60,7 @@ public class RunMenuListener implements ActionListener {
 
 	private Method disconnect = new Method() {
 		public void doEvent(ActionEvent e) {
-			if (Automat.runningAutomat != null) {
-				JOptionPane
-						.showMessageDialog(
-								(Component) e.getSource(),
-								"<html>Die Verbindung wird getrennt."
-										+ "<br>Danach werden keine Debug-Ausgaben empfangen."
-										+ "<br>Der EPuck wird ggf. weiter aktiv sein.",
-								"Verbindung wird getrennt!",
-								JOptionPane.WARNING_MESSAGE);
-			}
-			MainFrame.onBoard.disconnect();
-			MainFrame.toolPanel.setConnected(false);
+			MainFrame.robot.disconnect();
 		};
 	};
 
@@ -81,62 +70,19 @@ public class RunMenuListener implements ActionListener {
 
 	private Method run = new Method() {
 		public void doEvent(ActionEvent e) {
-			double status = MainFrame.onBoard.completionStatus();
-			if (!MainFrame.onBoard.transmissionIsComplete()) {
-				int i = (int) (status * 100);
-				JOptionPane.showMessageDialog((Component) e.getSource(),
-						"<html>Die Übertragung ist noch nicht abgechlossen."
-								+ "<br>Übertragung bei " + i + "%",
-						"Der EPuck kann noch nicht gestartet werden!",
-						JOptionPane.WARNING_MESSAGE);
-			} else if (MainFrame.onBoard.hasMemoryError()) {
-				JOptionPane.showMessageDialog((Component) e.getSource(),
-						"<html>Die Übertragung ist fehlgeschlagen."
-								+ "<br>Der Automat ist zu groß um in den"
-								+ "<br>Speicher aufgenommen zu werden",
-						"Der EPuck sollte nicht gestartet werden!",
-						JOptionPane.WARNING_MESSAGE);
-			} else {
-				if (MainFrame.onBoard.start()) {
-					Automat.runningAutomat = MainFrame.automat;
-				} else {
-					JOptionPane
-							.showMessageDialog(
-									(Component) e.getSource(),
-									"<html>Die Übertragung kann nicht gestartet werden"
-											+ "<br>Mögliche Ursachen:"
-											+ "<br>Die Verbindung ist noch nicht aufgebaut"
-											+ "<br>Die Übertragung ist noch nicht abgeschlossen",
-									"Der EPuck kann nicht gestartet werden!",
-									JOptionPane.WARNING_MESSAGE);
-				}
-			}
+			MainFrame.robot.play();
 		}
 	};
 
 	private Method stop = new Method() {
 		public void doEvent(ActionEvent e) {
-			if (Automat.runningAutomat != null) {
-				MainFrame.onBoard.stop();
-				Automat.runningAutomat = null;
-			}
+			MainFrame.robot.stop();
 		};
 	};
 
 	private Method transmit = new Method() {
 		public void doEvent(ActionEvent e) {
-			boolean ok = MainFrame.onBoard.transmit(MainFrame.automat);
-			if (!ok) {
-				JOptionPane
-						.showMessageDialog(
-								(Component) e.getSource(),
-								"<html>Die Übertragung ist fehlgeschlagen."
-										+ "<br>Dies kann bedeuten, dass auf dem EPuck die"
-										+ "<br>falsche Software installiert oder"
-										+ "<br>der EPuck nicht verbunden ist.",
-								"Übertragung fehlgeschlagen!",
-								JOptionPane.WARNING_MESSAGE);
-			}
+			MainFrame.robot.transmit();
 		}
 	};
 

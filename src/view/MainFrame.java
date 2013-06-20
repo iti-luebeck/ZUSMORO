@@ -183,4 +183,9 @@ public class MainFrame extends JFrame {
 			System.exit(0);
 		}
 	}
+
+	public static void showErrInfo(String errLong, String errShort) {
+		JOptionPane.showMessageDialog(mainFrame, errLong, errShort,
+				JOptionPane.WARNING_MESSAGE);
+	}
 }

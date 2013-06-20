@@ -32,8 +32,6 @@ public class Automat extends Observable implements Runnable {
 	private State initialState = null;
 	private long lastStateChange = 0;
 	private String saveToFile = null;
-	private boolean fileIsInSync = true;
-
 	private volatile boolean cancelRequested = false;
 
 	public Automat() {
@@ -58,7 +56,6 @@ public class Automat extends Observable implements Runnable {
 				}
 			}
 			states.add(newState);
-			fileIsInSync = false;
 			this.setChanged();
 			this.notifyObservers(new ChangeEvent(ChangeEventType.STATE_CREATE,
 					newState, false));
@@ -95,7 +92,6 @@ public class Automat extends Observable implements Runnable {
 				}
 			}
 		}
-		fileIsInSync = false;
 		this.setChanged();
 		this.notifyObservers(new ChangeEvent(ChangeEventType.STATE_DELETE,
 				state, false));
@@ -201,7 +197,6 @@ public class Automat extends Observable implements Runnable {
 	}
 
 	public void setChanged(ChangeEvent event) {
-		fileIsInSync = false;
 		this.setChanged();
 		this.notifyObservers(event);
 	}
@@ -388,7 +383,6 @@ public class Automat extends Observable implements Runnable {
 			System.out.println("Saving complete!");
 		}
 		saveToFile = fileName;
-		fileIsInSync = true;
 		return true;
 	}
 

@@ -1,10 +1,12 @@
 package robots.epuck;
 
+import java.awt.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import model.AbstractRobot;
@@ -32,6 +34,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	private int unacknowledgedCmds = 0;
 	private Object monitor = new Object();
 	private DebugView debugView = null;
+	private String lastInput = "/dev/rfcomm1";
 
 	public EPuckRobot() {
 		irDistances = new int[8];
@@ -46,7 +49,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 	/**
 	 * Uebersetzt die gegebenen Actions in Befehle für den e-puck und sendet
 	 * diese an ihn.
-	 *
+	 * 
 	 * @param actions
 	 *            die auszuführenden Actions
 	 * @throws IOException
@@ -58,11 +61,13 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 			throw new IOException("Programm ist zu keinem Roboter verbunden");
 		}
 		if (MainFrame.DEBUG) {
-			System.out.println("Unbestätigte Befehle: " + getDesiredAdditionalTimeout());
+			System.out.println("Unbestätigte Befehle: "
+					+ getDesiredAdditionalTimeout());
 		}
 		if (getDesiredAdditionalTimeout() > 60) {
-			throw new IOException("<html>Die Verbindung zum Roboter ist gestört."
-					+ "<br>Mehr als 60 Befehle wurden nicht vom Roboter bestätigt!");
+			throw new IOException(
+					"<html>Die Verbindung zum Roboter ist gestört."
+							+ "<br>Mehr als 60 Befehle wurden nicht vom Roboter bestätigt!");
 		}
 		// Dummy Kommando senden, da erster Befehl irgendwo verschluckt wird.
 		// commPort.writeToStream("v");
@@ -72,7 +77,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		int[] ledValues = new int[8];
 		for (ISmachableAction action : actions) {
 			String key = action.getKey();
-			int value =action.getValue();
+			int value = action.getValue();
 			if (key.startsWith("LED")) { // LEDS setzen
 				int led = Character.getNumericValue(key.charAt(3));
 				ledValues[led] = value;
@@ -87,8 +92,9 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 				} else {
 					motor1Value = value;
 				}
-			} else if (key.equals("BEEP") && value==1 && System.currentTimeMillis() - lastSoundPlayed > 300) { // Sound
-																														// ausgeben
+			} else if (key.equals("BEEP") && value == 1
+					&& System.currentTimeMillis() - lastSoundPlayed > 300) { // Sound
+																				// ausgeben
 				lastSoundPlayed = System.currentTimeMillis();
 				buffer.append("T,4\n");
 				// commPort.writeToStream("t,5");
@@ -155,7 +161,8 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 			throw new IOException("Programm ist zu keinem Roboter verbunden");
 		}
 		if (getDesiredAdditionalTimeout() > 40) {
-			throw new IOException("Er reagiert nicht mehr auf die gesendeten Befehle!");
+			throw new IOException(
+					"Er reagiert nicht mehr auf die gesendeten Befehle!");
 		}
 		// Get acceleration
 		// commPort.writeToStream("A");
@@ -244,6 +251,10 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public void stop() {
+		if (Automat.runningAutomat != null) {
+			MainFrame.onBoard.stop();
+			Automat.runningAutomat = null;
+		}
 		if (MainFrame.DEBUG) {
 			System.out.println("Robot stopping...");
 		}
@@ -292,24 +303,42 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public boolean connect(String connectTo) {
-		if (commPort != null) {
-			commPort.disconnect();
+		if(connectTo == null){
+			connectTo = lastInput;
 		}
-		commPort = new Communicator(connectTo);
-		commPort.addObserver(this);
-		/*commPort.addObserver(new Observer() {
-
-			@Override
-			public void update(Observable o, Object arg) {
-				System.out.println("Rückgabe:"+(String)arg);
-
-			}
-		});*/
+		if (this.commPort != null) {
+			this.commPort.disconnect();
+		}
+		this.commPort = new Communicator(connectTo);
+		this.commPort.addObserver(this);
+		/*
+		 * commPort.addObserver(new Observer() {
+		 * 
+		 * @Override public void update(Observable o, Object arg) {
+		 * System.out.println("Rückgabe:"+(String)arg);
+		 * 
+		 * } });
+		 */
 		unacknowledgedCmds = 0;
-		//commPort will be used in Automat.run()
-		//so do not block
-		//basically just test for connection
-		commPort.disconnect();
+		// commPort will be used in Automat.run()
+		// so do not block
+		// basically just test for connection
+		this.commPort.disconnect();
+		
+		
+		String comPort = JOptionPane.showInputDialog(
+				MainFrame.mainFrame,
+				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):",
+				lastInput);
+
+		// if (comPort != null && comPort.startsWith("COM")) {
+		if (comPort != null) {
+
+			lastInput = comPort;
+			MainFrame.onBoard.connect(comPort);
+			MainFrame.toolPanel.setConnected(MainFrame.onBoard
+					.isConnected());
+		}
 
 		return commPort.isConnected();
 	}
@@ -326,6 +355,15 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		if (MainFrame.DEBUG) {
 			System.out.println("Robot disconnected!");
 		}
+
+		if (Automat.runningAutomat != null) {
+			MainFrame.showErrInfo("<html>Die Verbindung wird getrennt."
+					+ "<br>Danach werden keine Debug-Ausgaben empfangen."
+					+ "<br>Der EPuck wird ggf. weiter aktiv sein.",
+					"Verbindung wird getrennt!");
+		}
+		MainFrame.onBoard.disconnect();
+		MainFrame.toolPanel.setConnected(false);
 	}
 
 	@Override
@@ -338,43 +376,44 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		return new EPuckTransitionPanel(trans);
 	}
 
+	/*
+	 * wird nicht benutzt public int[] getIrLumity() { return irLumity; }
+	 * 
+	 * public int[] getMicrophones() { return microphones; }
+	 * 
+	 * public int[] getAccelerations() { return accelerations; }
+	 */
 
-	/* wird nicht benutzt
-	public int[] getIrLumity() {
-		return irLumity;
-	}
-
-	public int[] getMicrophones() {
-		return microphones;
-	}
-
-	public int[] getAccelerations() {
-		return accelerations;
-	}
-	*/
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see robots.epuck.EPuckSensorI#getFloorIr()
 	 */
 	public int[] getFloorIr() {
 		return floorIr;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see robots.epuck.EPuckSensorI#getIrDistances()
 	 */
 	public int[] getIrDistances() {
 		return irDistances;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see robots.epuck.EPuckSensorI#getLedState()
 	 */
 	public int[] getLedState() {
 		return ledState;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see robots.epuck.EPuckSensorI#getMotorState()
 	 */
 	public int[] getMotorState() {
@@ -393,13 +432,45 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public void transmit() {
-		//TODO wird nicht benötigt, da nie aufgerufen.
-		//Transmit aufruf über RunMenuListener (actionCommand: "transmit") 
+		boolean ok = MainFrame.onBoard.transmit(MainFrame.automat);
+		if (!ok) {
+			MainFrame.showErrInfo("<html>Die Übertragung ist fehlgeschlagen."
+					+ "<br>Dies kann bedeuten, dass auf dem EPuck die"
+					+ "<br>falsche Software installiert oder"
+					+ "<br>der EPuck nicht verbunden ist.",
+					"Übertragung fehlgeschlagen!");
+		}
 	}
 
 	@Override
 	public void play() {
-		MainFrame.automat.start();
+		double status = MainFrame.onBoard.completionStatus();
+		if (!MainFrame.onBoard.transmissionIsComplete()) {
+			int i = (int) (status * 100);
+			MainFrame.showErrInfo(
+					"<html>Die Übertragung ist noch nicht abgechlossen."
+							+ "<br>Übertragung bei " + i + "%",
+					"Der EPuck kann noch nicht gestartet werden!");
+		} else if (MainFrame.onBoard.hasMemoryError()) {
+			MainFrame.showErrInfo("<html>Die Übertragung ist fehlgeschlagen."
+					+ "<br>Der Automat ist zu groß um in den"
+					+ "<br>Speicher aufgenommen zu werden",
+					"Der EPuck sollte nicht gestartet werden!");
+		} else {
+			MainFrame.automat.start();
+			if (MainFrame.onBoard.start()) {
+				Automat.runningAutomat = MainFrame.automat;
+			} else {
+				MainFrame
+						.showErrInfo(
+								"<html>Die Übertragung kann nicht gestartet werden"
+										+ "<br>Mögliche Ursachen:"
+										+ "<br>Die Verbindung ist noch nicht aufgebaut"
+										+ "<br>Die Übertragung ist noch nicht abgeschlossen",
+								"Der EPuck kann nicht gestartet werden!");
+			}
+		}
+
 	}
 
 }
