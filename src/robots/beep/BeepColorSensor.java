@@ -5,11 +5,13 @@ import java.awt.Color;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import RosCommunication.ISubscriberInfo;
+
 import model.bool.Variable.Operator;
 import smachGenerator.ISmachableSensor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BeepColorSensor implements ISmachableSensor {
+public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;

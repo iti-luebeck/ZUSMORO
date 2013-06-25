@@ -3,12 +3,14 @@ package robots.beep;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import RosCommunication.ISubscriberInfo;
+
 import model.bool.Variable.Operator;
 
 import smachGenerator.ISmachableSensor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BeepIRSensor implements ISmachableSensor {
+public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;

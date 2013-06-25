@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -22,8 +23,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import RosCommunication.ISubscriberInfo;
+import RosCommunication.RosCommunicator;
+
 import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
@@ -96,27 +99,27 @@ public class BeepRobot extends AbstractRobot {
 		connected = false;
 
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int8",
+		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int8",
+		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int8",
+		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int32",
 				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int8",
+		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int32",
 				"std_msgs.msg", "data"));
 
 		// Define default Beep actuators
@@ -124,29 +127,29 @@ public class BeepRobot extends AbstractRobot {
 		// "beep.msg", "links"));
 		// actuators.add(new BeepActuator("MOTOR2", "topic/motors", "Motors",
 		// "beep.msg", "rechts"));
-		actuators.add(new BeepActuator("LED1", "topic/LED1", "Int8",
+		actuators.add(new BeepActuator("LED1", "topic/LED1", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED2", "topic/LED2", "Int8",
+		actuators.add(new BeepActuator("LED2", "topic/LED2", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED3", "topic/LED3", "Int8",
+		actuators.add(new BeepActuator("LED3", "topic/LED3", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED4", "topic/LED4", "Int8",
+		actuators.add(new BeepActuator("LED4", "topic/LED4", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED5", "topic/LED5", "Int8",
+		actuators.add(new BeepActuator("LED5", "topic/LED5", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED6", "topic/LED6", "Int8",
+		actuators.add(new BeepActuator("LED6", "topic/LED6", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED7", "topic/LED7", "Int8",
+		actuators.add(new BeepActuator("LED7", "topic/LED7", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED0", "topic/LED0", "Int8",
+		actuators.add(new BeepActuator("LED0", "topic/LED0", "Int32",
 				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED8", "topic/LED8", "Int8",
+		actuators.add(new BeepActuator("LED8", "topic/LED8", "Int32",
 				"std_msgs.msg", "data"));
-		BeepActuator beep = new BeepActuator("BEEP", "topic/beep", "Int8",
+		BeepActuator beep = new BeepActuator("BEEP", "topic/beep", "Int32",
 				"std_msgs.msg", "data");
 		actuators.add(beep);
 
-		beepIP = "141.83.158.207";
+		beepIP = "141.83.158.207"; //"141.83.158.160"
 		piDirAutomat = "/home/pi/Beep/Software/catkin_ws/src/beep_imu";
 		automatFileName = "test.py";
 	}
@@ -275,17 +278,22 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean transmit() {
-		SCPClient client = new SCPClient(conn);
-		try {
-			client.put(automatFileName, piDirAutomat);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			MainFrame.showErrInfo(
-					"Die generierte Datei konnte nicht übertragen werden.",
-					"Übertragungsfehler");
-			return false;
-		}
+		LinkedList<ISubscriberInfo> info = new LinkedList<>();
+		info.addAll(sensorsCol);
+		info.addAll(sensorsIR);
+		RosCommunicator rC = new RosCommunicator("http://"+beepIP+":11311/", info);
+//		SCPClient client = new SCPClient(conn);
+//		try {
+//			client.put(automatFileName, piDirAutomat);
+//			return true;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			MainFrame.showErrInfo(
+//					"Die generierte Datei konnte nicht übertragen werden.",
+//					"Übertragungsfehler");
+//			return false;
+//		}
+		return true ;
 	}
 
 	@Override
@@ -385,7 +393,7 @@ public class BeepRobot extends AbstractRobot {
 	 * Be sure that there is a roscore running before calling this method.
 	 */
 	private void startAutomatOnPi() {
-		stop(); // Stop old automate
+				stop(); // Stop old automate //TODO wieder einkommentieren
 		piIn.println("nohup rosrun beep_imu ir_distance.py 2> ~/log/ir_distance-err.log 1> ~/log/ir_distance-out.log &");
 		try {
 			piOut.readLine(); // command
