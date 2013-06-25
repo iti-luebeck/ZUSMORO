@@ -15,8 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import sun.org.mozilla.javascript.EcmaError;
-
 import model.AbstractRobot;
 import model.Automat;
 
