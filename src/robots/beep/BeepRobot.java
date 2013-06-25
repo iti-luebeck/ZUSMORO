@@ -214,6 +214,12 @@ public class BeepRobot extends AbstractRobot {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			MainFrame
+					.showErrInfo(
+							"<html>Es konnte keine Verbindung mit "
+									+ connectTo
+									+ "hergestellt werden.<br>Bitte überprüfe die IP des Roboters und ob dieser über eine aktive W-Lan Verbindung verfügt!",
+							"Verbindung fehlgeschlagen");
 		}
 		return false;
 	}
@@ -452,6 +458,12 @@ public class BeepRobot extends AbstractRobot {
 	@Override
 	public String getRobotName() {
 		return "Beep Robot";
+	}
+
+	@Override
+	public void debug() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

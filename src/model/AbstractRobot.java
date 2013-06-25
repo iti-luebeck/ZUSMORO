@@ -1,6 +1,5 @@
 package model;
 
-//wieder wegmachen
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -23,6 +22,7 @@ public abstract class AbstractRobot {
 	public abstract void stop();
 	public abstract boolean transmit();
 	public abstract void play();
+	public abstract void debug();
 	public abstract int getDesiredAdditionalTimeout();
 	public abstract AbstractStatePanel getStatePanel(State state);
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);

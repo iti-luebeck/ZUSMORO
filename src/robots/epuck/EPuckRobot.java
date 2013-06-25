@@ -1,10 +1,12 @@
 package robots.epuck;
 
+import java.awt.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -302,7 +304,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public boolean connect(String connectTo) {
-		if(connectTo == null){
+		if (connectTo == null) {
 			connectTo = lastInput;
 		}
 		if (this.commPort != null) {
@@ -323,12 +325,9 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		// so do not block
 		// basically just test for connection
 		this.commPort.disconnect();
-		
-		
-		String comPort = JOptionPane.showInputDialog(
-				MainFrame.mainFrame,
-				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):",
-				lastInput);
+
+		String comPort = JOptionPane.showInputDialog(MainFrame.mainFrame,
+				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):", lastInput);
 
 		// if (comPort != null && comPort.startsWith("COM")) {
 		if (comPort != null) {
@@ -469,6 +468,23 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 			}
 		}
 
+	}
+
+	@Override
+	public void debug() {
+		JCheckBox debug1 = new JCheckBox(
+				"Konfiguration eines neuen Zustands senden");
+		JCheckBox debug2 = new JCheckBox(
+				"Kontinuierlich die MotorSteuerung senden");
+		JCheckBox debug3 = new JCheckBox(
+				"Kontinuierlich die SensorDaten senden");
+		Object[] params = { debug1, debug2, debug3 };
+		int n = JOptionPane.showConfirmDialog((Component) MainFrame.mainFrame ,
+				params, "Debug-Optionen", JOptionPane.OK_CANCEL_OPTION);
+		if (n == 0) {
+			MainFrame.onBoard.setDebugLevel(debug1.isSelected(),
+					debug2.isSelected(), debug3.isSelected());
+		}
 	}
 
 }

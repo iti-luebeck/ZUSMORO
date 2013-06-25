@@ -1,12 +1,8 @@
 package view.listeners;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.TreeMap;
-
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 import view.MainFrame;
 
 public class RunMenuListener implements ActionListener {
@@ -26,19 +22,7 @@ public class RunMenuListener implements ActionListener {
 											// viewer starten
 		@Override
 		public void doEvent(ActionEvent e) {
-			JCheckBox debug1 = new JCheckBox(
-					"Konfiguration eines neuen Zustands senden");
-			JCheckBox debug2 = new JCheckBox(
-					"Kontinuierlich die MotorSteuerung senden");
-			JCheckBox debug3 = new JCheckBox(
-					"Kontinuierlich die SensorDaten senden");
-			Object[] params = { debug1, debug2, debug3 };
-			int n = JOptionPane.showConfirmDialog((Component) e.getSource(),
-					params, "Debug-Optionen", JOptionPane.OK_CANCEL_OPTION);
-			if (n == 0) {
-				MainFrame.onBoard.setDebugLevel(debug1.isSelected(),
-						debug2.isSelected(), debug3.isSelected());
-			}
+			MainFrame.robot.debug();			
 		}
 	};
 
@@ -80,8 +64,7 @@ public class RunMenuListener implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		Method m = methods.get(e.getActionCommand());// TODO wieder
-														// einkommentieren
+		Method m = methods.get(e.getActionCommand());
 		try {
 			m.doEvent(e);
 		} catch (NullPointerException ex) {
