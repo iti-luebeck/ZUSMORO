@@ -16,19 +16,15 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	 * instance with this name.
 	 * 
 	 * @param sensorName
-	 * @return first {@link ISmachableSensor} with the specified name
-	 * @throws NoSuchAttributeException
-	 *             if there is no matching {@link ISmachableSensor} found in
-	 *             this list.
+	 * @return first {@link ISmachableSensor} with the specified name or
+	 *         <code>null</code> if there is no sensor with this name
 	 */
-	public ISmachableSensor getSensor(String sensorName)
-			throws NoSuchAttributeException {
+	public ISmachableSensor getSensor(String sensorName) {
 		for (ISmachableSensor sensor : this) {
 			if (sensor.getName().equals(sensorName))
 				return sensor;
 		}
-		throw new NoSuchAttributeException("Zugriff auf unbekannten Sensor "
-				+ sensorName + ".");
+		return null;
 	}
 
 	/**

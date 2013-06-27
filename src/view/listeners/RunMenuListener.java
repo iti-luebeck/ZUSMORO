@@ -37,6 +37,8 @@ public class RunMenuListener implements ActionListener {
 	private Method run = new Method() {
 		public void doEvent(ActionEvent e) {
 			MainFrame.robot.play();
+			MainFrame.toolPanel.enableStop(true);
+			MainFrame.toolPanel.enableDebug(true);
 		}
 	};
 

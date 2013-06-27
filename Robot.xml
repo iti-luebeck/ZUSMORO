@@ -4,161 +4,150 @@
         <name>IR0</name>
         <topic>topic/IR0</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>String</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR1</name>
         <topic>topic/IR1</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR2</name>
         <topic>topic/IR2</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR3</name>
         <topic>topic/IR3</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR4</name>
         <topic>topic/IR4</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR5</name>
         <topic>topic/IR5</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR6</name>
         <topic>topic/IR6</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR7</name>
         <topic>topic/IR7</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </IR_Sensor>
     <Color_Sensor>
         <name>UIR0</name>
         <topic>topic/UIR0</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR1</name>
         <topic>topic/UIR2</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR2</name>
         <topic>topic/UIR3</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </Color_Sensor>
-    <actuator>
-        <name>MOTOR1</name>
-        <topic>topic/motors</topic>
-        <objectInMessage>links</objectInMessage>
-        <topicType>Motors</topicType>
-        <topicPackage>beep.msg</topicPackage>
-    </actuator>
-    <actuator>
-        <name>MOTOR2</name>
-        <topic>topic/motors</topic>
-        <objectInMessage>rechts</objectInMessage>
-        <topicType>Motors</topicType>
-        <topicPackage>beep.msg</topicPackage>
-    </actuator>
     <actuator>
         <name>LED1</name>
         <topic>topic/LED1</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED2</name>
         <topic>topic/LED2</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED3</name>
         <topic>topic/LED3</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED4</name>
         <topic>topic/LED4</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED5</name>
         <topic>topic/LED5</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED6</name>
         <topic>topic/LED6</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED7</name>
         <topic>topic/LED7</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED0</name>
         <topic>topic/LED0</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>LED8</name>
         <topic>topic/LED8</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
     <actuator>
         <name>BEEP</name>
         <topic>topic/beep</topic>
         <objectInMessage>data</objectInMessage>
-        <topicType>Int8</topicType>
+        <topicType>Int32</topicType>
         <topicPackage>std_msgs.msg</topicPackage>
     </actuator>
+    <beepIP>141.83.158.160</beepIP>
+    <piDirAutomat>/home/pi/Beep/Software/catkin_ws/src/beep_imu</piDirAutomat>
+    <automatFileName>ir_distance_zusmoro.py</automatFileName>
 </beepRobot>

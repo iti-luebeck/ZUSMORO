@@ -9,6 +9,9 @@ import org.ros.node.NodeMainExecutor;
 public class RosCommunicator {
 
 	NodeMainExecutor nodeMainExecutor;
+	
+	SubscriberNode subNode;
+	
 
 	public RosCommunicator(String RosMasterIp, LinkedList<ISubscriberInfo> info) {
 
@@ -22,11 +25,22 @@ public class RosCommunicator {
 				muri);
 		nodeConf.setNodeName("zusmoro/RosCommunicator");
 		
-		SubscriberNode systemNode = new SubscriberNode(info);
+		subNode = new SubscriberNode(info);
 
-		nodeMainExecutor.execute(systemNode, nodeConf);
+		nodeMainExecutor.execute(subNode, nodeConf);
 	}
 	
-	
+	/**
+	 * Returns an Object, representing the Ros-message that is associated with this sensorName.
+	 * To use the result, try to carst the returned Object to the expected TopicType.
+	 * 
+	 * E.g. (std_msgs.Int32)getSensorMsg("mySensor")
+	 * 	
+	 * @param sensorName you would like to get the last received message from
+	 * @return last received message of the associated sensor
+	 */
+	public Object getSensorMsg(String sensorName){
+		return subNode.getSensorMsg(sensorName);
+	}
 
 }

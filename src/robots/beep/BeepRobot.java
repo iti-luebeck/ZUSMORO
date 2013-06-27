@@ -27,9 +27,11 @@ import RosCommunication.ISubscriberInfo;
 import RosCommunication.RosCommunicator;
 
 import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
+import smachGenerator.ISmachableSensor;
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import view.AbstractStatePanel;
@@ -50,6 +52,8 @@ public class BeepRobot extends AbstractRobot {
 	@XmlElement(name = "Color_Sensor")
 	List<BeepColorSensor> sensorsCol = new ArrayList<BeepColorSensor>();
 
+	SmachableSensors smachableSensors;
+
 	@XmlElement(name = "actuator")
 	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
 
@@ -57,10 +61,12 @@ public class BeepRobot extends AbstractRobot {
 	 * true, if connected to Beep <=> piIn/piOut/sess will be != null
 	 */
 	boolean connected;
+	
 	/**
 	 * IP or url of the robot that was connected to last time or that is
 	 * currently used
 	 */
+	@XmlElement(name = "beepIP")
 	String beepIP;
 
 	/**
@@ -84,22 +90,31 @@ public class BeepRobot extends AbstractRobot {
 	/**
 	 * Directory on beep for all smach automates
 	 */
+	@XmlElement(name = "piDirAutomat")
 	String piDirAutomat;
 	/**
 	 * Name (including file ending '.py') of the automate. it is used to store
 	 * and start the automat
 	 */
+	@XmlElement(name = "automatFileName")//TODO needed?
 	String automatFileName;
+
+	/**
+	 * RosJava component to receive sensor data for debug_view
+	 */
+	RosCommunicator rosComm;
 
 	/**
 	 * Creates a new {@link BeepRobot} instance with default sensors, actuators
 	 * and configurations.
 	 */
 	public BeepRobot() {
+		//TODO Read and Store XML 
+		
 		connected = false;
 
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "Int32",
+		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "String",
 				"std_msgs.msg", "data"));
 		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int32",
 				"std_msgs.msg", "data"));
@@ -121,6 +136,10 @@ public class BeepRobot extends AbstractRobot {
 				"std_msgs.msg", "data"));
 		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int32",
 				"std_msgs.msg", "data"));
+
+		smachableSensors = new SmachableSensors();
+		smachableSensors.addAll(sensorsIR);
+		smachableSensors.addAll(sensorsCol);
 
 		// Define default Beep actuators
 		// actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
@@ -149,9 +168,11 @@ public class BeepRobot extends AbstractRobot {
 				"std_msgs.msg", "data");
 		actuators.add(beep);
 
-		beepIP = "141.83.158.207"; //"141.83.158.160"
+		beepIP = "141.83.158.160"; // "141.83.158.207";
 		piDirAutomat = "/home/pi/Beep/Software/catkin_ws/src/beep_imu";
-		automatFileName = "test.py";
+		automatFileName = "ir_distance_zusmoro.py";
+		
+		saveBeepRobot(this,new File("Robot.xml"));
 	}
 
 	/**
@@ -161,10 +182,7 @@ public class BeepRobot extends AbstractRobot {
 	 * @return {@link SmachableActuators} of this instance
 	 */
 	public SmachableSensors getSensors() {
-		SmachableSensors sen = new SmachableSensors();
-		sen.addAll(sensorsIR);
-		sen.addAll(sensorsCol);
-		return sen;
+		return smachableSensors;
 	}
 
 	/**
@@ -189,6 +207,7 @@ public class BeepRobot extends AbstractRobot {
 		try {
 			// connect and authorize
 			conn.connect();
+
 			conn.authenticateWithPassword("pi", "beep");
 
 			// start a compatible shell
@@ -245,20 +264,27 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public int getVariableValue(String variable) {
-		// TODO Auto-generated method stub
+		Object msg = rosComm.getSensorMsg(variable);
+		ISmachableSensor sen = smachableSensors.getSensor(variable);
+		if(msg!=null && sen!=null){
+			if(sen.getTopicPackage().equals("std_msgs.msg")&&sen.getTopicType().equals("Int32")){
+				return ((std_msgs.Int32)msg).getData();
+			}else if(sen.getTopicPackage().equals("std_msgs.msg")&&sen.getTopicType().equals("Int16")){
+				return ((std_msgs.Int16)msg).getData();
+			}//add new message-types here
+		}
 		return 0;
 	}
 
 	@Override
 	public void executeActions(ArrayList<Action> actions) throws IOException {
-		// TODO Auto-generated method stub
+		// TODO what to do with this?
 
 	}
 
 	@Override
 	public void updateSensors() throws IOException {
-		// TODO Auto-generated method stub
-
+		// not necessary, automatically updated by RosCommunicator
 	}
 
 	@Override
@@ -278,26 +304,22 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean transmit() {
-		LinkedList<ISubscriberInfo> info = new LinkedList<>();
-		info.addAll(sensorsCol);
-		info.addAll(sensorsIR);
-		RosCommunicator rC = new RosCommunicator("http://"+beepIP+":11311/", info);
-//		SCPClient client = new SCPClient(conn);
-//		try {
-//			client.put(automatFileName, piDirAutomat);
-//			return true;
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			MainFrame.showErrInfo(
-//					"Die generierte Datei konnte nicht übertragen werden.",
-//					"Übertragungsfehler");
-//			return false;
-//		}
-		return true ;
+		SCPClient client = new SCPClient(conn);
+		try {
+			client.put(automatFileName, piDirAutomat);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			MainFrame.showErrInfo(
+					"Die generierte Datei konnte nicht übertragen werden.",
+					"Übertragungsfehler");
+			return false;
+		}
 	}
 
 	@Override
 	public void play() {
+		System.out.println("startetd play");//TODO
 		if (connected) {
 			piIn.println("mkdir -p ~/log");
 			try {
@@ -310,6 +332,7 @@ public class BeepRobot extends AbstractRobot {
 			}
 			startAutomatOnPi();
 		}
+		System.out.println("finished play");//TODO
 	}
 
 	@Override
@@ -365,23 +388,23 @@ public class BeepRobot extends AbstractRobot {
 			piIn.println("pkill roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
 			String line;
-			try {
-				line = piOut.readLine();
-				while (line != null) {
-					if (line.equals("started core service [/rosout]")) {// TODO
-																		// how
-																		// to
-																		// check
-																		// if
-																		// roscore
-																		// is
-																		// ready?
-						return;
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				line = piOut.readLine();
+//				while (line != null) {
+//					if (line.equals("started core service [/rosout]")) {// TODO
+//																		// how
+//																		// to
+//																		// check
+//																		// if
+//																		// roscore
+//																		// is
+//																		// ready?
+//						return;
+//					}
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 
@@ -393,8 +416,9 @@ public class BeepRobot extends AbstractRobot {
 	 * Be sure that there is a roscore running before calling this method.
 	 */
 	private void startAutomatOnPi() {
-				stop(); // Stop old automate //TODO wieder einkommentieren
-		piIn.println("nohup rosrun beep_imu ir_distance.py 2> ~/log/ir_distance-err.log 1> ~/log/ir_distance-out.log &");
+		stop(); // Stop old automate 		
+		//TODO richtiges Programm starten
+		piIn.println("nohup rosrun beep_imu ir_distance_zusmoro.py 2> ~/log/ir_distance_zusmoro-err.log 1> ~/log/ir_distance_zusmoro-out.log &");
 		try {
 			piOut.readLine(); // command
 			piOut.readLine(); // Process ID
@@ -470,8 +494,23 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public void debug() {
-		// TODO Auto-generated method stub
-		
+		LinkedList<ISubscriberInfo> info = new LinkedList<>();
+		info.addAll(sensorsCol);
+		info.addAll(sensorsIR);
+		rosComm = new RosCommunicator("http://" + beepIP + ":11311/", info);
+		while(true){
+			Object msg = rosComm.getSensorMsg("IR3");
+			if(msg!=null){
+				System.out.println(((std_msgs.Int32)msg).getData());
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
 	}
 
 }
