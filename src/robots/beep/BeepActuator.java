@@ -12,15 +12,13 @@ public class BeepActuator implements ISmachableActuator {
 	private String topic;
 	private String objectInMessage;
 	private String topicType;
-	private String topicPackage;
 
 	public BeepActuator(String name, String topic, String topicType,
-			String topicPackage, String objectInMessage) {
+			String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
 		this.objectInMessage = objectInMessage;
 		this.topicType = topicType;
-		this.topicPackage = topicPackage;
 	}
 
 	public BeepActuator() {
@@ -28,7 +26,6 @@ public class BeepActuator implements ISmachableActuator {
 		topic = null;
 		objectInMessage = null;
 		topicType = null;
-		topicPackage = null;
 	}
 
 	@Override
@@ -50,10 +47,6 @@ public class BeepActuator implements ISmachableActuator {
 		return topicType;
 	}
 
-	public String getTopicPackage() {
-		return topicPackage;
-	}
-
 	public boolean equals(Object o) {
 		if (!(o instanceof BeepActuator)) {
 			return false;
@@ -63,5 +56,5 @@ public class BeepActuator implements ISmachableActuator {
 					.equals(s.getObejctInMessage())));
 		}
 	}
-	
+
 }

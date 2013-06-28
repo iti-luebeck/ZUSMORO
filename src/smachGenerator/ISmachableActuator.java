@@ -8,6 +8,5 @@ public interface ISmachableActuator {
 	public abstract String getName();
 	public abstract String getObejctInMessage();
 	public abstract String getTopicType();
-	public abstract String getTopicPackage();
 	
 }

@@ -176,8 +176,10 @@ public class BeepStatePanel extends AbstractStatePanel implements
 	public ArrayList<Action> getActions() {
 		ArrayList<Action> actions = new ArrayList<Action>(11);
 		for (int i = 0; i < 9; i++) {
-			actions.add(new Action("LED" + i, leds.get(i).getBackground()
-					.getRGB()));
+			if (leds.get(i).getBackground() != null) {
+				actions.add(new Action("LED" + i, leds.get(i).getBackground()
+						.getRGB()));
+			}
 		}
 
 		Action left = null;

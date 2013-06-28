@@ -15,6 +15,9 @@ public class RunMenuListener implements ActionListener {
 		public void doEvent(ActionEvent e) {
 			boolean connected = MainFrame.robot.connect(null);
 			MainFrame.toolPanel.setConnected(connected);
+			MainFrame.toolPanel.enableStart(connected);
+			MainFrame.toolPanel.enableStop(connected);
+			MainFrame.toolPanel.enableDebug(connected);
 		}
 	};
 
@@ -29,6 +32,7 @@ public class RunMenuListener implements ActionListener {
 	private Method disconnect = new Method() {
 		public void doEvent(ActionEvent e) {
 			MainFrame.robot.disconnect();
+			MainFrame.toolPanel.setConnected(false);
 		};
 	};
 
@@ -50,8 +54,7 @@ public class RunMenuListener implements ActionListener {
 
 	private Method transmit = new Method() {
 		public void doEvent(ActionEvent e) {
-			boolean transmitted = MainFrame.robot.transmit();
-			MainFrame.toolPanel.enableStart(transmitted);
+			MainFrame.robot.transmit();
 		}
 	};
 

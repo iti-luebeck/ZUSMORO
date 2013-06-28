@@ -178,6 +178,9 @@ public class ToolPanel extends JPanel implements ActionListener {
 		connectButton.setIcon(connected ? Images.DISCONNECT : Images.CONNECT);
 		connectButton.setActionCommand(connected ? "disconnect" : "connect");
 		enableTransmit(connected);
+		enableStart(connected);
+		enableStop(connected);
+		enableDebug(connected);
 	}
 	
 	public void enableTransmit(boolean enable) {

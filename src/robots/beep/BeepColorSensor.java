@@ -17,15 +17,13 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 	private String topic;
 	private String objectInMessage;
 	private String topicType;
-	private String topicPackage;
 
 	public BeepColorSensor(String name, String topic, String topicType,
-			String topicPackage, String objectInMessage) {
+			String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
 		this.objectInMessage = objectInMessage;
 		this.topicType = topicType;
-		this.topicPackage = topicPackage;
 	}
 
 	public BeepColorSensor() {
@@ -33,7 +31,6 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 		topic = null;
 		objectInMessage = null;
 		topicType = null;
-		topicPackage = null;
 	}
 
 	@Override
@@ -51,12 +48,9 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 		return objectInMessage;
 	}
 
+	@Override
 	public String getTopicType() {
 		return topicType;
-	}
-
-	public String getTopicPackage() {
-		return topicPackage;
 	}
 
 	public boolean equals(Object o) {

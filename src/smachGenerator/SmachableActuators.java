@@ -45,7 +45,7 @@ public class SmachableActuators extends LinkedList<ISmachableActuator> {
 		for (ISmachableActuator actuator : this) {
 			pubs.add("pub_" + actuator.getTopic().replace("/", "_")
 					+ " = rospy.Publisher('" + actuator.getTopic() + "', "
-					+ actuator.getTopicType() + ")");
+					+ actuator.getTopicType().split("/")[1] + ")");
 		}
 		return pubs;
 	}
@@ -59,8 +59,9 @@ public class SmachableActuators extends LinkedList<ISmachableActuator> {
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
 		for (ISmachableActuator actuator : this) {
-			deps.add("from " + actuator.getTopicPackage() + " import "
-					+ actuator.getTopicType());
+			String[] temp = actuator.getTopicType().split("/");
+			deps.add("from " +  temp[0]+ ".msg import "
+					+ temp[1]);
 		}
 		return deps;
 	}

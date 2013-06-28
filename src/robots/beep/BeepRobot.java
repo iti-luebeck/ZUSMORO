@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.naming.directory.NoSuchAttributeException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -32,6 +33,7 @@ import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
 import smachGenerator.ISmachableSensor;
+import smachGenerator.SmachAutomat;
 import smachGenerator.SmachableActuators;
 import smachGenerator.SmachableSensors;
 import view.AbstractStatePanel;
@@ -61,7 +63,7 @@ public class BeepRobot extends AbstractRobot {
 	 * true, if connected to Beep <=> piIn/piOut/sess will be != null
 	 */
 	boolean connected;
-	
+
 	/**
 	 * IP or url of the robot that was connected to last time or that is
 	 * currently used
@@ -96,7 +98,7 @@ public class BeepRobot extends AbstractRobot {
 	 * Name (including file ending '.py') of the automate. it is used to store
 	 * and start the automat
 	 */
-	@XmlElement(name = "automatFileName")//TODO needed?
+	@XmlElement(name = "automatFileName")// TODO needed?
 	String automatFileName;
 
 	/**
@@ -105,74 +107,82 @@ public class BeepRobot extends AbstractRobot {
 	RosCommunicator rosComm;
 
 	/**
+	 * Panel to view Debuginformation
+	 */
+	BeepDebugView debugView;
+
+	/**
 	 * Creates a new {@link BeepRobot} instance with default sensors, actuators
 	 * and configurations.
 	 */
 	public BeepRobot() {
-		//TODO Read and Store XML 
-		
+		// TODO Read and Store XML
+
 		connected = false;
 
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0", "String",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2", "Int32",
-				"std_msgs.msg", "data"));
-		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3", "Int32",
-				"std_msgs.msg", "data"));
+		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2",
+				std_msgs.Int32._TYPE, "data"));
+		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3",
+				std_msgs.Int32._TYPE, "data"));
 
 		smachableSensors = new SmachableSensors();
 		smachableSensors.addAll(sensorsIR);
 		smachableSensors.addAll(sensorsCol);
 
 		// Define default Beep actuators
-		// actuators.add(new BeepActuator("MOTOR1", "topic/motors", "Motors",
-		// "beep.msg", "links"));
-		// actuators.add(new BeepActuator("MOTOR2", "topic/motors", "Motors",
-		// "beep.msg", "rechts"));
-		actuators.add(new BeepActuator("LED1", "topic/LED1", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED2", "topic/LED2", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED3", "topic/LED3", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED4", "topic/LED4", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED5", "topic/LED5", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED6", "topic/LED6", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED7", "topic/LED7", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED0", "topic/LED0", "Int32",
-				"std_msgs.msg", "data"));
-		actuators.add(new BeepActuator("LED8", "topic/LED8", "Int32",
-				"std_msgs.msg", "data"));
-		BeepActuator beep = new BeepActuator("BEEP", "topic/beep", "Int32",
-				"std_msgs.msg", "data");
+		actuators.add(new BeepActuator("MOTOR1", "topic/motors",
+				std_msgs.Int32._TYPE, "links"));
+		actuators.add(new BeepActuator("MOTOR2", "topic/motors",
+				std_msgs.Int32._TYPE, "rechts"));
+
+		actuators.add(new BeepActuator("LED1", "topic/LED1",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED2", "topic/LED2",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED3", "topic/LED3",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED4", "topic/LED4",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED5", "topic/LED5",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED6", "topic/LED6",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED7", "topic/LED7",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED0", "topic/LED0",
+				std_msgs.Int32._TYPE, "data"));
+		actuators.add(new BeepActuator("LED8", "topic/LED8",
+				std_msgs.Int32._TYPE, "data"));
+		BeepActuator beep = new BeepActuator("BEEP", "topic/beep",
+				std_msgs.Int32._TYPE, "data");
 		actuators.add(beep);
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
 		piDirAutomat = "/home/pi/Beep/Software/catkin_ws/src/beep_imu";
-		automatFileName = "ir_distance_zusmoro.py";
-		
-		saveBeepRobot(this,new File("Robot.xml"));
+		automatFileName = "test.py";
+
+		saveBeepRobot(this, new File("Robot.xml"));
+
+		debugView = new BeepDebugView(this);
 	}
 
 	/**
@@ -233,6 +243,18 @@ public class BeepRobot extends AbstractRobot {
 			}
 
 			connected = true;
+
+			// Start a new roscore
+			piIn.println("mkdir -p ~/log");
+			try {
+				piOut.readLine(); // command
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (!isRoscoreRunning()) {
+				startNewRoscore();
+			}
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -266,12 +288,12 @@ public class BeepRobot extends AbstractRobot {
 	public int getVariableValue(String variable) {
 		Object msg = rosComm.getSensorMsg(variable);
 		ISmachableSensor sen = smachableSensors.getSensor(variable);
-		if(msg!=null && sen!=null){
-			if(sen.getTopicPackage().equals("std_msgs.msg")&&sen.getTopicType().equals("Int32")){
-				return ((std_msgs.Int32)msg).getData();
-			}else if(sen.getTopicPackage().equals("std_msgs.msg")&&sen.getTopicType().equals("Int16")){
-				return ((std_msgs.Int16)msg).getData();
-			}//add new message-types here
+		if (msg != null && sen != null) {
+			if (sen.getTopicType().equals(std_msgs.Int32._TYPE)) {
+				return ((std_msgs.Int32) msg).getData();
+			} else if (sen.getTopicType().equals(std_msgs.Int16._TYPE)) {
+				return ((std_msgs.Int16) msg).getData();
+			}// add new message-types here
 		}
 		return 0;
 	}
@@ -304,6 +326,22 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean transmit() {
+		try {
+			if (MainFrame.automat.getStates().isEmpty()) {
+				MainFrame.showErrInfo(
+						"Ein leerer Automat kann nicht übertragen werden.<br>"
+								+ " Bitte lege mindestens einen State an!",
+						"Fehler beim Erstellen des Automats");
+			}
+			SmachAutomat sA = new SmachAutomat(MainFrame.automat.getStates(),
+					smachableSensors, getActuators());
+			File file = new File(automatFileName);
+			sA.saveToFile(file);
+		} catch (NoSuchAttributeException e1) {
+			// unknown Sensors used
+			e1.printStackTrace();
+			return false;
+		}
 		SCPClient client = new SCPClient(conn);
 		try {
 			client.put(automatFileName, piDirAutomat);
@@ -319,25 +357,18 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public void play() {
-		System.out.println("startetd play");//TODO
 		if (connected) {
-			piIn.println("mkdir -p ~/log");
-			try {
-				piOut.readLine(); // command
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (!isRoscoreRunning()) {
+			if (isRoscoreRunning()) {
+				startAutomatOnPi();
+			} else {
 				startNewRoscore();
+				startAutomatOnPi();
 			}
-			startAutomatOnPi();
 		}
-		System.out.println("finished play");//TODO
 	}
 
 	@Override
 	public int getDesiredAdditionalTimeout() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -353,7 +384,6 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public int getUnAcknowledgedCmds() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -363,48 +393,43 @@ public class BeepRobot extends AbstractRobot {
 	 * @return true, if roscore is running
 	 */
 	private boolean isRoscoreRunning() {
+		System.out.print("Roscore running: ");
 		if (connected) {
 			piIn.println("ps -ef | grep 'roscore' | grep -v 'grep' | wc -l");
 			try {
-				piOut.readLine(); // command
-				if (piOut.readLine().equals("1")) { // number of roscore
-													// processes running
+				String line = piOut.readLine(); // command
+				while (line.length() > 1) {
+					line = piOut.readLine();
+				}
+				if (line.equals("1")) { // number of roscore
+										// processes running
+					System.out.println("true");
 					return true;
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
+		System.out.println("false");
 		return false;
 	}
 
 	/**
-	 * Terminates every running roscore process and starts a new roscore.
-	 * Returns, when roscore is running and ready to use.
+	 * Terminates every running roscore process and starts a new roscore. Mind,
+	 * that the roscore needs some time to start up after the call of this
+	 * function.
 	 */
 	private void startNewRoscore() {
 		if (connected) {
 			piIn.println("pkill roscore");
+			System.out.println("Starting new Roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
-			String line;
-//			try {
-//				line = piOut.readLine();
-//				while (line != null) {
-//					if (line.equals("started core service [/rosout]")) {// TODO
-//																		// how
-//																		// to
-//																		// check
-//																		// if
-//																		// roscore
-//																		// is
-//																		// ready?
-//						return;
-//					}
-//				}
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -416,8 +441,8 @@ public class BeepRobot extends AbstractRobot {
 	 * Be sure that there is a roscore running before calling this method.
 	 */
 	private void startAutomatOnPi() {
-		stop(); // Stop old automate 		
-		//TODO richtiges Programm starten
+		stop(); // Stop old automate
+		// TODO richtiges Programm starten
 		piIn.println("nohup rosrun beep_imu ir_distance_zusmoro.py 2> ~/log/ir_distance_zusmoro-err.log 1> ~/log/ir_distance_zusmoro-out.log &");
 		try {
 			piOut.readLine(); // command
@@ -494,23 +519,20 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public void debug() {
-		LinkedList<ISubscriberInfo> info = new LinkedList<>();
-		info.addAll(sensorsCol);
-		info.addAll(sensorsIR);
-		rosComm = new RosCommunicator("http://" + beepIP + ":11311/", info);
-		while(true){
-			Object msg = rosComm.getSensorMsg("IR3");
-			if(msg!=null){
-				System.out.println(((std_msgs.Int32)msg).getData());
+		if (connected) {
+			LinkedList<ISubscriberInfo> info = new LinkedList<>();
+			info.addAll(sensorsCol);
+			info.addAll(sensorsIR);
+			if (rosComm == null) {
+				rosComm = new RosCommunicator("http://" + beepIP + ":11311/",
+						info);
+				rosComm.addActionListener(debugView);
 			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 			
+			rosComm.startCommunication();
+			
+			debugView.setVisible(true);
+		}
 	}
 
 }

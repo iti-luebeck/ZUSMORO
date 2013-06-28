@@ -15,7 +15,7 @@ public class DebugView extends JDialog {
 	private static final long serialVersionUID = 5138791031355097563L;
 	private EPuckSensorI robot;
 
-	//TODO: Hieraus ein array?
+	// TODO: Hieraus ein array?
 	private JRadioButton led0;
 	private JRadioButton led1;
 	private JRadioButton led2;
@@ -58,6 +58,8 @@ public class DebugView extends JDialog {
 
 		add(panel);
 		pack();
+
+
 	}
 
 	private void setComponentBounds() {
@@ -112,8 +114,8 @@ public class DebugView extends JDialog {
 		led.setEnabled(false);
 		led.setOpaque(false);
 		return led;
-	}	
-	
+	}
+
 	private JSlider initMotorSlider(MotorModel mm) {
 		JSlider motorslider = new JSlider(mm);
 		motorslider.setOrientation(SwingConstants.VERTICAL);
@@ -138,4 +140,5 @@ public class DebugView extends JDialog {
 		panel.update(robot);
 		repaint();
 	}
+
 }

@@ -29,18 +29,14 @@ pub_topic_LED7 = rospy.Publisher('topic/LED7', Int32)
 pub_topic_LED8 = rospy.Publisher('topic/LED8', Int32)
 pub_topic_LED5 = rospy.Publisher('topic/LED5', Int32)
 pub_topic_LED3 = rospy.Publisher('topic/LED3', Int32)
-pub_topic_motors = rospy.Publisher('topic/motors', Int32)
 
 
 class State1(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=['T1'])
+		smach.State.__init__(self, outcomes=[])
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 1')
-		global UIR2
-		global pub_topic_motors
-		global pub_topic_motors
 		global pub_topic_LED1
 		global pub_topic_LED2
 		global pub_topic_LED3
@@ -51,20 +47,8 @@ class State1(smach.State):
 		global pub_topic_LED0
 		global pub_topic_LED8
 		global pub_topic_beep
-		topic_LED1 = Int32()
-		topic_LED1.data = -6724096
-		topic_motors = Int32()
-		topic_motors.links = 0
-		topic_motors.rechts = 550
-		topic_beep = Int32()
-		topic_beep.data = 0
-		pub_topic_motors.publish(topic_motors)
-		pub_topic_LED1.publish(topic_LED1)
-		pub_topic_beep.publish(topic_beep)
 
 		while not rospy.is_shutdown():
-			if(UIR2>0.7333333134651183 and UIR2<0.9333333134651184):
-				return 'T1'
 			rospy.sleep(0.01)
 
 class State2(smach.State):
@@ -73,8 +57,6 @@ class State2(smach.State):
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 2')
-		global pub_topic_motors
-		global pub_topic_motors
 		global pub_topic_LED1
 		global pub_topic_LED2
 		global pub_topic_LED3
@@ -148,7 +130,7 @@ if __name__ == '__main__':
 	rospy.Subscriber('topic/IR6', Int32, callback_topic_IR6)
 	sm = smach.StateMachine(outcomes=[])
 	with sm:
-		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2'})
+		smach.StateMachine.add('State1', State1(), transitions={})
 		smach.StateMachine.add('State2', State2(), transitions={})
 	sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()

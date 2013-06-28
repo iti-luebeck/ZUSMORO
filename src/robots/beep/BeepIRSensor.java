@@ -16,15 +16,12 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 	private String topic;
 	private String objectInMessage;
 	private String topicType;
-	private String topicPackage;
 
-	public BeepIRSensor(String name, String topic, String topicType,
-			String topicPackage, String objectInMessage) {
+	public BeepIRSensor(String name, String topic, String topicType, String objectInMessage) {
 		this.name = name;
 		this.topic = topic;
 		this.objectInMessage = objectInMessage;
 		this.topicType = topicType;
-		this.topicPackage = topicPackage;
 	}
 
 	public BeepIRSensor() {
@@ -32,7 +29,6 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 		topic = null;
 		objectInMessage = null;
 		topicType = null;
-		topicPackage = null;
 	}
 
 	@Override
@@ -52,10 +48,6 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 
 	public String getTopicType() {
 		return topicType;
-	}
-
-	public String getTopicPackage() {
-		return topicPackage;
 	}
 
 	public boolean equals(Object o) {

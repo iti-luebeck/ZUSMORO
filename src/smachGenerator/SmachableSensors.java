@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import javax.naming.directory.NoSuchAttributeException;
 
 public class SmachableSensors extends LinkedList<ISmachableSensor> {
 
@@ -97,7 +96,7 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 		HashSet<String> subs = new HashSet<>();
 		for (ISmachableSensor sensor : this) {
 			subs.add("rospy.Subscriber('" + sensor.getTopic() + "', "
-					+ sensor.getTopicType() + ", callback_"
+					+ sensor.getTopicType().split("/")[1] + ", callback_"
 					+ sensor.getTopic().replace("/", "_") + ")\n");
 		}
 		return subs;
@@ -112,8 +111,9 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
 		for (ISmachableSensor sensor : this) {
-			deps.add("from " + sensor.getTopicPackage() + " import "
-					+ sensor.getTopicType());
+			String[] temp = sensor.getTopicType().split("/");
+			deps.add("from " +  temp[0]+ ".msg import "
+					+ temp[1]);
 		}
 		return deps;
 	}

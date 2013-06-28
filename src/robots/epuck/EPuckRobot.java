@@ -359,7 +359,6 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 					"Verbindung wird getrennt!");
 		}
 		MainFrame.onBoard.disconnect();
-		MainFrame.toolPanel.setConnected(false);
 	}
 
 	@Override

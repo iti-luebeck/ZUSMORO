@@ -1,4 +1,4 @@
-package robots.epuck;
+package robots.beep;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,11 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import robots.beep.BeepRobot;
+import robots.epuck.SensorPanel;
+import robots.epuck.ValuePosition;
 
 import model.bool.Variable.Operator;
 
@@ -22,26 +23,26 @@ import model.bool.Variable.Operator;
  *         Class setting the epuck image into the background. Different images
  *         for different modes.
  */
-public class BackgroundPanel extends JPanel {
+public class BeepDebugBackgroundPanel extends JPanel  {
 
 	private static final long serialVersionUID = -278302991810159232L;
 	/**
 	 * The image of the epuck for programming the states
 	 */
 	public static final Image state_background = new ImageIcon(
-			BackgroundPanel.class.getResource("e-puck-background.png"))
+			BeepDebugBackgroundPanel.class.getResource("beep-background.png"))
 			.getImage();
 	/**
 	 * The image of the epuck for transitions
 	 */
 	public static final Image trans_background = new ImageIcon(
-			BackgroundPanel.class.getResource("trans_background.png"))
+			BeepDebugBackgroundPanel.class.getResource("beep_trans_background.png"))
 			.getImage();
 	/**
 	 * The image of the epuck for debug-mode
 	 */
 	public static final Image debug_background = new ImageIcon(
-			BackgroundPanel.class.getResource("debug_background.png"))
+			BeepDebugBackgroundPanel.class.getResource("beep_debug_background.png"))
 			.getImage();
 
 	private Image background;
@@ -73,7 +74,7 @@ public class BackgroundPanel extends JPanel {
 			new ValuePosition(232, 143, 0), new ValuePosition(165, 260, 0) };
 
 	private SensorPanel[] sensorPanels;
-	protected EPuckSensorI robot;
+	protected BeepRobot robot;
 
 	/**
 	 * @param background
@@ -82,7 +83,7 @@ public class BackgroundPanel extends JPanel {
 	 *            Sets the image of the epuck. Different images for different
 	 *            modes (debug, program a state, transition)
 	 */
-	public BackgroundPanel(Image background) {
+	public BeepDebugBackgroundPanel(Image background) {
 		super();
 		setPreferredSize(new Dimension(400, 400));
 		this.background = background;
@@ -92,9 +93,9 @@ public class BackgroundPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (background == state_background) {
-			g.drawImage(BackgroundPanel.state_background, 0, 0, null);
+			g.drawImage(BeepDebugBackgroundPanel.state_background, 0, 0, null);
 		} else if (background == trans_background) {
-			g.drawImage(BackgroundPanel.trans_background, 0, 0, null);
+			g.drawImage(BeepDebugBackgroundPanel.trans_background, 0, 0, null);
 			Graphics2D g2d = (Graphics2D) g;
 			// for (int i = 0; i < sensorShapes.length; i++) {
 			// g2d.fill(sensorShapes[i]);
@@ -128,7 +129,7 @@ public class BackgroundPanel extends JPanel {
 				}
 			}
 		} else if (background == debug_background) {
-			g.drawImage(BackgroundPanel.debug_background, 0, 0, null);
+			g.drawImage(BeepDebugBackgroundPanel.debug_background, 0, 0, null);
 			Graphics2D g2d = (Graphics2D) g;
 			if (robot != null) {
 				AffineTransform Tx = g2d.getTransform();
@@ -143,9 +144,9 @@ public class BackgroundPanel extends JPanel {
 					pos = labelPos[i];
 					if (i <= 7) {
 						// op = sensorPanels[i].getOperator();
-						value = robot.getIrDistances()[i];
+						value = robot.getVariableValue("IR"+i);
 					} else if (i <= 10) {
-						value = robot.getFloorIr()[i - 8];
+						value = robot.getVariableValue("UIR"+(i - 8));
 					}
 					// if (i == 11) {
 					// g2d.setColor(Color.BLACK);
@@ -164,8 +165,9 @@ public class BackgroundPanel extends JPanel {
 	public void update(Object update) {
 		if (update instanceof SensorPanel[]) {
 			this.sensorPanels = (SensorPanel[]) update;
-		} else if (update instanceof EPuckSensorI) {
-			this.robot = (EPuckSensorI) update;
+		} else if (update instanceof BeepRobot) {
+			this.robot = (BeepRobot) update;
 		}
 	}
+
 }

@@ -1,5 +1,7 @@
 package RosCommunication;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
 import org.ros.node.DefaultNodeMainExecutor;
@@ -8,26 +10,26 @@ import org.ros.node.NodeMainExecutor;
 
 public class RosCommunicator {
 
-	NodeMainExecutor nodeMainExecutor;
+	private NodeMainExecutor nodeMainExecutor;
 	
-	SubscriberNode subNode;
+	private SubscriberNode subNode;
 	
+	private LinkedList<ActionListener> listeners;
+	private String rosMasterIP;
 
-	public RosCommunicator(String RosMasterIp, LinkedList<ISubscriberInfo> info) {
+	public RosCommunicator(String rosMasterIp, LinkedList<ISubscriberInfo> info) {
 
+		this.rosMasterIP = rosMasterIp;
+		
 		System.out.println("creating RosCommunicator");
+		
+		listeners = new LinkedList<>();
+		
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
-		System.out.println("ROS Master IP: " + RosMasterIp);
-		java.net.URI muri = java.net.URI.create(RosMasterIp);
-
-		NodeConfiguration nodeConf = NodeConfiguration.newPublic("127.0.0.1",
-				muri);
-		nodeConf.setNodeName("zusmoro/RosCommunicator");
+		System.out.println("ROS Master IP: " + rosMasterIp);		
 		
-		subNode = new SubscriberNode(info);
-
-		nodeMainExecutor.execute(subNode, nodeConf);
+		subNode = new SubscriberNode(info, this);
 	}
 	
 	/**
@@ -41,6 +43,34 @@ public class RosCommunicator {
 	 */
 	public Object getSensorMsg(String sensorName){
 		return subNode.getSensorMsg(sensorName);
+	}
+	
+	public void addActionListener(ActionListener listener){
+		listeners.add(listener);
+		System.out.println("Listeneranzahl: "+listeners.size());
+	}
+	
+	void notifyListeners(ActionEvent e){
+		for(ActionListener l : listeners){
+			l.actionPerformed(e);
+		}
+	}
+	
+	public void removeListener(ActionListener listener){
+		listeners.remove(listener);
+	}
+	
+	public void startCommunication(){
+		java.net.URI muri = java.net.URI.create(rosMasterIP);
+		NodeConfiguration nodeConf = NodeConfiguration.newPublic("127.0.0.1",
+				muri);
+		nodeConf.setNodeName("zusmoro/RosCommunicator");
+		
+		nodeMainExecutor.execute(subNode, nodeConf);
+	}
+	
+	public void shutdown(){
+		nodeMainExecutor.shutdown();
 	}
 
 }

@@ -116,13 +116,15 @@ public class SmachAutomat {
 		HashSet<String> publish = new HashSet<>();
 		for (ISmachableAction a : s.getActions()) {
 			ISmachableActuator actuator = actuators.getActuator(a.getKey());
+
 			if (!msgs.contains(actuator.getTopic().replace("/", "_") + " = "
-					+ actuator.getTopicType() + "()")) {
+					+ actuator.getTopicType().split("/")[1] + "()")) {
 				msgs.add(actuator.getTopic().replace("/", "_") + " = "
-						+ actuator.getTopicType() + "()");
+						+ actuator.getTopicType().split("/")[1] + "()");
 				state += "\t\t" + actuator.getTopic().replace("/", "_") + " = "
-						+ actuator.getTopicType() + "()\n";
+						+ actuator.getTopicType().split("/")[1] + "()\n";
 			}
+
 			state += "\t\t" + actuator.getTopic().replace("/", "_") + "."
 					+ actuator.getObejctInMessage() + " = " + a.getValue()
 					+ "\n";
@@ -168,36 +170,39 @@ public class SmachAutomat {
 	}
 
 	private String getSmachStateMachine(String sm) {
-		// prepare all states to add them to the Smach state machine
-		ArrayList<String> stateToAdd = new ArrayList<>();
-		for (int i = 0; i < states.size(); i++) {
-			String state = "smach.StateMachine.add('"
-					+ states.get(i).getText().replace(" ", "") + "', "
-					+ states.get(i).getText().replace(" ", "")
-					+ "(), transitions={";
-			for (ISmachableTransition t : states.get(i).getTransitions()) {
-				state += "'" + t.getLabel() + "':'"
-						+ t.getFollowerState().getText().replace(" ", "")
-						+ "',";
+		if (states.size() > 0) {
+			// prepare all states to add them to the Smach state machine
+			ArrayList<String> stateToAdd = new ArrayList<>();
+			for (int i = 0; i < states.size(); i++) {
+				String state = "smach.StateMachine.add('"
+						+ states.get(i).getText().replace(" ", "") + "', "
+						+ states.get(i).getText().replace(" ", "")
+						+ "(), transitions={";
+				for (ISmachableTransition t : states.get(i).getTransitions()) {
+					state += "'" + t.getLabel() + "':'"
+							+ t.getFollowerState().getText().replace(" ", "")
+							+ "',";
+				}
+				if (states.get(i).getTransitions().size() > 0) {
+					state = state.substring(0, state.length() - 1) + "})";
+				} else {
+					state += "})";
+				}
+				stateToAdd.add(state);
 			}
-			if (states.get(i).getTransitions().size() > 0) {
-				state = state.substring(0, state.length() - 1) + "})";
-			} else {
-				state += "})";
+			// create state machine and add states in correct order
+			String stateMachine = "\t" + sm
+					+ " = smach.StateMachine(outcomes=[])\n";
+			stateMachine += "\twith " + sm + ":\n";
+			stateMachine += "\t\t" + stateToAdd.get(initialStateIndex) + "\n";
+			for (int i = 0; i < stateToAdd.size(); i++) {
+				if (i != initialStateIndex) {
+					stateMachine += "\t\t" + stateToAdd.get(i) + "\n";
+				}
 			}
-			stateToAdd.add(state);
+			return stateMachine;
 		}
-		// create state machine and add states in correct order
-		String stateMachine = "\t" + sm
-				+ " = smach.StateMachine(outcomes=[])\n";
-		stateMachine += "\twith " + sm + ":\n";
-		stateMachine += "\t\t" + stateToAdd.get(initialStateIndex) + "\n";
-		for (int i = 0; i < stateToAdd.size(); i++) {
-			if (i != initialStateIndex) {
-				stateMachine += "\t\t" + stateToAdd.get(i) + "\n";
-			}
-		}
-		return stateMachine;
+		return "";
 	}
 
 	private String getMainMethode() {
@@ -225,7 +230,7 @@ public class SmachAutomat {
 	 * @throws NoSuchAttributeException
 	 * @throws AlreadyBoundException
 	 */
-	public boolean saveToFile(String fileName) {
+	public boolean saveToFile(File file) {
 		try {
 			String pythonNode = getImports() + "\n\n";
 			// define global sensor variables
@@ -246,11 +251,10 @@ public class SmachAutomat {
 				pythonNode += cb + "\n";
 			}
 			pythonNode += getMainMethode();
-			PrintWriter out = new PrintWriter(fileName + ".py");
+			PrintWriter out = new PrintWriter(file);
 			out.print(pythonNode);
 			out.close();
-			File py = new File(fileName + ".py");
-			py.setExecutable(true);
+			file.setExecutable(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

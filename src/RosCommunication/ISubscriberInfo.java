@@ -5,6 +5,5 @@ public interface ISubscriberInfo {
 	public abstract String getName();
 	public abstract String getTopic();
 	public abstract String getTopicType();
-	public abstract String getTopicPackage();
 	
 }

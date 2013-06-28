@@ -126,9 +126,9 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					Color col = JColorChooser.showDialog(BeepTransitionPanel.this,
-							"Wähle eine Farbe", e.getComponent()
-							.getBackground());
+					Color col = JColorChooser.showDialog(
+							BeepTransitionPanel.this, "Wähle eine Farbe", e
+									.getComponent().getBackground());
 					e.getComponent().setBackground(col);
 				}
 			});
@@ -220,11 +220,15 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 		}
 		for (int i = 0; i <= 2; i++) {
 			try {
-				newGuard.addOperand(new Variable("UIR" + (i), Operator.EQUAL,
-						groundSensors[i].getBackground().getRGB()));
-				toolTip.append("<br>UIR" + (i) + Operator.EQUAL.toHTMLString()
-						+ groundSensors[i].getBackground());
-				somethingSet = true;
+				if (groundSensors[i].getBackground() != null) {
+					newGuard.addOperand(new Variable("UIR" + (i),
+							Operator.EQUAL, groundSensors[i].getBackground()
+									.getRGB()));
+					toolTip.append("<br>UIR" + (i)
+							+ Operator.EQUAL.toHTMLString()
+							+ groundSensors[i].getBackground());
+					somethingSet = true;
+				}
 			} catch (Exception e) {
 				// don't care
 			}
