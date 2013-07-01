@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('xxxxxx')
+import roslib; roslib.load_manifest('zusmoro_state_machine')
 import rospy
 import smach
 import smach_ros
@@ -38,7 +38,7 @@ class State1(smach.State):
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 1')
-		global UIR2
+		global IR0
 		global pub_topic_motors
 		global pub_topic_motors
 		global pub_topic_LED1
@@ -52,27 +52,31 @@ class State1(smach.State):
 		global pub_topic_LED8
 		global pub_topic_beep
 		topic_LED1 = Int32()
-		topic_LED1.data = -6724096
+		topic_LED1.data = -13369549
+		topic_LED6 = Int32()
+		topic_LED6.data = -16763956
 		topic_motors = Int32()
 		topic_motors.links = 0
-		topic_motors.rechts = 550
+		topic_motors.rechts = 0
 		topic_beep = Int32()
 		topic_beep.data = 0
 		pub_topic_motors.publish(topic_motors)
 		pub_topic_LED1.publish(topic_LED1)
+		pub_topic_LED6.publish(topic_LED6)
 		pub_topic_beep.publish(topic_beep)
 
 		while not rospy.is_shutdown():
-			if(UIR2>0.7333333134651183 and UIR2<0.9333333134651184):
+			if(IR0>1000):
 				return 'T1'
 			rospy.sleep(0.01)
 
 class State2(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=[])
+		smach.State.__init__(self, outcomes=['T2'])
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 2')
+		global IR0
 		global pub_topic_motors
 		global pub_topic_motors
 		global pub_topic_LED1
@@ -85,8 +89,20 @@ class State2(smach.State):
 		global pub_topic_LED0
 		global pub_topic_LED8
 		global pub_topic_beep
+		topic_LED5 = Int32()
+		topic_LED5.data = -10027213
+		topic_motors = Int32()
+		topic_motors.links = 0
+		topic_motors.rechts = 0
+		topic_beep = Int32()
+		topic_beep.data = 0
+		pub_topic_motors.publish(topic_motors)
+		pub_topic_LED5.publish(topic_LED5)
+		pub_topic_beep.publish(topic_beep)
 
 		while not rospy.is_shutdown():
+			if(IR0<=800):
+				return 'T2'
 			rospy.sleep(0.01)
 
 def callback_topic_IR1(msg):
@@ -105,21 +121,21 @@ def callback_topic_IR3(msg):
 	global IR3
 	IR3 = msg.data
 
+def callback_topic_UIR1(msg):
+	global UIR1
+	UIR1 = msg.data
+
 def callback_topic_IR4(msg):
 	global IR4
 	IR4 = msg.data
 
 def callback_topic_UIR2(msg):
-	global UIR1
-	UIR1 = msg.data
+	global UIR2
+	UIR2 = msg.data
 
 def callback_topic_IR5(msg):
 	global IR5
 	IR5 = msg.data
-
-def callback_topic_UIR3(msg):
-	global UIR2
-	UIR2 = msg.data
 
 def callback_topic_IR6(msg):
 	global IR6
@@ -136,10 +152,10 @@ def callback_topic_IR0(msg):
 if __name__ == '__main__':
 	rospy.init_node('zusmoro_state_machine')
 	rospy.Subscriber('topic/IR3', Int32, callback_topic_IR3)
+	rospy.Subscriber('topic/UIR1', Int32, callback_topic_UIR1)
 	rospy.Subscriber('topic/IR0', Int32, callback_topic_IR0)
 	rospy.Subscriber('topic/UIR0', Int32, callback_topic_UIR0)
 	rospy.Subscriber('topic/IR7', Int32, callback_topic_IR7)
-	rospy.Subscriber('topic/UIR3', Int32, callback_topic_UIR3)
 	rospy.Subscriber('topic/IR4', Int32, callback_topic_IR4)
 	rospy.Subscriber('topic/IR1', Int32, callback_topic_IR1)
 	rospy.Subscriber('topic/IR5', Int32, callback_topic_IR5)
@@ -149,7 +165,7 @@ if __name__ == '__main__':
 	sm = smach.StateMachine(outcomes=[])
 	with sm:
 		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2'})
-		smach.StateMachine.add('State2', State2(), transitions={})
+		smach.StateMachine.add('State2', State2(), transitions={'T2':'State1'})
 	sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()
 	sm.execute()

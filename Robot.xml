@@ -56,13 +56,13 @@
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR1</name>
-        <topic>topic/UIR2</topic>
+        <topic>topic/UIR1</topic>
         <objectInMessage>data</objectInMessage>
         <topicType>std_msgs/Int32</topicType>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR2</name>
-        <topic>topic/UIR3</topic>
+        <topic>topic/UIR2</topic>
         <objectInMessage>data</objectInMessage>
         <topicType>std_msgs/Int32</topicType>
     </Color_Sensor>
@@ -139,6 +139,6 @@
         <topicType>std_msgs/Int32</topicType>
     </actuator>
     <beepIP>141.83.158.160</beepIP>
-    <piDirAutomat>/home/pi/Beep/Software/catkin_ws/src/beep_imu</piDirAutomat>
+    <piDirAutomat>/home/pi/ros_ws/zusmoro_state_machine</piDirAutomat>
     <automatFileName>test.py</automatFileName>
 </beepRobot>

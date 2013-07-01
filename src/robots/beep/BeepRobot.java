@@ -139,9 +139,9 @@ public class BeepRobot extends AbstractRobot {
 				std_msgs.Int32._TYPE, "data"));
 		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0",
 				std_msgs.Int32._TYPE, "data"));
-		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR2",
+		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR1",
 				std_msgs.Int32._TYPE, "data"));
-		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR3",
+		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR2",
 				std_msgs.Int32._TYPE, "data"));
 
 		smachableSensors = new SmachableSensors();
@@ -177,7 +177,7 @@ public class BeepRobot extends AbstractRobot {
 		actuators.add(beep);
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
-		piDirAutomat = "/home/pi/Beep/Software/catkin_ws/src/beep_imu";
+		piDirAutomat = "/home/pi/ros_ws/zusmoro_state_machine";
 		automatFileName = "test.py";
 
 		saveBeepRobot(this, new File("Robot.xml"));
@@ -334,7 +334,7 @@ public class BeepRobot extends AbstractRobot {
 						"Fehler beim Erstellen des Automats");
 			}
 			SmachAutomat sA = new SmachAutomat(MainFrame.automat.getStates(),
-					smachableSensors, getActuators());
+					smachableSensors, getActuators(), "zusmoro_state_machine");
 			File file = new File(automatFileName);
 			sA.saveToFile(file);
 		} catch (NoSuchAttributeException e1) {
@@ -397,8 +397,8 @@ public class BeepRobot extends AbstractRobot {
 		if (connected) {
 			piIn.println("ps -ef | grep 'roscore' | grep -v 'grep' | wc -l");
 			try {
-				String line = piOut.readLine(); // command
-				while (line.length() > 1) {
+				String line = piOut.readLine();
+				while (line.length() != 1) {
 					line = piOut.readLine();
 				}
 				if (line.equals("1")) { // number of roscore
@@ -409,8 +409,9 @@ public class BeepRobot extends AbstractRobot {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			
 		}
+		
 		System.out.println("false");
 		return false;
 	}
@@ -426,7 +427,7 @@ public class BeepRobot extends AbstractRobot {
 			System.out.println("Starting new Roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(8000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -443,7 +444,7 @@ public class BeepRobot extends AbstractRobot {
 	private void startAutomatOnPi() {
 		stop(); // Stop old automate
 		// TODO richtiges Programm starten
-		piIn.println("nohup rosrun beep_imu ir_distance_zusmoro.py 2> ~/log/ir_distance_zusmoro-err.log 1> ~/log/ir_distance_zusmoro-out.log &");
+		piIn.println("nohup rosrun zusmoro_state_machine "+ automatFileName + " 2> ~/log/"+automatFileName+"-err.log 1> ~/log/"+automatFileName+"-out.log &");
 		try {
 			piOut.readLine(); // command
 			piOut.readLine(); // Process ID

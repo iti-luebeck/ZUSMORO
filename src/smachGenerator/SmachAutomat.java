@@ -23,22 +23,34 @@ public class SmachAutomat {
 	private int initialStateIndex;
 	private SmachableSensors sensors;
 	private SmachableActuators actuators;
+	private String pkg;
 
 	/**
 	 * Constructs a Smach state machine form the given states
 	 * 
 	 * @param states
 	 *            used to create the state machine
+	 * @param sensors
+	 *            containing all {@link ISmachableSensor}s that are used in the
+	 *            {@link ISmachableTransition}s
+	 * @param actuators
+	 *            containing all {@link ISmachableActuator}s that are used in
+	 *            the {@link ISmachableState}s
+	 * @param pkg
+	 *            the package the state machine is stored in, to load the right
+	 *            manifest
+	 * 
 	 * @throws NoSuchAttributeException
 	 *             if sensors are used that are not specified in the
 	 *             {@link ISmachableSensors} object.
 	 */
 	public SmachAutomat(ArrayList<? extends ISmachableState> states,
-			SmachableSensors sensors, SmachableActuators actuators)
+			SmachableSensors sensors, SmachableActuators actuators, String pkg)
 			throws NoSuchAttributeException {
 		this.states = states;
 		this.sensors = sensors;
 		this.actuators = actuators;
+		this.pkg = pkg;
 		for (ISmachableState s : states) {
 			if (s.isInitialState()) {
 				initialStateIndex = states.indexOf(s);
@@ -49,9 +61,7 @@ public class SmachAutomat {
 
 	private String getImports() {
 		String imports = "#!/usr/bin/env python\n\n";
-		imports += "import roslib; roslib.load_manifest('xxxxxx')\n";// TODO
-																		// Manifest
-																		// festlegen
+		imports += "import roslib; roslib.load_manifest('" + pkg + "')\n";
 		imports += "import rospy\n";
 		imports += "import smach\n";
 		imports += "import smach_ros\n\n";
