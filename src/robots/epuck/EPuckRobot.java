@@ -304,6 +304,8 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public boolean connect(String connectTo) {
+		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
+				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):", lastInput);
 		if (connectTo == null) {
 			connectTo = lastInput;
 		}
@@ -326,14 +328,13 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		// basically just test for connection
 		this.commPort.disconnect();
 
-		String comPort = JOptionPane.showInputDialog(MainFrame.mainFrame,
-				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):", lastInput);
+		
 
 		// if (comPort != null && comPort.startsWith("COM")) {
-		if (comPort != null) {
+		if (connectTo != null) {
 
-			lastInput = comPort;
-			MainFrame.onBoard.connect(comPort);
+			lastInput = connectTo;
+			MainFrame.onBoard.connect(connectTo);
 		}
 
 		return commPort.isConnected();
@@ -484,6 +485,11 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 			MainFrame.onBoard.setDebugLevel(debug1.isSelected(),
 					debug2.isSelected(), debug3.isSelected());
 		}
+	}
+
+	@Override
+	public String getLastConnectedTo() {
+		return lastInput;
 	}
 
 }

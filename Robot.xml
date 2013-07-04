@@ -140,5 +140,5 @@
     </actuator>
     <beepIP>141.83.158.160</beepIP>
     <piDirAutomat>/home/pi/ros_ws/zusmoro_state_machine</piDirAutomat>
-    <automatFileName>test.py</automatFileName>
+    <automatFileName>TestAutomat.py</automatFileName>
 </beepRobot>

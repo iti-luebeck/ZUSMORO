@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.directory.NoSuchAttributeException;
+import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -178,7 +179,7 @@ public class BeepRobot extends AbstractRobot {
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
 		piDirAutomat = "/home/pi/ros_ws/zusmoro_state_machine";
-		automatFileName = "test.py";
+		automatFileName = "TestAutomat.py";
 
 		saveBeepRobot(this, new File("Robot.xml"));
 
@@ -208,10 +209,12 @@ public class BeepRobot extends AbstractRobot {
 	}
 
 	@Override
-	public boolean connect(String connectTo) {
+	public boolean connect(String connectTo) {		
 		if (connectTo == null) {
 			connectTo = beepIP;
 		}
+		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
+				"Bitte die IP-Adresse des Beeps angeben.", connectTo);
 		beepIP = connectTo;
 		conn = new Connection(connectTo);
 		try {
@@ -345,6 +348,7 @@ public class BeepRobot extends AbstractRobot {
 		SCPClient client = new SCPClient(conn);
 		try {
 			client.put(automatFileName, piDirAutomat);
+			piIn.println("chmod +x "+piDirAutomat+"/"+automatFileName);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -443,7 +447,6 @@ public class BeepRobot extends AbstractRobot {
 	 */
 	private void startAutomatOnPi() {
 		stop(); // Stop old automate
-		// TODO richtiges Programm starten
 		piIn.println("nohup rosrun zusmoro_state_machine "+ automatFileName + " 2> ~/log/"+automatFileName+"-err.log 1> ~/log/"+automatFileName+"-out.log &");
 		try {
 			piOut.readLine(); // command
@@ -534,6 +537,11 @@ public class BeepRobot extends AbstractRobot {
 			
 			debugView.setVisible(true);
 		}
+	}
+
+	@Override
+	public String getLastConnectedTo() {
+		return beepIP;
 	}
 
 }

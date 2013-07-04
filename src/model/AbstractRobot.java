@@ -14,6 +14,7 @@ public abstract class AbstractRobot {
 	public AbstractRobot() {
 		//nothing
 	}
+	public abstract String getLastConnectedTo();
 	public abstract boolean connect(String connectTo);
 	public abstract void disconnect();
 	public abstract int getVariableValue(String variable);

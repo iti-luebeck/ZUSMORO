@@ -51,28 +51,19 @@ class State1(smach.State):
 		global pub_topic_LED0
 		global pub_topic_LED8
 		global pub_topic_beep
-		topic_LED8 = Int32()
-		topic_LED8.data = -13434625
-		topic_motors = Int32()
-		topic_motors.links = 0
-		topic_motors.rechts = 0
-		topic_beep = Int32()
-		topic_beep.data = 0
-		pub_topic_motors.publish(topic_motors)
-		pub_topic_LED8.publish(topic_LED8)
-		pub_topic_beep.publish(topic_beep)
 
 		while not rospy.is_shutdown():
-			if(IR0>2000):
+			if(IR0>1000):
 				return 'T1'
 			rospy.sleep(0.01)
 
 class State2(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=['T2'])
+		smach.State.__init__(self, outcomes=['T2','T3'])
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 2')
+		global IR0
 		global IR0
 		global pub_topic_motors
 		global pub_topic_motors
@@ -88,8 +79,32 @@ class State2(smach.State):
 		global pub_topic_beep
 
 		while not rospy.is_shutdown():
-			if(IR0<800):
+			if(IR0<750):
 				return 'T2'
+			if(IR0>3500):
+				return 'T3'
+			rospy.sleep(0.01)
+
+class State3(smach.State):
+	def __init__(self):
+		smach.State.__init__(self, outcomes=[])
+
+	def execute(self, userdata):
+		rospy.loginfo('Executing state State 3')
+		global pub_topic_motors
+		global pub_topic_motors
+		global pub_topic_LED1
+		global pub_topic_LED2
+		global pub_topic_LED3
+		global pub_topic_LED4
+		global pub_topic_LED5
+		global pub_topic_LED6
+		global pub_topic_LED7
+		global pub_topic_LED0
+		global pub_topic_LED8
+		global pub_topic_beep
+
+		while not rospy.is_shutdown():
 			rospy.sleep(0.01)
 
 def callback_topic_IR1(msg):
@@ -152,7 +167,8 @@ if __name__ == '__main__':
 	sm = smach.StateMachine(outcomes=[])
 	with sm:
 		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2'})
-		smach.StateMachine.add('State2', State2(), transitions={'T2':'State1'})
+		smach.StateMachine.add('State2', State2(), transitions={'T2':'State1','T3':'State3'})
+		smach.StateMachine.add('State3', State3(), transitions={})
 	sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()
 	sm.execute()

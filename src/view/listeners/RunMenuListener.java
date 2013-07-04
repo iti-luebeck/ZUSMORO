@@ -13,7 +13,8 @@ public class RunMenuListener implements ActionListener {
 
 	private Method connect = new Method() {
 		public void doEvent(ActionEvent e) {
-			boolean connected = MainFrame.robot.connect(null);
+			String connectTo = MainFrame.robot.getLastConnectedTo();
+			boolean connected = MainFrame.robot.connect(connectTo);
 			MainFrame.toolPanel.setConnected(connected);
 			MainFrame.toolPanel.enableStart(connected);
 			MainFrame.toolPanel.enableStop(connected);
