@@ -14,21 +14,19 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;
-	private String objectInMessage;
-	private String topicType;
+	private final int irIndex;
+	private final String topicType = std_msgs.Int32._TYPE;
 
-	public BeepIRSensor(String name, String topic, String topicType, String objectInMessage) {
+	public BeepIRSensor(String name, String topic, int irIndex) {
 		this.name = name;
 		this.topic = topic;
-		this.objectInMessage = objectInMessage;
-		this.topicType = topicType;
+		this.irIndex = irIndex;
 	}
 
 	public BeepIRSensor() {
 		name = null;
 		topic = null;
-		objectInMessage = null;
-		topicType = null;
+		irIndex = 0;
 	}
 
 	@Override
@@ -42,27 +40,48 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	@Override
-	public String getObejctInMessage() {
-		return objectInMessage;
+	public String getTransitionCondition(Operator op, int compVal) {
+		return getValueIdentifier() + op + compVal;
 	}
 
+	@Override
+	public String getImports() {
+		String temp[] = topicType.split("/");
+		String res = "";
+		res = "from " + temp[0] + ".msg import " + temp[1];
+		return res;
+	}
+
+	@Override
+	public String getCallback() {
+		String res = "";
+		res += "def ir_cb(msg):\n";
+		res += "\tglobal ir\n";
+		res += "\tir = msg.ir\n";
+		return res;
+	}
+
+	@Override
+	public String getSubscriberSetup() {
+		String res = "";
+		res = "rospy.Subscriber('" + topic + "', " + topicType.split("/")[1]
+				+ ", ir_cb)\n";
+		return res;
+	}
+
+	@Override
+	public String getValueIdentifier() {
+		return "ir[" + irIndex + "]";
+	}
+
+	@Override
 	public String getTopicType() {
 		return topicType;
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof BeepIRSensor)) {
-			return false;
-		} else {
-			BeepIRSensor s = (BeepIRSensor) o;
-			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
-					.equals(s.getObejctInMessage())));
-		}
+	@Override
+	public String getIdentifierInit() {
+		return "ir = array([0,0,0,0,0,0,0,0])";
 	}
 
-	@Override
-	public String getTransitionCondition(Operator op, int compVal) {
-		return name + op + compVal;
-	}
-	
 }

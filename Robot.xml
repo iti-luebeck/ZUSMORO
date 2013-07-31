@@ -2,69 +2,69 @@
 <beepRobot>
     <IR_Sensor>
         <name>IR0</name>
-        <topic>topic/IR0</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>0</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR1</name>
-        <topic>topic/IR1</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>1</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR2</name>
-        <topic>topic/IR2</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>2</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR3</name>
-        <topic>topic/IR3</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>3</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR4</name>
-        <topic>topic/IR4</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>4</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR5</name>
-        <topic>topic/IR5</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>5</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR6</name>
-        <topic>topic/IR6</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>6</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR7</name>
-        <topic>topic/IR7</topic>
-        <objectInMessage>data</objectInMessage>
+        <topic>/IR_filtered</topic>
+        <irIndex>7</irIndex>
         <topicType>std_msgs/Int32</topicType>
     </IR_Sensor>
     <Color_Sensor>
         <name>UIR0</name>
-        <topic>topic/UIR0</topic>
-        <objectInMessage>data</objectInMessage>
-        <topicType>std_msgs/Int32</topicType>
+        <topic>/ground_Color</topic>
+        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <sensorIndex>0</sensorIndex>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR1</name>
-        <topic>topic/UIR1</topic>
-        <objectInMessage>data</objectInMessage>
-        <topicType>std_msgs/Int32</topicType>
+        <topic>/ground_Color</topic>
+        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <sensorIndex>1</sensorIndex>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR2</name>
-        <topic>topic/UIR2</topic>
-        <objectInMessage>data</objectInMessage>
-        <topicType>std_msgs/Int32</topicType>
+        <topic>/ground_Color</topic>
+        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <sensorIndex>2</sensorIndex>
     </Color_Sensor>
     <Motors>
         <name>MOTOR1</name>

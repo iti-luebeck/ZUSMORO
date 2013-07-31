@@ -15,22 +15,19 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;
-	private String objectInMessage;
-	private String topicType;
+	private final String topicType = "beep_msgs.msg/Color_sensors";
+	private final int sensorIndex;
 
-	public BeepColorSensor(String name, String topic, String topicType,
-			String objectInMessage) {
+	public BeepColorSensor(String name, String topic, int sensorIndex) {
 		this.name = name;
 		this.topic = topic;
-		this.objectInMessage = objectInMessage;
-		this.topicType = topicType;
+		this.sensorIndex = sensorIndex;
 	}
 
 	public BeepColorSensor() {
 		name = null;
 		topic = null;
-		objectInMessage = null;
-		topicType = null;
+		sensorIndex = 0;
 	}
 
 	@Override
@@ -44,31 +41,54 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	@Override
-	public String getObejctInMessage() {
-		return objectInMessage;
-	}
-
-	@Override
 	public String getTopicType() {
 		return topicType;
-	}
-
-	public boolean equals(Object o) {
-		if (!(o instanceof BeepIRSensor)) {
-			return false;
-		} else {
-			BeepIRSensor s = (BeepIRSensor) o;
-			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
-					.equals(s.getObejctInMessage())));
-		}
 	}
 
 	@Override
 	public String getTransitionCondition(Operator op, int compVal) {
 		Color col = new Color(compVal);
-		float[] hsbCol =  Color.RGBtoHSB(col.getRed(), col.getGreen(), col.getBlue(), null);
-		
-		return name + ">" + (hsbCol[0]-0.1+1)%1 + " and " + name + "<" + (hsbCol[0]+0.1)%1;
+		float[] hsbCol = Color.RGBtoHSB(col.getRed(), col.getGreen(),
+				col.getBlue(), null);
+
+		return getValueIdentifier() + ">" + (hsbCol[0] - 0.1 + 1) % 1 + " and " + getValueIdentifier() + "<"
+				+ (hsbCol[0] + 0.1) % 1;
+	}
+
+	@Override
+	public String getImports() {
+		String res = "";
+		res += "from " + topicType.split("/")[0] + ".msg import "
+				+ topicType.split("/")[1]+"\n";
+		res += "import colorsys\n";
+		return res;
+	}
+
+	@Override
+	public String getCallback() {
+		String res = "";
+		res += "def color_cb(msg):\n";
+		res += "\tglobal colorSensor\n";
+		res += "\tfor (i, sensor) in enumerate(msg.sensors)\n";
+		res += "\t\tgroundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";				
+		return res;
+	}
+
+	@Override
+	public String getSubscriberSetup() {
+		String res = "";
+		res += "rospy.Subscriber('" + topic + "', " + topicType.split("/")[1]
+				+ ", color_cb)\n";
+		return res;
+	}
+
+	@Override
+	public String getValueIdentifier() {
+		return "colorSensor[" + sensorIndex + "]";
+	}
+	
+	public String getIdentifierInit(){
+		return "colorSensor = array([0,0,0])";
 	}
 
 }

@@ -13,7 +13,7 @@ public class BeepRgbLed implements ISmachableActuator {
 
 	private String name;
 	private String topic;
-	private int ledIndex;
+	private final int ledIndex;
 
 	public BeepRgbLed(String name, String topic, int ledIndex) {
 		this.name = name;

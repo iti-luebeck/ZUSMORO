@@ -33,7 +33,6 @@ import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
-import smachGenerator.ISmachableActuator;
 import smachGenerator.ISmachableSensor;
 import smachGenerator.SmachAutomat;
 import smachGenerator.SmachableActuators;
@@ -60,7 +59,7 @@ public class BeepRobot extends AbstractRobot {
 
 	@XmlElement(name = "Motors")
 	List<BeepMotor> motors = new ArrayList<BeepMotor>();
-	
+
 	@XmlElement(name = "rgbLEDs")
 	List<BeepRgbLed> rgbLEDs = new ArrayList<BeepRgbLed>();
 
@@ -127,28 +126,18 @@ public class BeepRobot extends AbstractRobot {
 		connected = false;
 
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "topic/IR0",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR1", "topic/IR1",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR2", "topic/IR2",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR3", "topic/IR3",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR4", "topic/IR4",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR5", "topic/IR5",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR6", "topic/IR6",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsIR.add(new BeepIRSensor("IR7", "topic/IR7",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsCol.add(new BeepColorSensor("UIR0", "topic/UIR0",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsCol.add(new BeepColorSensor("UIR1", "topic/UIR1",
-				std_msgs.Int32._TYPE, "data"));
-		sensorsCol.add(new BeepColorSensor("UIR2", "topic/UIR2",
-				std_msgs.Int32._TYPE, "data"));
+		sensorsIR.add(new BeepIRSensor("IR0", "/IR_filtered", 0));
+		sensorsIR.add(new BeepIRSensor("IR1", "/IR_filtered", 1));
+		sensorsIR.add(new BeepIRSensor("IR2", "/IR_filtered", 2));
+		sensorsIR.add(new BeepIRSensor("IR3", "/IR_filtered", 3));
+		sensorsIR.add(new BeepIRSensor("IR4", "/IR_filtered", 4));
+		sensorsIR.add(new BeepIRSensor("IR5", "/IR_filtered", 5));
+		sensorsIR.add(new BeepIRSensor("IR6", "/IR_filtered", 6));
+		sensorsIR.add(new BeepIRSensor("IR7", "/IR_filtered", 7));
+		sensorsCol.add(new BeepColorSensor("UIR0", "/ground_Color", 0));
+		sensorsCol.add(new BeepColorSensor("UIR1", "/ground_Color", 1));
+		sensorsCol.add(new BeepColorSensor("UIR2", "/ground_Color", 2));
+		
 
 		smachableSensors = new SmachableSensors();
 		smachableSensors.addAll(sensorsIR);
@@ -166,8 +155,8 @@ public class BeepRobot extends AbstractRobot {
 		rgbLEDs.add(new BeepRgbLed("LED5", "/leds", 5));
 		rgbLEDs.add(new BeepRgbLed("LED6", "/leds", 6));
 		rgbLEDs.add(new BeepRgbLed("LED7", "/leds", 7));
-		
-		motors.add(new BeepMotor("BEEP", "/beep"));//TODO!!
+
+		motors.add(new BeepMotor("BEEP", "/beep"));// TODO!!
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
 		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";

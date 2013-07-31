@@ -10,11 +10,14 @@ import model.bool.Variable.Operator;
 @XmlSeeAlso({ BeepIRSensor.class, BeepColorSensor.class })
 public interface ISmachableSensor {
 
-	public abstract String getTopic();
-
 	public abstract String getName();
 
-	public abstract String getObejctInMessage();
+	public abstract String getImports();
+	public abstract String getCallback();
+	public abstract String getSubscriberSetup();
+	
+	public abstract String getValueIdentifier();
+	public abstract String getIdentifierInit();
 
 	/**
 	 * Returns the type of the topic in ros conventions.
@@ -25,7 +28,6 @@ public interface ISmachableSensor {
 	 * @return Type of the topic
 	 */
 	public abstract String getTopicType();
-
 	public abstract String getTransitionCondition(Operator op, int compVal);
 
 }

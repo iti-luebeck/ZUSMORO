@@ -59,7 +59,7 @@ public class SmachableActuators extends LinkedList<ISmachableActuator> {
 		for (ISmachableActuator actuator : this) {
 			for (String s : actuator.getImports()){
 				deps.add(s);
-			}			
+			}
 		}
 		return deps;
 	}

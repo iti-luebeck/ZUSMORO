@@ -48,34 +48,10 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	 *             different sensors are stored at the same leaf in the same
 	 *             topic.
 	 */
-	public LinkedList<String> getCallbacks() throws AlreadyBoundException {
-		HashMap<String, String> callbacks = new HashMap<>();
+	public HashSet<String> getCallbacks() throws AlreadyBoundException {
+		HashSet<String> results = new HashSet<String>();
 		for (ISmachableSensor sensor : this) {
-			String cb;
-			if (callbacks.containsKey(sensor.getTopic())) {
-				cb = "\tglobal " + sensor.getName() + "\n\t" + sensor.getName()
-						+ " = msg." + sensor.getObejctInMessage() + "\n";
-				if (callbacks.get(sensor.getTopic()).contains(
-						"\t" + sensor.getName() + " = msg.")
-						|| callbacks.get(sensor.getTopic()).contains(
-								" = msg." + sensor.getObejctInMessage() + "\n")) {
-					throw new AlreadyBoundException(
-							sensor.getName()
-									+ " is not unique. It has the same name as an other sensor or cannot be differentiated by topic and objectInMessage from an other Sensor");
-				}
-				cb = callbacks.get(sensor.getTopic()) + cb;
-			} else {
-				cb = "def callback_" + sensor.getTopic().replace("/", "_")
-						+ "(msg):\n" + "\tglobal " + sensor.getName() + "\n\t"
-						+ sensor.getName() + " = msg."
-						+ sensor.getObejctInMessage() + "\n";
-
-			}
-			callbacks.put(sensor.getTopic(), cb);
-		}
-		LinkedList<String> results = new LinkedList<String>();
-		for (String cb : callbacks.values()) {
-			results.add(cb);
+			results.add(sensor.getCallback());
 		}
 		return results;
 	}
@@ -95,9 +71,7 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	public HashSet<String> getSubscriberSetups() {
 		HashSet<String> subs = new HashSet<>();
 		for (ISmachableSensor sensor : this) {
-			subs.add("rospy.Subscriber('" + sensor.getTopic() + "', "
-					+ sensor.getTopicType().split("/")[1] + ", callback_"
-					+ sensor.getTopic().replace("/", "_") + ")\n");
+			subs.add(sensor.getSubscriberSetup());
 		}
 		return subs;
 	}
@@ -111,11 +85,17 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
 		for (ISmachableSensor sensor : this) {
-			String[] temp = sensor.getTopicType().split("/");
-			deps.add("from " +  temp[0]+ ".msg import "
-					+ temp[1]);
+			deps.add(sensor.getImports());			
 		}
 		return deps;
+	}
+	
+	public HashSet<String> getIdentifierInit(){
+		HashSet<String> res = new HashSet<>();
+		for (ISmachableSensor sensor : this){
+			res.add(sensor.getIdentifierInit());
+		}
+		return res;
 	}
 
 }
