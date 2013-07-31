@@ -89,22 +89,22 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		};
 
 		// add all LEDs
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 8; i++) {
 			CirclePanel led = new CirclePanel();
 			led.addMouseListener(ledListener);
 			leds.add(led);
 			add(led);
 		}
 
-		motor1slider = new JSlider(SwingConstants.VERTICAL, -1000, 1000, 0);
-		motor2slider = new JSlider(SwingConstants.VERTICAL, -1000, 1000, 0);
+		motor1slider = new JSlider(SwingConstants.VERTICAL, -100, 100, 0);
+		motor2slider = new JSlider(SwingConstants.VERTICAL, -100, 100, 0);
 		motor1slider.addChangeListener(this);
 		motor2slider.addChangeListener(this);
 		motor1slider.setOpaque(false);
 		motor2slider.setOpaque(false);
 
-		motor1spinner = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 1));
-		motor2spinner = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 1));
+		motor1spinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
+		motor2spinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
 		motor1spinner.addChangeListener(this);
 		motor2spinner.addChangeListener(this);
 
@@ -151,8 +151,6 @@ public class BeepStatePanel extends AbstractStatePanel implements
 			led.next().setBounds(220, 351, ledRadius, ledRadius);
 			led.next().setBounds(78, 306, ledRadius, ledRadius);
 			led.next().setBounds(31, 193, ledRadius, ledRadius);
-			led.next().setBounds(53, 113, ledRadius, ledRadius);
-
 			if (led.hasNext())
 				System.err
 						.println("Do not have enough led-positions for led-amount. Check setComponentBounds in BeepStatePanel!");
@@ -175,7 +173,7 @@ public class BeepStatePanel extends AbstractStatePanel implements
 	@Override
 	public ArrayList<Action> getActions() {
 		ArrayList<Action> actions = new ArrayList<Action>(11);
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < leds.size(); i++) {
 			if (leds.get(i).getBackground() != null) {
 				actions.add(new Action("LED" + i, leds.get(i).getBackground()
 						.getRGB()));

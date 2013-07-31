@@ -63,14 +63,13 @@ public class BeepDebugView extends JDialog implements ActionListener {
 			led.next().setBounds(220, 351, ledRadius, ledRadius);
 			led.next().setBounds(78, 306, ledRadius, ledRadius);
 			led.next().setBounds(31, 193, ledRadius, ledRadius);
-			led.next().setBounds(53, 113, ledRadius, ledRadius);
 
 			if (led.hasNext())
 				System.err
-						.println("Do not have enough led-positions for led-amount. Check setComponentBounds in BeepStatePanel!");
+						.println("Do not have enough led-positions for led-amount. Check setComponentBounds in BeepDebugView!");
 		} catch (Exception e) {
 			System.err
-					.println("Tried to set to many led-positions. Check setComponentBounds in BeepStatePanel!");
+					.println("Tried to set to many led-positions. Check setComponentBounds in BeepDebugView!");
 		}
 
 		motor1slider.setBounds(65, 138, 20, 127);

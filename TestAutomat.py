@@ -6,6 +6,9 @@ import smach
 import smach_ros
 
 from std_msgs.msg import Int32
+from std_msgs.msg import Int8
+from beep_msgs.msg import Color
+from beep_msgs.msg import Led
 
 
 IR0 = 0
@@ -19,90 +22,57 @@ IR7 = 0
 UIR0 = 0
 UIR1 = 0
 UIR2 = 0
-pub_topic_LED6 = rospy.Publisher('topic/LED6', Int32)
-pub_topic_LED1 = rospy.Publisher('topic/LED1', Int32)
-pub_topic_LED0 = rospy.Publisher('topic/LED0', Int32)
-pub_topic_beep = rospy.Publisher('topic/beep', Int32)
-pub_topic_LED2 = rospy.Publisher('topic/LED2', Int32)
-pub_topic_LED4 = rospy.Publisher('topic/LED4', Int32)
-pub_topic_LED7 = rospy.Publisher('topic/LED7', Int32)
-pub_topic_LED8 = rospy.Publisher('topic/LED8', Int32)
-pub_topic_LED5 = rospy.Publisher('topic/LED5', Int32)
-pub_topic_LED3 = rospy.Publisher('topic/LED3', Int32)
-pub_topic_motors = rospy.Publisher('topic/motors', Int32)
+pub_BEEP = rospy.Publisher('/beep', Int8)
+pub_MOTOR2 = rospy.Publisher('/motor_r', Int8)
+pub_led = rospy.Publisher('/leds', Led)
+pub_MOTOR1 = rospy.Publisher('/motor_l', Int8)
 
 
 class State1(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=['T1'])
-
-	def execute(self, userdata):
-		rospy.loginfo('Executing state State 1')
-		global IR0
-		global pub_topic_motors
-		global pub_topic_motors
-		global pub_topic_LED1
-		global pub_topic_LED2
-		global pub_topic_LED3
-		global pub_topic_LED4
-		global pub_topic_LED5
-		global pub_topic_LED6
-		global pub_topic_LED7
-		global pub_topic_LED0
-		global pub_topic_LED8
-		global pub_topic_beep
-
-		while not rospy.is_shutdown():
-			if(IR0>1000):
-				return 'T1'
-			rospy.sleep(0.01)
-
-class State2(smach.State):
-	def __init__(self):
-		smach.State.__init__(self, outcomes=['T2','T3'])
-
-	def execute(self, userdata):
-		rospy.loginfo('Executing state State 2')
-		global IR0
-		global IR0
-		global pub_topic_motors
-		global pub_topic_motors
-		global pub_topic_LED1
-		global pub_topic_LED2
-		global pub_topic_LED3
-		global pub_topic_LED4
-		global pub_topic_LED5
-		global pub_topic_LED6
-		global pub_topic_LED7
-		global pub_topic_LED0
-		global pub_topic_LED8
-		global pub_topic_beep
-
-		while not rospy.is_shutdown():
-			if(IR0<750):
-				return 'T2'
-			if(IR0>3500):
-				return 'T3'
-			rospy.sleep(0.01)
-
-class State3(smach.State):
-	def __init__(self):
 		smach.State.__init__(self, outcomes=[])
 
 	def execute(self, userdata):
-		rospy.loginfo('Executing state State 3')
-		global pub_topic_motors
-		global pub_topic_motors
-		global pub_topic_LED1
-		global pub_topic_LED2
-		global pub_topic_LED3
-		global pub_topic_LED4
-		global pub_topic_LED5
-		global pub_topic_LED6
-		global pub_topic_LED7
-		global pub_topic_LED0
-		global pub_topic_LED8
-		global pub_topic_beep
+		rospy.loginfo('Executing state State 1')
+		c11 = Color()
+		c1.r = 204
+		c1.g = 51
+		c1.b = 0
+		led1= Led()
+		led1.header.frame_id = 'led'
+		led1.header.stamp = rospy.get_rostime()
+		led1.col = c1
+		led1.led = 1
+		pub_led.publish(led1)
+		c66 = Color()
+		c6.r = 0
+		c6.g = 102
+		c6.b = 102
+		led6= Led()
+		led6.header.frame_id = 'led'
+		led6.header.stamp = rospy.get_rostime()
+		led6.col = c6
+		led6.led = 6
+		pub_led.publish(led6)
+		c77 = Color()
+		c7.r = 153
+		c7.g = 255
+		c7.b = 255
+		led7= Led()
+		led7.header.frame_id = 'led'
+		led7.header.stamp = rospy.get_rostime()
+		led7.col = c7
+		led7.led = 7
+		pub_led.publish(led7)
+		MOTOR1 = Int8()
+		MOTOR1.data = 100
+		pub_MOTOR1.publish(MOTOR1)
+		MOTOR2 = Int8()
+		MOTOR2.data = -100
+		pub_MOTOR2.publish(MOTOR2)
+		BEEP = Int8()
+		BEEP.data = 0
+		pub_BEEP.publish(BEEP)
 
 		while not rospy.is_shutdown():
 			rospy.sleep(0.01)
@@ -166,9 +136,7 @@ if __name__ == '__main__':
 	rospy.Subscriber('topic/IR6', Int32, callback_topic_IR6)
 	sm = smach.StateMachine(outcomes=[])
 	with sm:
-		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2'})
-		smach.StateMachine.add('State2', State2(), transitions={'T2':'State1','T3':'State3'})
-		smach.StateMachine.add('State3', State3(), transitions={})
+		smach.StateMachine.add('State1', State1(), transitions={})
 	sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()
 	sm.execute()

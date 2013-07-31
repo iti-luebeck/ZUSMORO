@@ -33,6 +33,7 @@ import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
+import smachGenerator.ISmachableActuator;
 import smachGenerator.ISmachableSensor;
 import smachGenerator.SmachAutomat;
 import smachGenerator.SmachableActuators;
@@ -57,8 +58,11 @@ public class BeepRobot extends AbstractRobot {
 
 	SmachableSensors smachableSensors;
 
-	@XmlElement(name = "actuator")
-	List<BeepActuator> actuators = new ArrayList<BeepActuator>();
+	@XmlElement(name = "Motors")
+	List<BeepMotor> motors = new ArrayList<BeepMotor>();
+	
+	@XmlElement(name = "rgbLEDs")
+	List<BeepRgbLed> rgbLEDs = new ArrayList<BeepRgbLed>();
 
 	/**
 	 * true, if connected to Beep <=> piIn/piOut/sess will be != null
@@ -99,7 +103,8 @@ public class BeepRobot extends AbstractRobot {
 	 * Name (including file ending '.py') of the automate. it is used to store
 	 * and start the automat
 	 */
-	@XmlElement(name = "automatFileName")// TODO needed?
+	@XmlElement(name = "automatFileName")
+	// TODO needed?
 	String automatFileName;
 
 	/**
@@ -150,35 +155,22 @@ public class BeepRobot extends AbstractRobot {
 		smachableSensors.addAll(sensorsCol);
 
 		// Define default Beep actuators
-		actuators.add(new BeepActuator("MOTOR1", "topic/motors",
-				std_msgs.Int32._TYPE, "links"));
-		actuators.add(new BeepActuator("MOTOR2", "topic/motors",
-				std_msgs.Int32._TYPE, "rechts"));
+		motors.add(new BeepMotor("MOTOR1", "/motor_l"));
+		motors.add(new BeepMotor("MOTOR2", "/motor_r"));
 
-		actuators.add(new BeepActuator("LED1", "topic/LED1",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED2", "topic/LED2",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED3", "topic/LED3",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED4", "topic/LED4",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED5", "topic/LED5",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED6", "topic/LED6",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED7", "topic/LED7",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED0", "topic/LED0",
-				std_msgs.Int32._TYPE, "data"));
-		actuators.add(new BeepActuator("LED8", "topic/LED8",
-				std_msgs.Int32._TYPE, "data"));
-		BeepActuator beep = new BeepActuator("BEEP", "topic/beep",
-				std_msgs.Int32._TYPE, "data");
-		actuators.add(beep);
+		rgbLEDs.add(new BeepRgbLed("LED0", "/leds", 0));
+		rgbLEDs.add(new BeepRgbLed("LED1", "/leds", 1));
+		rgbLEDs.add(new BeepRgbLed("LED2", "/leds", 2));
+		rgbLEDs.add(new BeepRgbLed("LED3", "/leds", 3));
+		rgbLEDs.add(new BeepRgbLed("LED4", "/leds", 4));
+		rgbLEDs.add(new BeepRgbLed("LED5", "/leds", 5));
+		rgbLEDs.add(new BeepRgbLed("LED6", "/leds", 6));
+		rgbLEDs.add(new BeepRgbLed("LED7", "/leds", 7));
+		
+		motors.add(new BeepMotor("BEEP", "/beep"));//TODO!!
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
-		piDirAutomat = "/home/pi/ros_ws/zusmoro_state_machine";
+		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";
 		automatFileName = "TestAutomat.py";
 
 		saveBeepRobot(this, new File("Robot.xml"));
@@ -204,12 +196,13 @@ public class BeepRobot extends AbstractRobot {
 	 */
 	public SmachableActuators getActuators() {
 		SmachableActuators act = new SmachableActuators();
-		act.addAll(actuators);
+		act.addAll(motors);
+		act.addAll(rgbLEDs);
 		return act;
 	}
 
 	@Override
-	public boolean connect(String connectTo) {		
+	public boolean connect(String connectTo) {
 		if (connectTo == null) {
 			connectTo = beepIP;
 		}
@@ -348,7 +341,7 @@ public class BeepRobot extends AbstractRobot {
 		SCPClient client = new SCPClient(conn);
 		try {
 			client.put(automatFileName, piDirAutomat);
-			piIn.println("chmod +x "+piDirAutomat+"/"+automatFileName);
+			piIn.println("chmod +x " + piDirAutomat + "/" + automatFileName);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -413,9 +406,9 @@ public class BeepRobot extends AbstractRobot {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 		System.out.println("false");
 		return false;
 	}
@@ -447,7 +440,9 @@ public class BeepRobot extends AbstractRobot {
 	 */
 	private void startAutomatOnPi() {
 		stop(); // Stop old automate
-		piIn.println("nohup rosrun zusmoro_state_machine "+ automatFileName + " 2> ~/log/"+automatFileName+"-err.log 1> ~/log/"+automatFileName+"-out.log &");
+		piIn.println("nohup rosrun zusmoro_state_machine " + automatFileName
+				+ " 2> ~/log/" + automatFileName + "-err.log 1> ~/log/"
+				+ automatFileName + "-out.log &");
 		try {
 			piOut.readLine(); // command
 			piOut.readLine(); // Process ID
@@ -532,9 +527,9 @@ public class BeepRobot extends AbstractRobot {
 						info);
 				rosComm.addActionListener(debugView);
 			}
-			
+
 			rosComm.startCommunication();
-			
+
 			debugView.setVisible(true);
 		}
 	}

@@ -90,7 +90,6 @@ public class SmachAutomat {
 		state += "\tdef __init__(self):\n";
 		state += "\t\tsmach.State.__init__(self, outcomes=[";
 		// get transitions for __init__ function
-		// a state
 		if (s.getTransitions().size() > 0) {
 			for (ISmachableTransition t : s.getTransitions()) {
 				state += "'" + t.getLabel() + "',";
@@ -103,6 +102,7 @@ public class SmachAutomat {
 		// create execute function for the state
 		state += "\tdef execute(self, userdata):\n";
 		state += "\t\trospy.loginfo('Executing state " + s.getText() + "')\n";
+		// add global declaration for all sensor variables needed
 		for (ISmachableTransition t : s.getTransitions()) {
 			ISmachableGuard g = t.getSmachableGuard();
 			for (String sensor : g.getSensorNames()) {
@@ -118,34 +118,16 @@ public class SmachAutomat {
 				state += "\t\tglobal " + sensor + "\n";
 			}
 		}
-		for (ISmachableActuator actuator : actuators) {
-			state += "\t\tglobal pub_" + actuator.getTopic().replace("/", "_")
-					+ "\n";
-		}
-		LinkedList<String> msgs = new LinkedList<>();
-		HashSet<String> publish = new HashSet<>();
+		
+		//add actions
 		for (ISmachableAction a : s.getActions()) {
 			ISmachableActuator actuator = actuators.getActuator(a.getKey());
-
-			if (!msgs.contains(actuator.getTopic().replace("/", "_") + " = "
-					+ actuator.getTopicType().split("/")[1] + "()")) {
-				msgs.add(actuator.getTopic().replace("/", "_") + " = "
-						+ actuator.getTopicType().split("/")[1] + "()");
-				state += "\t\t" + actuator.getTopic().replace("/", "_") + " = "
-						+ actuator.getTopicType().split("/")[1] + "()\n";
+			for (String str : actuator.getPublishMessage(a)){
+				state += "\t\t" + str + "\n";
 			}
-
-			state += "\t\t" + actuator.getTopic().replace("/", "_") + "."
-					+ actuator.getObejctInMessage() + " = " + a.getValue()
-					+ "\n";
-			publish.add("\t\tpub_" + actuator.getTopic().replace("/", "_")
-					+ ".publish(" + actuator.getTopic().replace("/", "_")
-					+ ")\n");
 		}
-		for (String pub : publish) {
-			state += pub;
-		}
-
+			
+		
 		// check for transition
 		state += "\n\t\twhile not rospy.is_shutdown():\n";
 		for (ISmachableTransition t : s.getTransitions()) {
