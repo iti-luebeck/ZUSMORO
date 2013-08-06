@@ -18,10 +18,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
 
-import robots.epuck.DifferencePanel;
-import robots.epuck.SensorPanel;
-import robots.epuck.ValuePosition;
-
 import model.Transition;
 import model.bool.BooleanExpression;
 import model.bool.HugeAnd;
@@ -151,11 +147,6 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 					continue;
 				}
 				String name = variable.getVariableName();
-				
-				
-				System.out.println(name);
-				
-				
 				int index = 0;
 				if (name.startsWith("IR")) {
 					try {

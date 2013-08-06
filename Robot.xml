@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <beepRobot>
     <IR_Sensor>
-        <name>Ir0</name>
+        <name>IR0</name>
         <topic>/IR_filtered</topic>
         <irIndex>0</irIndex>
         <topicType>std_msgs/Int32</topicType>

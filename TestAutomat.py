@@ -22,44 +22,6 @@ pub_led = rospy.Publisher('/leds', Led)
 pub_MOTOR1 = rospy.Publisher('/motor_l', Int8)
 
 
-class State1(smach.State):
-	def __init__(self):
-		smach.State.__init__(self, outcomes=['T1'])
-
-	def execute(self, userdata):
-		rospy.loginfo('Executing state State 1')
-		global ir
-		global t_timer
-		t_timer = rospy.get_time()
-		global colorSensor
-		global pub_led
-		global pub_MOTOR1
-		global pub_MOTOR2
-		global pub_BEEP
-
-		while not rospy.is_shutdown():
-			if(rospy.get_time()-t_timer>544):
-				return 'T1'
-			rospy.sleep(0.01)
-
-class State2(smach.State):
-	def __init__(self):
-		smach.State.__init__(self, outcomes=[])
-
-	def execute(self, userdata):
-		rospy.loginfo('Executing state State 2')
-		global ir
-		global t_timer
-		t_timer = rospy.get_time()
-		global colorSensor
-		global pub_led
-		global pub_MOTOR1
-		global pub_MOTOR2
-		global pub_BEEP
-
-		while not rospy.is_shutdown():
-			rospy.sleep(0.01)
-
 
 def color_cb(msg):
 	global colorSensor
@@ -77,10 +39,6 @@ if __name__ == '__main__':
 
 	rospy.Subscriber('/ground_Color', Color_sensors, color_cb)
 
-	sm = smach.StateMachine(outcomes=[])
-	with sm:
-		smach.StateMachine.add('State1', State1(), transitions={'T1':'State2'})
-		smach.StateMachine.add('State2', State2(), transitions={})
 	sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 	sis.start()
 	sm.execute()

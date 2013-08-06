@@ -2,25 +2,23 @@ package smachGenerator;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.rmi.AlreadyBoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import javax.naming.directory.NoSuchAttributeException;
 
 /**
  * Creates the python Source-Code for a Smach state machine for ROS (Robot
- * Operation System) It can be stored to a file
- * 
- * @author Marvin Lindenberg
+ * Operation System) It can be stored to a file.
  * 
  */
 public class SmachAutomat {
 
 	private ArrayList<? extends ISmachableState> states = new ArrayList<>();
 	private LinkedList<String> smachStates = new LinkedList<>();
-	private int initialStateIndex;
+	private int initialStateIndex = 0;
 	private SmachableSensors sensors;
 	private SmachableActuators actuators;
 	private String pkg;
@@ -165,7 +163,7 @@ public class SmachAutomat {
 	/**
 	 * create the smachMachine
 	 * 
-	 * @param sm
+	 * @param sm the identifier of the state machine
 	 * @return
 	 */
 	private String getSmachStateMachine(String sm) {
@@ -227,11 +225,16 @@ public class SmachAutomat {
 	 *            the python-programm will be stored in.
 	 * @return true, if constructing and saving was successfully. False if there
 	 *         were problems with Topics, names, or the saving progress.
-	 * @throws NoSuchAttributeException
-	 * @throws AlreadyBoundException
+	 * @throws NoSuchElementException
+	 *             if there are no states in the states handed in the
+	 *             constructor
 	 */
-	public boolean saveToFile(File file) {
+	public boolean saveToFile(File file) throws NoSuchElementException {
 		try {
+			if (states.size() == 0) {
+				throw new NoSuchElementException(
+						"Tried to create an smach automat out of NO STATES!");
+			}
 			String pythonNode = getImports() + "\n\n";
 			// define global sensor variables
 			for (String init : sensors.getIdentifierInit()) {
@@ -251,7 +254,9 @@ public class SmachAutomat {
 			for (String cb : sensors.getCallbacks()) {
 				pythonNode += cb + "\n";
 			}
+			//add main methode
 			pythonNode += getMainMethode();
+			//save to file
 			PrintWriter out = new PrintWriter(file);
 			out.print(pythonNode);
 			out.close();

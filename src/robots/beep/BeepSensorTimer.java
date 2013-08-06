@@ -46,7 +46,7 @@ public class BeepSensorTimer implements ISmachableSensor {
 	/**
 	 * Hacked: 
 	 * Two statements (second: 2 tabs)
-	 * Second sets timer to current time!
+	 * Second statement resets timer!
 	 */
 	public String getGlobalIdentifier() {
 		return getValueIdentifier() + "\n\t\t" + getIdentifierInit();

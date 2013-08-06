@@ -32,7 +32,6 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
-
 import smachGenerator.ISmachableSensor;
 import smachGenerator.SmachAutomat;
 import smachGenerator.SmachableActuators;
@@ -105,7 +104,6 @@ public class BeepRobot extends AbstractRobot {
 	 * and start the automat
 	 */
 	@XmlElement(name = "automatFileName")
-	// TODO needed?
 	String automatFileName;
 
 	/**
@@ -196,26 +194,15 @@ public class BeepRobot extends AbstractRobot {
 	}
 
 	@Override
-	public boolean connect(String connectTo) {
-		//safe smach automate to file
-		SmachAutomat sA;
-		try {
-			sA = new SmachAutomat(MainFrame.automat.getStates(),
-					smachableSensors, getActuators(), "zusmoro_state_machine");
-		File file = new File(automatFileName);
-		sA.saveToFile(file);
-		} catch (NoSuchAttributeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return false;
-		
-		/*
+	public boolean connect(String connectTo) {	
 		if (connectTo == null) {
 			connectTo = beepIP;
 		}
 		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
 				"Bitte die IP-Adresse des Beeps angeben.", connectTo);
+		if (connectTo == null){
+			return false;
+		}
 		beepIP = connectTo;
 		conn = new Connection(connectTo);
 		try {
@@ -266,12 +253,13 @@ public class BeepRobot extends AbstractRobot {
 					.showErrInfo(
 							"<html>Es konnte keine Verbindung mit "
 									+ connectTo
-									+ "hergestellt werden.<br>Bitte überprüfe die IP des Roboters und ob dieser über eine aktive W-Lan Verbindung verfügt!",
+									+ " hergestellt werden.<br>Bitte überprüfe die IP des Roboters und ob dieser über eine aktive W-Lan Verbindung verfügt!",
 							"Verbindung fehlgeschlagen");
 		}
-		return false;*/
+		return false;
 	}
 
+	
 	@Override
 	public void disconnect() {
 		connected = false;
