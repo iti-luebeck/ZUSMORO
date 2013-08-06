@@ -97,7 +97,7 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 
 	private void initComponents() {
 		// IR and Timer
-		sensorPanels = new SensorPanel[10];
+		sensorPanels = new SensorPanel[9];
 		for (int i = 0; i < sensorPanels.length; i++) {
 			sensorPanels[i] = new SensorPanel();
 		}
@@ -151,6 +151,11 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 					continue;
 				}
 				String name = variable.getVariableName();
+				
+				
+				System.out.println(name);
+				
+				
 				int index = 0;
 				if (name.startsWith("IR")) {
 					try {
@@ -304,12 +309,12 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 			Operator op;
 			int compValue;
 			ValuePosition pos;
-			for (int i = 0; i < sensorPanels.length - 3; i++) {
+			for (int i = 0; i < sensorPanels.length; i++) {
 				pos = labelPos[i];
 				try {
 					op = sensorPanels[i].getOperator();
 					compValue = sensorPanels[i].getCompValue();
-					if (i == 11) {
+					if (i == TIMER) {
 						g2d.setColor(Color.BLACK);
 						g2d.setFont(g2d.getFont().deriveFont(18.0f));
 					}

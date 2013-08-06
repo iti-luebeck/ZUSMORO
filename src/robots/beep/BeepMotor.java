@@ -1,5 +1,7 @@
 package robots.beep;
 
+import java.util.HashSet;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
@@ -17,8 +19,8 @@ public class BeepMotor implements ISmachableActuator {
 		this.name = name;
 		this.topic = topic;
 	}
-	
-	public BeepMotor(){
+
+	public BeepMotor() {
 		name = null;
 		topic = null;
 	}
@@ -45,9 +47,9 @@ public class BeepMotor implements ISmachableActuator {
 	}
 
 	@Override
-	public String[] getImports() {
-		String[] result = new String[1];
-		result[0] = "from std_msgs.msg import " + topicType;
+	public HashSet<String> getImports() {
+		HashSet<String> result = new HashSet<String>();
+		result.add("from std_msgs.msg import " + topicType);
 		return result;
 	}
 

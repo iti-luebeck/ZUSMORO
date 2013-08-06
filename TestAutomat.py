@@ -5,15 +5,15 @@ import rospy
 import smach
 import smach_ros
 
-from beep_msgs.msg.msg import Color_sensors
 import colorsys
-
+from beep_msgs.msg import Color_sensors
 from std_msgs.msg import Int32
 from std_msgs.msg import Int8
 from beep_msgs.msg import Color
 from beep_msgs.msg import Led
 
 
+t_timer = rospy.get_time()
 colorSensor = array([0,0,0])
 ir = array([0,0,0,0,0,0,0,0])
 pub_BEEP = rospy.Publisher('/beep', Int8)
@@ -28,39 +28,17 @@ class State1(smach.State):
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 1')
-		global IR0
-		c1 = Color()
-		c1.r = 255
-		c1.g = 0
-		c1.b = 102
-		led1 = Led()
-		led1.header.frame_id = 'led'
-		led1.header.stamp = rospy.get_rostime()
-		led1.col = c1
-		led1.led = 1
-		pub_led.publish(led1)
-		c6 = Color()
-		c6.r = 0
-		c6.g = 51
-		c6.b = 153
-		led6 = Led()
-		led6.header.frame_id = 'led'
-		led6.header.stamp = rospy.get_rostime()
-		led6.col = c6
-		led6.led = 6
-		pub_led.publish(led6)
-		MOTOR1 = Int8()
-		MOTOR1.data = 0
-		pub_MOTOR1.publish(MOTOR1)
-		MOTOR2 = Int8()
-		MOTOR2.data = 0
-		pub_MOTOR2.publish(MOTOR2)
-		BEEP = Int8()
-		BEEP.data = 0
-		pub_BEEP.publish(BEEP)
+		global ir
+		global t_timer
+		t_timer = rospy.get_time()
+		global colorSensor
+		global pub_led
+		global pub_MOTOR1
+		global pub_MOTOR2
+		global pub_BEEP
 
 		while not rospy.is_shutdown():
-			if(ir[0]>5):
+			if(rospy.get_time()-t_timer>544):
 				return 'T1'
 			rospy.sleep(0.01)
 
@@ -70,9 +48,18 @@ class State2(smach.State):
 
 	def execute(self, userdata):
 		rospy.loginfo('Executing state State 2')
+		global ir
+		global t_timer
+		t_timer = rospy.get_time()
+		global colorSensor
+		global pub_led
+		global pub_MOTOR1
+		global pub_MOTOR2
+		global pub_BEEP
 
 		while not rospy.is_shutdown():
 			rospy.sleep(0.01)
+
 
 def color_cb(msg):
 	global colorSensor
@@ -85,6 +72,7 @@ def ir_cb(msg):
 
 if __name__ == '__main__':
 	rospy.init_node('zusmoro_state_machine')
+	
 	rospy.Subscriber('/IR_filtered', Int32, ir_cb)
 
 	rospy.Subscriber('/ground_Color', Color_sensors, color_cb)

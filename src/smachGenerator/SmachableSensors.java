@@ -1,10 +1,8 @@
 package smachGenerator;
 
 import java.rmi.AlreadyBoundException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-
 
 public class SmachableSensors extends LinkedList<ISmachableSensor> {
 
@@ -85,15 +83,36 @@ public class SmachableSensors extends LinkedList<ISmachableSensor> {
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
 		for (ISmachableSensor sensor : this) {
-			deps.add(sensor.getImports());			
+			deps.addAll(sensor.getImports());
 		}
 		return deps;
 	}
-	
-	public HashSet<String> getIdentifierInit(){
+
+	/**
+	 * returns statements for each Sensor that initializes the identifier. These
+	 * "declaration" will be done global after the import statements.
+	 * 
+	 * @return a HashSet of Identifier initializations
+	 */
+	public HashSet<String> getIdentifierInit() {
 		HashSet<String> res = new HashSet<>();
-		for (ISmachableSensor sensor : this){
+		for (ISmachableSensor sensor : this) {
 			res.add(sensor.getIdentifierInit());
+		}
+		return res;
+	}
+
+	/**
+	 * returns a HashSet of identifiers of all {@link ISmachableSensor}s stored
+	 * in this List. These are used to declare the identifiers global in certain
+	 * functions.
+	 * 
+	 * @return HashSet of names of the {@link ISmachableSensor}s
+	 */
+	public HashSet<String> getGlobalIdentifiers() {
+		HashSet<String> res = new HashSet<>();
+		for (ISmachableSensor sensor : this) {
+			res.add(sensor.getGlobalIdentifier());
 		}
 		return res;
 	}

@@ -50,10 +50,10 @@ import model.Transition;
 public class BeepRobot extends AbstractRobot {
 
 	@XmlElement(name = "IR_Sensor")
-	List<BeepIRSensor> sensorsIR = new ArrayList<BeepIRSensor>();
+	List<BeepSensorIR> sensorsIR = new ArrayList<BeepSensorIR>();
 
 	@XmlElement(name = "Color_Sensor")
-	List<BeepColorSensor> sensorsCol = new ArrayList<BeepColorSensor>();
+	List<BeepSensorColor> sensorsCol = new ArrayList<BeepSensorColor>();
 
 	SmachableSensors smachableSensors;
 
@@ -63,6 +63,8 @@ public class BeepRobot extends AbstractRobot {
 	@XmlElement(name = "rgbLEDs")
 	List<BeepRgbLed> rgbLEDs = new ArrayList<BeepRgbLed>();
 
+	@XmlElement(name = "TIMER")
+	BeepSensorTimer beepTimer;
 	/**
 	 * true, if connected to Beep <=> piIn/piOut/sess will be != null
 	 */
@@ -126,22 +128,25 @@ public class BeepRobot extends AbstractRobot {
 		connected = false;
 
 		// Define default Beep sensors
-		sensorsIR.add(new BeepIRSensor("IR0", "/IR_filtered", 0));
-		sensorsIR.add(new BeepIRSensor("IR1", "/IR_filtered", 1));
-		sensorsIR.add(new BeepIRSensor("IR2", "/IR_filtered", 2));
-		sensorsIR.add(new BeepIRSensor("IR3", "/IR_filtered", 3));
-		sensorsIR.add(new BeepIRSensor("IR4", "/IR_filtered", 4));
-		sensorsIR.add(new BeepIRSensor("IR5", "/IR_filtered", 5));
-		sensorsIR.add(new BeepIRSensor("IR6", "/IR_filtered", 6));
-		sensorsIR.add(new BeepIRSensor("IR7", "/IR_filtered", 7));
-		sensorsCol.add(new BeepColorSensor("UIR0", "/ground_Color", 0));
-		sensorsCol.add(new BeepColorSensor("UIR1", "/ground_Color", 1));
-		sensorsCol.add(new BeepColorSensor("UIR2", "/ground_Color", 2));
+		//DO NOT CHANGE THE MANES OF THE SENSORS AND ACTUATORS!
+		sensorsIR.add(new BeepSensorIR("IR0", "/IR_filtered", 0));
+		sensorsIR.add(new BeepSensorIR("IR1", "/IR_filtered", 1));
+		sensorsIR.add(new BeepSensorIR("IR2", "/IR_filtered", 2));
+		sensorsIR.add(new BeepSensorIR("IR3", "/IR_filtered", 3));
+		sensorsIR.add(new BeepSensorIR("IR4", "/IR_filtered", 4));
+		sensorsIR.add(new BeepSensorIR("IR5", "/IR_filtered", 5));
+		sensorsIR.add(new BeepSensorIR("IR6", "/IR_filtered", 6));
+		sensorsIR.add(new BeepSensorIR("IR7", "/IR_filtered", 7));
+		sensorsCol.add(new BeepSensorColor("UIR0", "/ground_Color", 0));
+		sensorsCol.add(new BeepSensorColor("UIR1", "/ground_Color", 1));
+		sensorsCol.add(new BeepSensorColor("UIR2", "/ground_Color", 2));
+		beepTimer = new BeepSensorTimer("timer");
 		
 
 		smachableSensors = new SmachableSensors();
 		smachableSensors.addAll(sensorsIR);
 		smachableSensors.addAll(sensorsCol);
+		smachableSensors.add(beepTimer);
 
 		// Define default Beep actuators
 		motors.add(new BeepMotor("MOTOR1", "/motor_l"));
@@ -192,6 +197,20 @@ public class BeepRobot extends AbstractRobot {
 
 	@Override
 	public boolean connect(String connectTo) {
+		//safe smach automate to file
+		SmachAutomat sA;
+		try {
+			sA = new SmachAutomat(MainFrame.automat.getStates(),
+					smachableSensors, getActuators(), "zusmoro_state_machine");
+		File file = new File(automatFileName);
+		sA.saveToFile(file);
+		} catch (NoSuchAttributeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return false;
+		
+		/*
 		if (connectTo == null) {
 			connectTo = beepIP;
 		}
@@ -250,7 +269,7 @@ public class BeepRobot extends AbstractRobot {
 									+ "hergestellt werden.<br>Bitte überprüfe die IP des Roboters und ob dieser über eine aktive W-Lan Verbindung verfügt!",
 							"Verbindung fehlgeschlagen");
 		}
-		return false;
+		return false;*/
 	}
 
 	@Override
@@ -278,6 +297,8 @@ public class BeepRobot extends AbstractRobot {
 				return ((std_msgs.Int32) msg).getData();
 			} else if (sen.getTopicType().equals(std_msgs.Int16._TYPE)) {
 				return ((std_msgs.Int16) msg).getData();
+			}else if (sen.getTopicType().equals(std_msgs.Float32._TYPE)){
+				return Math.round(((std_msgs.Float32) msg).getData());
 			}// add new message-types here
 		}
 		return 0;
@@ -318,6 +339,7 @@ public class BeepRobot extends AbstractRobot {
 								+ " Bitte lege mindestens einen State an!",
 						"Fehler beim Erstellen des Automats");
 			}
+			//safe smach automate to file
 			SmachAutomat sA = new SmachAutomat(MainFrame.automat.getStates(),
 					smachableSensors, getActuators(), "zusmoro_state_machine");
 			File file = new File(automatFileName);

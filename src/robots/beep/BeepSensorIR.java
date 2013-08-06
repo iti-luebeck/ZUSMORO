@@ -1,5 +1,7 @@
 package robots.beep;
 
+import java.util.HashSet;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
@@ -10,20 +12,20 @@ import model.bool.Variable.Operator;
 import smachGenerator.ISmachableSensor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
+public class BeepSensorIR implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;
 	private final int irIndex;
 	private final String topicType = std_msgs.Int32._TYPE;
 
-	public BeepIRSensor(String name, String topic, int irIndex) {
+	public BeepSensorIR(String name, String topic, int irIndex) {
 		this.name = name;
 		this.topic = topic;
 		this.irIndex = irIndex;
 	}
 
-	public BeepIRSensor() {
+	public BeepSensorIR() {
 		name = null;
 		topic = null;
 		irIndex = 0;
@@ -45,10 +47,10 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	@Override
-	public String getImports() {
+	public HashSet<String> getImports() {
 		String temp[] = topicType.split("/");
-		String res = "";
-		res = "from " + temp[0] + ".msg import " + temp[1];
+		HashSet<String> res = new HashSet<String>();
+		res.add("from " + temp[0] + ".msg import " + temp[1]);
 		return res;
 	}
 
@@ -82,6 +84,11 @@ public class BeepIRSensor implements ISmachableSensor, ISubscriberInfo {
 	@Override
 	public String getIdentifierInit() {
 		return "ir = array([0,0,0,0,0,0,0,0])";
+	}
+
+	@Override
+	public String getGlobalIdentifier() {
+		return "ir";
 	}
 
 }

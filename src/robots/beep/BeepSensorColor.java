@@ -1,6 +1,7 @@
 package robots.beep;
 
 import java.awt.Color;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,20 +12,20 @@ import model.bool.Variable.Operator;
 import smachGenerator.ISmachableSensor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
+public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;
 	private final String topicType = "beep_msgs.msg/Color_sensors";
 	private final int sensorIndex;
 
-	public BeepColorSensor(String name, String topic, int sensorIndex) {
+	public BeepSensorColor(String name, String topic, int sensorIndex) {
 		this.name = name;
 		this.topic = topic;
 		this.sensorIndex = sensorIndex;
 	}
 
-	public BeepColorSensor() {
+	public BeepSensorColor() {
 		name = null;
 		topic = null;
 		sensorIndex = 0;
@@ -51,16 +52,16 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 		float[] hsbCol = Color.RGBtoHSB(col.getRed(), col.getGreen(),
 				col.getBlue(), null);
 
-		return getValueIdentifier() + ">" + (hsbCol[0] - 0.1 + 1) % 1 + " and " + getValueIdentifier() + "<"
-				+ (hsbCol[0] + 0.1) % 1;
+		return getValueIdentifier() + ">" + (hsbCol[0] - 0.1 + 1) % 1 + " and "
+				+ getValueIdentifier() + "<" + (hsbCol[0] + 0.1) % 1;
 	}
 
 	@Override
-	public String getImports() {
-		String res = "";
-		res += "from " + topicType.split("/")[0] + ".msg import "
-				+ topicType.split("/")[1]+"\n";
-		res += "import colorsys\n";
+	public HashSet<String> getImports() {
+		HashSet<String> res = new HashSet<String>();
+		res.add("from " + topicType.split("/")[0] + " import "
+				+ topicType.split("/")[1]);
+		res.add("import colorsys");
 		return res;
 	}
 
@@ -70,7 +71,7 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 		res += "def color_cb(msg):\n";
 		res += "\tglobal colorSensor\n";
 		res += "\tfor (i, sensor) in enumerate(msg.sensors)\n";
-		res += "\t\tgroundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";				
+		res += "\t\tgroundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";
 		return res;
 	}
 
@@ -86,9 +87,14 @@ public class BeepColorSensor implements ISmachableSensor, ISubscriberInfo {
 	public String getValueIdentifier() {
 		return "colorSensor[" + sensorIndex + "]";
 	}
-	
-	public String getIdentifierInit(){
+
+	public String getIdentifierInit() {
 		return "colorSensor = array([0,0,0])";
+	}
+
+	@Override
+	public String getGlobalIdentifier() {
+		return "colorSensor";
 	}
 
 }

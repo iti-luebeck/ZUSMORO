@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <beepRobot>
     <IR_Sensor>
-        <name>IR0</name>
+        <name>Ir0</name>
         <topic>/IR_filtered</topic>
         <irIndex>0</irIndex>
         <topicType>std_msgs/Int32</topicType>
@@ -121,6 +121,9 @@
         <topic>/leds</topic>
         <ledIndex>7</ledIndex>
     </rgbLEDs>
+    <TIMER>
+        <name>timer</name>
+    </TIMER>
     <beepIP>141.83.158.160</beepIP>
     <piDirAutomat>/home/pi/ros_ws/beep_framework/zusmoro_state_machine</piDirAutomat>
     <automatFileName>TestAutomat.py</automatFileName>

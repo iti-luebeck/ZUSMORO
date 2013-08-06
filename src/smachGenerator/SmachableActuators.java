@@ -57,11 +57,24 @@ public class SmachableActuators extends LinkedList<ISmachableActuator> {
 	public HashSet<String> getMsgDeps() {
 		HashSet<String> deps = new HashSet<>();
 		for (ISmachableActuator actuator : this) {
-			for (String s : actuator.getImports()){
-				deps.add(s);
-			}
+			deps.addAll(actuator.getImports());
 		}
 		return deps;
+	}
+
+	/**
+	 * returns a HashSet of publisher names of all {@link ISmachableActuator}s
+	 * stored in this List. These are used to declare the identifiers global in
+	 * certain functions.
+	 * 
+	 * @return HashSet of publisherNames of the {@link ISmachableActuator}s
+	 */
+	public HashSet<String> getGlobalIdentifiers() {
+		HashSet<String> res = new HashSet<>();
+		for (ISmachableActuator actuator : this) {
+			res.add(actuator.getPublisherName());
+		}
+		return res;
 	}
 
 }

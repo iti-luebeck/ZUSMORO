@@ -102,21 +102,14 @@ public class SmachAutomat {
 		// create execute function for the state
 		state += "\tdef execute(self, userdata):\n";
 		state += "\t\trospy.loginfo('Executing state " + s.getText() + "')\n";
-		// add global declaration for all sensor variables needed
-		for (ISmachableTransition t : s.getTransitions()) {
-			ISmachableGuard g = t.getSmachableGuard();
-			for (String sensor : g.getSensorNames()) {
-				if (sensor.startsWith("DIFFERENCE_")) {
-					String sensorNames[] = sensor.replace("DIFFERENCE_", "")
-							.split("_");
-					if (sensors.getSensor(sensorNames[0]) != null
-							&& sensors.getSensor(sensorNames[1]) != null) {
-						state += "\t\tglobal " + sensorNames[0]
-								+ "\n\t\tglobal " + sensorNames[1] + "\n";
-					}
-				}
-				state += "\t\tglobal " + sensor + "\n";
-			}
+
+		// add global declaration for all sensor variables
+		for (String glob : sensors.getGlobalIdentifiers()) {
+			state += "\t\tglobal " + glob + "\n";
+		}
+		// add global declaration for all publisher
+		for (String publ : actuators.getGlobalIdentifiers()) {
+			state += "\t\tglobal " + publ + "\n";
 		}
 
 		// add actions
@@ -127,13 +120,14 @@ public class SmachAutomat {
 			}
 		}
 
-		// check for transition
+		// add transition conditions
 		state += "\n\t\twhile not rospy.is_shutdown():\n";
 		for (ISmachableTransition t : s.getTransitions()) {
 			ISmachableGuard guard = t.getSmachableGuard();
 			if (guard.getSensorNames().size() > 0) {
 				state += "\t\t\tif(";
 				for (int i = 0; i < guard.getSensorNames().size(); i++) {
+					// add condition for each guard of this transition
 					if (guard.getSensorNames().get(i).startsWith("DIFFERENCE_")) {
 						String sensorNames[] = guard.getSensorNames().get(i)
 								.replace("DIFFERENCE_", "").split("_");
@@ -141,12 +135,10 @@ public class SmachAutomat {
 								.getSensor(sensorNames[0]);
 						ISmachableSensor sensor2 = sensors
 								.getSensor(sensorNames[1]);
-						if (sensor1 != null && sensor2 != null) {
-							state += sensor1.getValueIdentifier() + "-"
-									+ sensor2.getValueIdentifier()
-									+ guard.getOperators().get(i)
-									+ guard.getCompValues().get(i) + " and ";
-						}
+						state += sensor1.getValueIdentifier() + "-"
+								+ sensor2.getValueIdentifier()
+								+ guard.getOperators().get(i)
+								+ guard.getCompValues().get(i) + " and ";
 					} else {
 						ISmachableSensor sensor = sensors.getSensor(guard
 								.getSensorNames().get(i));
@@ -155,6 +147,10 @@ public class SmachAutomat {
 									.getOperators().get(i), guard
 									.getCompValues().get(i))
 									+ " and ";
+						} else {
+							throw new NoSuchAttributeException(
+									"Zugriff auf unbekannten Sensor: "
+											+ guard.getSensorNames().get(i));
 						}
 					}
 				}
@@ -166,6 +162,12 @@ public class SmachAutomat {
 		return state;
 	}
 
+	/**
+	 * create the smachMachine
+	 * 
+	 * @param sm
+	 * @return
+	 */
 	private String getSmachStateMachine(String sm) {
 		if (states.size() > 0) {
 			// prepare all states to add them to the Smach state machine
@@ -206,8 +208,8 @@ public class SmachAutomat {
 		String main = "if __name__ == '__main__':\n";
 		main += "\trospy.init_node('zusmoro_state_machine')\n";
 		for (String subSetup : sensors.getSubscriberSetups()) {
-				main += "\t" + subSetup + "\n";
-			
+			main += "\t" + subSetup + "\n";
+
 		}
 		main += getSmachStateMachine("sm");
 		// including possibility to use Smach_viewer
@@ -246,7 +248,7 @@ public class SmachAutomat {
 				pythonNode += smachStates.get(i) + "\n";
 			}
 			// add callbacks
-			for (String cb : sensors.getCallbacks()) {				
+			for (String cb : sensors.getCallbacks()) {
 				pythonNode += cb + "\n";
 			}
 			pythonNode += getMainMethode();

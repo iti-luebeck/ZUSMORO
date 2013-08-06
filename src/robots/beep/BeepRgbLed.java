@@ -1,6 +1,7 @@
 package robots.beep;
 
 import java.awt.Color;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,7 +49,7 @@ public class BeepRgbLed implements ISmachableActuator {
 		Color c = new Color(a.getValue());
 		String col = "c" + ledIndex;
 		String led = "led" + ledIndex;
-		
+
 		res[0] = col + " = Color()";
 		res[1] = col + ".r = " + c.getRed();
 		res[2] = col + ".g = " + c.getGreen();
@@ -59,15 +60,15 @@ public class BeepRgbLed implements ISmachableActuator {
 		res[7] = led + ".col = " + col;
 		res[8] = led + ".led = " + ledIndex;
 		res[9] = getPublisherName() + ".publish(" + led + ")";
-		
+
 		return res;
 	}
 
 	@Override
-	public String[] getImports() {
-		String[] res = new String[2];
-		res[0] = "from beep_msgs.msg import Led";
-		res[1] = "from beep_msgs.msg import Color";
+	public HashSet<String> getImports() {
+		HashSet<String> res = new HashSet<String>();
+		res.add("from beep_msgs.msg import Led");
+		res.add("from beep_msgs.msg import Color");
 		return res;
 	}
 
