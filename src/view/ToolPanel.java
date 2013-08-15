@@ -1,16 +1,24 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+
+import robots.beep.BeepDebugBackgroundPanel;
 
 import view.EditorPanel.EditorMode;
 import view.img.Images;
@@ -35,6 +43,7 @@ public class ToolPanel extends JPanel implements ActionListener {
 	private MouseListener mouseListener;
 	private JButton transmitButton;
 	private JButton debugButton;
+	private JLabel robotNamePanel;
 
 	private static final long serialVersionUID = -1528913814588121352L;
 
@@ -43,8 +52,8 @@ public class ToolPanel extends JPanel implements ActionListener {
 	 * 
 	 * @param connected
 	 *            Is the robot connected to the computer?
-	 * @param transmitted 
-	 * 			  Is the automat transmitted completely?
+	 * @param transmitted
+	 *            Is the automat transmitted completely?
 	 */
 	public ToolPanel() {
 		super();
@@ -70,7 +79,44 @@ public class ToolPanel extends JPanel implements ActionListener {
 		createStartButton(controlPanel, runListener);
 		createStopButton(controlPanel, runListener);
 		createDebugButton(controlPanel, runListener);
+
+		JPanel robotPanel = new JPanel();
+		robotPanel.setBorder(BorderFactory.createTitledBorder("Roboter:"));
+		// Image img = new ImageIcon(
+		// BeepDebugBackgroundPanel.class
+		// .getResource("beep-background.png")).getImage();
+		// img = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+		// ImageIcon i = new ImageIcon(img);
+		// JLabel pic = new JLabel(i);
+		// robotPanel.add(pic,BorderLayout.EAST);
+		robotNamePanel = new JLabel(MainFrame.robot.getRobotName());
+		robotPanel.add(robotNamePanel);
+		robotPanel.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				new SettingsDialog().setVisible(true);
+			}
+		});
+
 		add(toolPanel, BorderLayout.NORTH);
+		add(robotPanel, BorderLayout.CENTER);
 		add(controlPanel, BorderLayout.SOUTH);
 	}
 
@@ -182,23 +228,23 @@ public class ToolPanel extends JPanel implements ActionListener {
 		enableStop(connected);
 		enableDebug(connected);
 	}
-	
+
 	public void enableTransmit(boolean enable) {
 		transmitButton.setEnabled(enable);
 	}
-	
+
 	public void enableStart(boolean enable) {
 		startButton.setEnabled(enable);
 	}
-	
+
 	public void enableDebug(boolean enable) {
 		debugButton.setEnabled(enable);
 	}
-	
+
 	public void enableStop(boolean enable) {
 		stopButton.setEnabled(enable);
 	}
-	
+
 	public void enableEditing(boolean enable) {
 		transitionButton.setEnabled(enable);
 		moveButton.setEnabled(enable);
@@ -217,5 +263,9 @@ public class ToolPanel extends JPanel implements ActionListener {
 		} else if (source == deleteButton) {
 			MainFrame.editorPanel.setMode(EditorMode.DELETE);
 		}
+	}
+
+	public void setRobotName(String robotName) {
+		robotNamePanel.setText(robotName);
 	}
 }

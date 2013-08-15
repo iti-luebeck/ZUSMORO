@@ -293,15 +293,14 @@ public class BeepRobot extends AbstractRobot {
 				return ((std_msgs.Int16) msg).getData();
 			} else if (sen.getTopicType().equals(std_msgs.Float32._TYPE)) {
 				return Math.round(((std_msgs.Float32) msg).getData());
-				// TODO einkommentieren und anpassen, wenn msg type eingebunden
-				// }else if (sen.getTopicType().equals(beep_msgs.ir._Type)){
+			} else if (sen.getTopicType().equals(beep_msgs.IR._TYPE)) {
 				// Sensorname: IRx ; x: index in ir-array of the message
-				// return ((beep_msgs.ir) msg).ir(variable.charAt(2));
-				// } else if
-				// (sen.getTopicType().equals(beep_msgs.Color_sensor._TYPE)) {
-				// beep_msgs.Color col = ((beep_msgs.Color_sensor) msg)
-				// .sensors(variable.charAt(3));
-				// Color c = new Color(col.r, col.g, col.b);
+				return ((beep_msgs.IR) msg).getIr()[variable.charAt(2)];
+			} else if (sen.getTopicType().equals(beep_msgs.Color_sensors._TYPE)) {
+				beep_msgs.Color col = ((beep_msgs.Color_sensors) msg)
+						.getSensors().get(variable.charAt(3));
+				Color c = new Color(col.getR(), col.getG(), col.getB(), col.getW());
+				return c.getRGB();
 			}// add new message-types here
 		}
 		return 0;

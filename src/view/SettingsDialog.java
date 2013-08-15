@@ -162,5 +162,6 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		}
 		MainFrame.robotClass = robotClass;
 		MainFrame.robot = robotClass.newInstance();
+		MainFrame.toolPanel.setRobotName(robotName);
 	}
 }

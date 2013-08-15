@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import model.bool.Variable.Operator;
 
-public interface ISmachableGuard {
+public interface ISmachableGuard{
 
 	/**
 	 * Returns the name of all sensors a value shall be compared with. Returns
