@@ -76,7 +76,7 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(MainFrame.mainFrame);
 	}
 
-	private LinkedList<Class<AbstractRobot>> getRobots() {
+	private static LinkedList<Class<AbstractRobot>> getRobots() {
 		File robotDir = new File(SettingsDialog.class.getResource("../robots")
 				.getFile().replace("%20", " "));
 		File[] robotDirs = robotDir.listFiles();
@@ -108,7 +108,6 @@ public class SettingsDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	// Typsicherheit manuell sichergestellt.
 	private boolean setSettings() {
 		try {
@@ -118,27 +117,20 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			if (delay <= 0 || delay >= 60000) {
 				throw new Exception("Frequenz nicht im zulässigen Bereich.");
 			}
-			// Roboter
-			Class<AbstractRobot> robotClass = null;
-			for (Class<AbstractRobot> r : getRobots()) {
-				if (r.newInstance().getRobotName()
-						.equals(robot.getSelectedItem())) {
-					robotClass = (Class<AbstractRobot>) r;
-				}
-			}
 			// Schlaufen
 			boolean allow = allowLoops.isSelected();
 			// Transitionsreihenfolge
 			boolean transSeq = allowTransSeq.isSelected();
 			// Debugausgaben auf Kosnsole
 			boolean debug = debugging.isSelected();
+
 			// Set values:
 			Automat.progDelay = delay;
-			MainFrame.robotClass = robotClass;
-			MainFrame.robot = robotClass.newInstance();
+			setRobotType((String) robot.getSelectedItem());
 			Automat.loopsAllowed = allow;
 			Automat.changeableTransSeq = transSeq;
 			MainFrame.DEBUG = debug;
+
 		} catch (Exception e) {
 			JOptionPane
 					.showMessageDialog(this,
@@ -149,5 +141,26 @@ public class SettingsDialog extends JDialog implements ActionListener {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Checks the ../Robots directory for the first fitting abstract Robot Class.<br>
+	 * Fitting means the result of the <code>getRobotName</code> function of the
+	 * class equals the <code>robotName</code> parameter.
+	 * 
+	 * @param robotName Name of the Robot (result of the <code>getRobotName</code> function)
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public static void setRobotType(String robotName)
+			throws InstantiationException, IllegalAccessException {
+		Class<AbstractRobot> robotClass = null;
+		for (Class<AbstractRobot> r : getRobots()) {
+			if (r.newInstance().getRobotName().equals(robotName)) {
+				robotClass = (Class<AbstractRobot>) r;
+			}
+		}
+		MainFrame.robotClass = robotClass;
+		MainFrame.robot = robotClass.newInstance();
 	}
 }

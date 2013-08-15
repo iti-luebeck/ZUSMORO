@@ -1,5 +1,6 @@
 package robots.beep;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -121,12 +122,23 @@ public class BeepRobot extends AbstractRobot {
 	 * and configurations.
 	 */
 	public BeepRobot() {
-		// TODO Read and Store XML
+		// TODO Read Robot XML
 
 		connected = false;
 
-		// Define default Beep sensors
-		//DO NOT CHANGE THE MANES OF THE SENSORS AND ACTUATORS!
+		setDefaultConfig();
+
+		saveBeepRobot(this, new File("Robot.xml"));
+
+		debugView = new BeepDebugView(this);
+	}
+
+	/**
+	 * Define default Beep sensors and actuators. Also defines Default IP,
+	 * directory for Automates on beep and automatFileName
+	 */
+	private void setDefaultConfig() {
+		// DO NOT CHANGE THE MANES OF THE SENSORS AND ACTUATORS!
 		sensorsIR.add(new BeepSensorIR("IR0", "/IR_filtered", 0));
 		sensorsIR.add(new BeepSensorIR("IR1", "/IR_filtered", 1));
 		sensorsIR.add(new BeepSensorIR("IR2", "/IR_filtered", 2));
@@ -139,7 +151,6 @@ public class BeepRobot extends AbstractRobot {
 		sensorsCol.add(new BeepSensorColor("UIR1", "/ground_Color", 1));
 		sensorsCol.add(new BeepSensorColor("UIR2", "/ground_Color", 2));
 		beepTimer = new BeepSensorTimer("timer");
-		
 
 		smachableSensors = new SmachableSensors();
 		smachableSensors.addAll(sensorsIR);
@@ -164,10 +175,6 @@ public class BeepRobot extends AbstractRobot {
 		beepIP = "141.83.158.160"; // "141.83.158.207";
 		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";
 		automatFileName = "TestAutomat.py";
-
-		saveBeepRobot(this, new File("Robot.xml"));
-
-		debugView = new BeepDebugView(this);
 	}
 
 	/**
@@ -194,13 +201,13 @@ public class BeepRobot extends AbstractRobot {
 	}
 
 	@Override
-	public boolean connect(String connectTo) {	
+	public boolean connect(String connectTo) {
 		if (connectTo == null) {
 			connectTo = beepIP;
 		}
 		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
 				"Bitte die IP-Adresse des Beeps angeben.", connectTo);
-		if (connectTo == null){
+		if (connectTo == null) {
 			return false;
 		}
 		beepIP = connectTo;
@@ -259,7 +266,6 @@ public class BeepRobot extends AbstractRobot {
 		return false;
 	}
 
-	
 	@Override
 	public void disconnect() {
 		connected = false;
@@ -285,8 +291,17 @@ public class BeepRobot extends AbstractRobot {
 				return ((std_msgs.Int32) msg).getData();
 			} else if (sen.getTopicType().equals(std_msgs.Int16._TYPE)) {
 				return ((std_msgs.Int16) msg).getData();
-			}else if (sen.getTopicType().equals(std_msgs.Float32._TYPE)){
+			} else if (sen.getTopicType().equals(std_msgs.Float32._TYPE)) {
 				return Math.round(((std_msgs.Float32) msg).getData());
+				// TODO einkommentieren und anpassen, wenn msg type eingebunden
+				// }else if (sen.getTopicType().equals(beep_msgs.ir._Type)){
+				// Sensorname: IRx ; x: index in ir-array of the message
+				// return ((beep_msgs.ir) msg).ir(variable.charAt(2));
+				// } else if
+				// (sen.getTopicType().equals(beep_msgs.Color_sensor._TYPE)) {
+				// beep_msgs.Color col = ((beep_msgs.Color_sensor) msg)
+				// .sensors(variable.charAt(3));
+				// Color c = new Color(col.r, col.g, col.b);
 			}// add new message-types here
 		}
 		return 0;
@@ -327,7 +342,7 @@ public class BeepRobot extends AbstractRobot {
 								+ " Bitte lege mindestens einen State an!",
 						"Fehler beim Erstellen des Automats");
 			}
-			//safe smach automate to file
+			// safe smach automate to file
 			SmachAutomat sA = new SmachAutomat(MainFrame.automat.getStates(),
 					smachableSensors, getActuators(), "zusmoro_state_machine");
 			File file = new File(automatFileName);

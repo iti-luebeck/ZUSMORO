@@ -18,6 +18,7 @@ import model.ChangeEvent.ChangeEventType;
 import model.bool.BooleanExpression;
 import smachGenerator.ISmachableAction;
 import view.MainFrame;
+import view.SettingsDialog;
 
 public class Automat extends Observable implements Runnable {
 
@@ -163,32 +164,37 @@ public class Automat extends Observable implements Runnable {
 									+ "Öffnen Sie einen Zustand und markieren Sie ihn als Startzustand.</html>",
 							"Automat kann nicht ausgeführt werden!",
 							JOptionPane.WARNING_MESSAGE);
-		}else if (!checkNames()){
+		} else if (!checkNames()) {
 			JOptionPane
-			.showMessageDialog(
-					MainFrame.mainFrame,
-					"<html>Es gibt gleichnamige Zust�nde!<br>"
-							+ "Öffnen Sie einen dieser Zust�nde und geben Sie ihm einen eindeutigen Namen.</html>",
-					"Automat kann nicht ausgeführt werden!",
-					JOptionPane.WARNING_MESSAGE);
+					.showMessageDialog(
+							MainFrame.mainFrame,
+							"<html>Es gibt gleichnamige Zust�nde!<br>"
+									+ "Öffnen Sie einen dieser Zust�nde und geben Sie ihm einen eindeutigen Namen.</html>",
+							"Automat kann nicht ausgeführt werden!",
+							JOptionPane.WARNING_MESSAGE);
 		} else {
 			checked = true;
 		}
 		return checked;
 	}
-	
-	public boolean checkNames(){
+
+	public boolean checkNames() {
 		LinkedList<String> transNames = new LinkedList<>();
-		for(State s1: states){
-			for (Transition t : s1.getTransitions()){
-				if(transNames.contains(t.getLabel())){ //Check for double transition names
+		for (State s1 : states) {
+			for (Transition t : s1.getTransitions()) {
+				if (transNames.contains(t.getLabel())) { // Check for double
+															// transition names
 					return false;
-				}else{
+				} else {
 					transNames.add(t.getLabel());
 				}
 			}
-			for(State s2 : states){
-				if(!s1.equals(s2) && s1.getText().equals(s2.getText())){ //Check for double State Name
+			for (State s2 : states) {
+				if (!s1.equals(s2) && s1.getText().equals(s2.getText())) { // Check
+																			// for
+																			// double
+																			// State
+																			// Name
 					return false;
 				}
 			}
@@ -367,7 +373,8 @@ public class Automat extends Observable implements Runnable {
 			return false;
 		}
 		saveFile.setLength(1);
-		saveFile.writeBytes("<Automat>\r\n");
+		saveFile.writeBytes("<Automat robotName='"
+				+ MainFrame.robot.getRobotName() + "' >\r\n");
 		ArrayList<Transition> transitions = new ArrayList<Transition>(
 				states.size() * 3);
 		for (State state : states) {
@@ -442,6 +449,13 @@ public class Automat extends Observable implements Runnable {
 		Automat automat = new Automat(fileName);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		String line;
+		line = reader.readLine();
+		if (line != null) {
+			if (line.startsWith("<Automat robotName='")) {
+				line = line.substring(20, line.lastIndexOf("'"));
+				SettingsDialog.setRobotType(line);
+			}
+		}
 		while ((line = reader.readLine()) != null) {
 			if (line.equals("<State>")) {
 				boolean initial = false;
