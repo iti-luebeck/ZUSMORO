@@ -1,100 +1,92 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.LinkedList;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.text.ChangedCharSetException;
 
 import model.AbstractRobot;
-import model.Automat;
+import model.AbstractSettingPanel;
 
 public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 4333492082030324369L;
-	private JTextField evaFreq;
+	private AbstractRobot selectedRobot;
 	private JComboBox<String> robot;
-	private JCheckBox allowLoops;
-	private JCheckBox allowTransSeq;
-	private JCheckBox debugging;
 	private JButton okButton;
 	private JButton cancelButton;
+	private AbstractSettingPanel robotSettings; //robot specific Panel containing all config options
 
 	public SettingsDialog() {
 		super(MainFrame.mainFrame, "Automateneinstellungen", true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		Container cPane = this.getContentPane();
-		cPane.setLayout(new GridLayout(6, 2));
-		cPane.add(new JLabel(" EVA Frequenz (Hz): "));
-		evaFreq = new JTextField("" + 1000 / Automat.progDelay, 5);
-		evaFreq.setHorizontalAlignment(JTextField.RIGHT);
-		cPane.add(evaFreq);
-		cPane.add(new JLabel(" Roboter: "));
+		cPane.setLayout(new BorderLayout());
+
+		JPanel robotPanel = new JPanel();
+		robotPanel.add(new JLabel("Roboter: "));
 		robot = new JComboBox<String>();
-		for (Class<AbstractRobot> rob : getRobots()) {
+		for (AbstractRobot rob : MainFrame.robots) {
 			try {
-				robot.addItem(rob.newInstance().getRobotName());
+				robot.addItem(rob.getRobotName());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		cPane.add(robot);
 		if (MainFrame.robot != null && MainFrame.robotClass != null) {
-			try {
-				robot.setSelectedItem(MainFrame.robot.getRobotName());
-			} catch (Exception e) {
-				System.err.println(MainFrame.robotClass.getName()
-						+ " konnte nicht instanziiert werden!");
-				e.printStackTrace();
-			}
+			selectedRobot = MainFrame.robot;
+			robot.setSelectedItem(selectedRobot.getRobotName());
 		}
-		cPane.add(new JLabel(" Schlaufen: "));
-		allowLoops = new JCheckBox("erlauben", Automat.loopsAllowed);
-		cPane.add(allowLoops);
-		cPane.add(new JLabel(" Transitionenreihenfolge: "));
-		allowTransSeq = new JCheckBox("einstellbar", Automat.changeableTransSeq);
-		cPane.add(allowTransSeq);
-		cPane.add(new JLabel(" Debugausgaben: "));
-		debugging = new JCheckBox("ausgeben (auf Konsole)", MainFrame.DEBUG);
-		cPane.add(debugging);
+		
+		robot.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if (!selectedRobot.getRobotName().equals(arg0.getItem())) {
+					for (AbstractRobot rob : MainFrame.robots) {
+						if (rob.getRobotName().equals(arg0.getItem())) {
+							selectedRobot = rob;
+							chagneSettingsPanel(rob.getSettingsPanel());
+							break;
+						}
+					}
+				}
+			}
+		});
+
+		robotPanel.add(robot);
+		cPane.add(robotPanel, BorderLayout.NORTH);
+
+		robotSettings = MainFrame.robot.getSettingsPanel();
+		cPane.add(robotSettings, BorderLayout.CENTER);
+
+		JPanel controlPanel = new JPanel();
 		okButton = new JButton("OK");
 		okButton.addActionListener(this);
 		cancelButton = new JButton("Abbrechen");
 		cancelButton.addActionListener(this);
-		cPane.add(okButton);
-		cPane.add(cancelButton);
+		controlPanel.add(okButton);
+		controlPanel.add(cancelButton);
+
+		cPane.add(controlPanel, BorderLayout.SOUTH);
+
 		pack();
 		setLocationRelativeTo(MainFrame.mainFrame);
 	}
-
-	private static LinkedList<Class<AbstractRobot>> getRobots() {
-		File robotDir = new File(SettingsDialog.class.getResource("../robots")
-				.getFile().replace("%20", " "));
-		File[] robotDirs = robotDir.listFiles();
-		LinkedList<Class<AbstractRobot>> robots = new LinkedList<>();
-		for (File dir : robotDirs) {
-			for (File file : dir.listFiles()) {
-				try {
-					Class<?> rob = Class.forName("robots." + dir.getName()
-							+ "." + file.getName().replace(".class", ""));
-					if (rob.newInstance() instanceof AbstractRobot) {
-
-						robots.add((Class<AbstractRobot>) rob);
-					}
-				} catch (Exception e) {
-				}
-			}
-		}
-		return robots;
+	
+	private void chagneSettingsPanel(AbstractSettingPanel newPanel){
+		this.remove(robotSettings);
+		this.add(newPanel, BorderLayout.CENTER);
+		robotSettings = newPanel;	
+		pack();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -110,58 +102,31 @@ public class SettingsDialog extends JDialog implements ActionListener {
 
 	// Typsicherheit manuell sichergestellt.
 	private boolean setSettings() {
-		try {
-			// Frequenz
-			double freq = Double.parseDouble(evaFreq.getText());
-			int delay = (int) (1000.0 / freq);
-			if (delay <= 0 || delay >= 60000) {
-				throw new Exception("Frequenz nicht im zulässigen Bereich.");
-			}
-			// Schlaufen
-			boolean allow = allowLoops.isSelected();
-			// Transitionsreihenfolge
-			boolean transSeq = allowTransSeq.isSelected();
-			// Debugausgaben auf Kosnsole
-			boolean debug = debugging.isSelected();
-
-			// Set values:
-			Automat.progDelay = delay;
-			setRobotType((String) robot.getSelectedItem());
-			Automat.loopsAllowed = allow;
-			Automat.changeableTransSeq = transSeq;
-			MainFrame.DEBUG = debug;
-
-		} catch (Exception e) {
-			JOptionPane
-					.showMessageDialog(this,
-							"<html>Es trat folgender Fehler auf:<br>" + e
-									+ "</html>",
-							"Fehler beim Setzen der Werte",
-							JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		return true;
+		setRobotType((String) robot.getSelectedItem());
+		return robotSettings.setSettings();
 	}
 
 	/**
-	 * Checks the ../Robots directory for the first fitting abstract Robot Class.<br>
+	 * Checks the ../Robots directory for the first fitting abstract Robot
+	 * Class.<br>
 	 * Fitting means the result of the <code>getRobotName</code> function of the
 	 * class equals the <code>robotName</code> parameter.
 	 * 
-	 * @param robotName Name of the Robot (result of the <code>getRobotName</code> function)
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 * @param robotName
+	 *            Name of the Robot (result of the <code>getRobotName</code>
+	 *            function)
 	 */
-	public static void setRobotType(String robotName)
-			throws InstantiationException, IllegalAccessException {
+	public static void setRobotType(String robotName) {
 		Class<AbstractRobot> robotClass = null;
-		for (Class<AbstractRobot> r : getRobots()) {
-			if (r.newInstance().getRobotName().equals(robotName)) {
-				robotClass = (Class<AbstractRobot>) r;
+		for (AbstractRobot r : MainFrame.robots) {
+			if (r.getRobotName().equals(robotName)) {
+				robotClass = (Class<AbstractRobot>) r.getClass();
+				MainFrame.robot = r;
+				MainFrame.robotClass = robotClass;
+				break;
 			}
 		}
-		MainFrame.robotClass = robotClass;
-		MainFrame.robot = robotClass.newInstance();
+
 		MainFrame.toolPanel.setRobotName(robotName);
 	}
 }

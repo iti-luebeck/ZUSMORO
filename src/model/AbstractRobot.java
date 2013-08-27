@@ -3,6 +3,7 @@ package model;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import robots.beep.BeepRobot;
 
@@ -28,6 +29,7 @@ public abstract class AbstractRobot {
 	public abstract AbstractStatePanel getStatePanel(State state);
 	public abstract AbstractTransitionPanel getTransitionPanel(Transition trans);
 	public abstract int getUnAcknowledgedCmds();
+	public abstract AbstractSettingPanel getSettingsPanel();
 	
 	public abstract String getRobotName();
 }

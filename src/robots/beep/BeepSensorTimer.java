@@ -16,6 +16,10 @@ public class BeepSensorTimer implements ISmachableSensor {
 	public BeepSensorTimer(String name) {
 		this.name = name;
 	}
+	
+	public BeepSensorTimer(){
+		this.name = null;
+	}
 
 	@Override
 	public String getName() {
@@ -64,7 +68,7 @@ public class BeepSensorTimer implements ISmachableSensor {
 
 	@Override
 	public String getTransitionCondition(Operator op, int compVal) {
-		return "rospy.get_time()-" + getValueIdentifier() + op + compVal / 1000;
+		return "rospy.get_time()-" + getValueIdentifier() + op + (float)compVal / 1000;
 	}
 
 }

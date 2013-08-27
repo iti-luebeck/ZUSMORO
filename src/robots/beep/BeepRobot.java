@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.directory.NoSuchAttributeException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -41,6 +42,7 @@ import view.AbstractStatePanel;
 import view.AbstractTransitionPanel;
 import view.MainFrame;
 import model.AbstractRobot;
+import model.AbstractSettingPanel;
 import model.Action;
 import model.State;
 import model.Transition;
@@ -128,7 +130,7 @@ public class BeepRobot extends AbstractRobot {
 
 		setDefaultConfig();
 
-		saveBeepRobot(this, new File("Robot.xml"));
+		saveBeepRobot(this, new File("BeepDefault.xml"));
 
 		debugView = new BeepDebugView(this);
 	}
@@ -176,6 +178,17 @@ public class BeepRobot extends AbstractRobot {
 		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";
 		automatFileName = "TestAutomat.py";
 	}
+	
+	public void changeConfig(){
+		JFileChooser fChooser = new JFileChooser(".");
+		fChooser.showDialog(MainFrame.mainFrame, "Config laden");
+		File config = fChooser.getSelectedFile();
+		MainFrame.robot = BeepRobot.loadBeepRobot(config.getAbsolutePath());
+		if (connected){
+			MainFrame.robot.connect(null);
+		}
+	}
+	
 
 	/**
 	 * returns a {@link SmachableSensors} instance containing all sensors of
@@ -550,6 +563,11 @@ public class BeepRobot extends AbstractRobot {
 	@Override
 	public String getLastConnectedTo() {
 		return beepIP;
+	}
+
+	@Override
+	public AbstractSettingPanel getSettingsPanel() {
+		return new BeepSettingPanel(this);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.io.File;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -62,6 +63,8 @@ public class MainFrame extends JFrame {
 	public volatile static Class<AbstractRobot> robotClass;
 
 	public volatile static AbstractRobot robot;
+	
+	public volatile static LinkedList<AbstractRobot> robots;
 
 	// TODO: should be control?
 	/**
@@ -100,6 +103,9 @@ public class MainFrame extends JFrame {
 				e2.printStackTrace();
 			}
 		}
+		
+		robots = getRobots();
+		
 		try {
 			robotClass = (Class<AbstractRobot>) Class
 					.forName("robots.beep.BeepRobot");
@@ -187,5 +193,25 @@ public class MainFrame extends JFrame {
 	public static void showErrInfo(String errLong, String errShort) {
 		JOptionPane.showMessageDialog(mainFrame, errLong, errShort,
 				JOptionPane.WARNING_MESSAGE);
+	}
+	
+	private static LinkedList<AbstractRobot> getRobots() {
+		File robotDir = new File(SettingsDialog.class.getResource("../robots")
+				.getFile().replace("%20", " "));
+		File[] robotDirs = robotDir.listFiles();
+		LinkedList<AbstractRobot> robots = new LinkedList<>();
+		for (File dir : robotDirs) {
+			for (File file : dir.listFiles()) {
+				try {
+					Class<?> rob = Class.forName("robots." + dir.getName()
+							+ "." + file.getName().replace(".class", ""));
+					if (rob.newInstance() instanceof AbstractRobot) {
+						robots.add((AbstractRobot)rob.newInstance());
+					}
+				} catch (Exception e) {
+				}
+			}
+		}
+		return robots;
 	}
 }

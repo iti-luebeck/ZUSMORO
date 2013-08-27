@@ -1,16 +1,22 @@
 package robots.epuck;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import model.AbstractRobot;
+import model.AbstractSettingPanel;
 import model.Action;
 import model.Automat;
 import model.State;
@@ -304,8 +310,10 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 
 	@Override
 	public boolean connect(String connectTo) {
-		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
-				"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):", lastInput);
+		connectTo = JOptionPane
+				.showInputDialog(MainFrame.mainFrame,
+						"Bitte einen COM-Port wählen (/dev/rfcommx||COMx):",
+						lastInput);
 		if (connectTo == null) {
 			connectTo = lastInput;
 		}
@@ -327,8 +335,6 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		// so do not block
 		// basically just test for connection
 		this.commPort.disconnect();
-
-		
 
 		// if (comPort != null && comPort.startsWith("COM")) {
 		if (connectTo != null) {
@@ -479,7 +485,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		JCheckBox debug3 = new JCheckBox(
 				"Kontinuierlich die SensorDaten senden");
 		Object[] params = { debug1, debug2, debug3 };
-		int n = JOptionPane.showConfirmDialog((Component) MainFrame.mainFrame ,
+		int n = JOptionPane.showConfirmDialog((Component) MainFrame.mainFrame,
 				params, "Debug-Optionen", JOptionPane.OK_CANCEL_OPTION);
 		if (n == 0) {
 			MainFrame.onBoard.setDebugLevel(debug1.isSelected(),
@@ -492,4 +498,8 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		return lastInput;
 	}
 
+	@Override
+	public AbstractSettingPanel getSettingsPanel() {
+		return new EPuckSettingsPanel(this);
+	}
 }
