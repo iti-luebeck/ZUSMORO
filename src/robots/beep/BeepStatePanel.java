@@ -96,15 +96,15 @@ public class BeepStatePanel extends AbstractStatePanel implements
 			add(led);
 		}
 
-		motor1slider = new JSlider(SwingConstants.VERTICAL, -100, 100, 0);
-		motor2slider = new JSlider(SwingConstants.VERTICAL, -100, 100, 0);
+		motor1slider = new JSlider(SwingConstants.VERTICAL, -128, 127, 0);
+		motor2slider = new JSlider(SwingConstants.VERTICAL, -128, 127, 0);
 		motor1slider.addChangeListener(this);
 		motor2slider.addChangeListener(this);
 		motor1slider.setOpaque(false);
 		motor2slider.setOpaque(false);
 
-		motor1spinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
-		motor2spinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
+		motor1spinner = new JSpinner(new SpinnerNumberModel(0, -128, 127, 1));
+		motor2spinner = new JSpinner(new SpinnerNumberModel(0, -128, 127, 1));
 		motor1spinner.addChangeListener(this);
 		motor2spinner.addChangeListener(this);
 
@@ -147,8 +147,8 @@ public class BeepStatePanel extends AbstractStatePanel implements
 			led.next().setBounds(328, 111, ledRadius, ledRadius);
 			led.next().setBounds(351, 193, ledRadius, ledRadius);
 			led.next().setBounds(304, 305, ledRadius, ledRadius);
-			led.next().setBounds(164, 351, ledRadius, ledRadius);
 			led.next().setBounds(220, 351, ledRadius, ledRadius);
+			led.next().setBounds(164, 351, ledRadius, ledRadius);			
 			led.next().setBounds(78, 306, ledRadius, ledRadius);
 			led.next().setBounds(31, 193, ledRadius, ledRadius);
 			if (led.hasNext())

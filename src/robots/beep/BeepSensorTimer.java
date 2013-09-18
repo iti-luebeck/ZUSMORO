@@ -28,7 +28,9 @@ public class BeepSensorTimer implements ISmachableSensor {
 
 	@Override
 	public HashSet<String> getImports() {
-		return new HashSet<>();
+		HashSet<String> imports = new HashSet<>();
+		imports.add("import time");
+		return imports;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class BeepSensorTimer implements ISmachableSensor {
 
 	@Override
 	public String getIdentifierInit() {
-		return getValueIdentifier() + " = rospy.get_time()";
+		return getValueIdentifier() + " = time.time()";
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class BeepSensorTimer implements ISmachableSensor {
 
 	@Override
 	public String getTransitionCondition(Operator op, int compVal) {
-		return "rospy.get_time()-" + getValueIdentifier() + op + (float)compVal / 1000;
+		return "time.time()-" + getValueIdentifier() + op + (float)compVal / 1000;
 	}
 
 }

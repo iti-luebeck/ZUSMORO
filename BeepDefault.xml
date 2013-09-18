@@ -4,49 +4,49 @@
         <name>IR0</name>
         <topic>/IR_filtered</topic>
         <irIndex>0</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR1</name>
         <topic>/IR_filtered</topic>
         <irIndex>1</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR2</name>
         <topic>/IR_filtered</topic>
         <irIndex>2</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR3</name>
         <topic>/IR_filtered</topic>
         <irIndex>3</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR4</name>
         <topic>/IR_filtered</topic>
         <irIndex>4</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR5</name>
         <topic>/IR_filtered</topic>
         <irIndex>5</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR6</name>
         <topic>/IR_filtered</topic>
         <irIndex>6</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <IR_Sensor>
         <name>IR7</name>
         <topic>/IR_filtered</topic>
         <irIndex>7</irIndex>
-        <topicType>std_msgs/Int32</topicType>
+        <topicType>beep_msgs/IR</topicType>
     </IR_Sensor>
     <Color_Sensor>
         <name>UIR0</name>

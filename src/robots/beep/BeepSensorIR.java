@@ -17,7 +17,7 @@ public class BeepSensorIR implements ISmachableSensor, ISubscriberInfo {
 	private String name;
 	private String topic;
 	private final int irIndex;
-	private final String topicType = std_msgs.Int32._TYPE;
+	private final String topicType = beep_msgs.IR._TYPE;
 
 	public BeepSensorIR(String name, String topic, int irIndex) {
 		this.name = name;
@@ -83,7 +83,7 @@ public class BeepSensorIR implements ISmachableSensor, ISubscriberInfo {
 
 	@Override
 	public String getIdentifierInit() {
-		return "ir = array([0,0,0,0,0,0,0,0])";
+		return "ir = [0, 0, 0, 0, 0, 0, 0, 0]";
 	}
 
 	@Override

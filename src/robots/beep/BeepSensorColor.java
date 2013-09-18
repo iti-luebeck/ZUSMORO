@@ -70,7 +70,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 		String res = "";
 		res += "def color_cb(msg):\n";
 		res += "\tglobal colorSensor\n";
-		res += "\tfor (i, sensor) in enumerate(msg.sensors)\n";
+		res += "\tfor (i, sensor) in enumerate(msg.sensors):\n";
 		res += "\t\tgroundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";
 		return res;
 	}
@@ -89,7 +89,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	public String getIdentifierInit() {
-		return "colorSensor = array([0,0,0])";
+		return "colorSensor = [0, 0, 0]";
 	}
 
 	@Override
