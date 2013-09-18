@@ -45,6 +45,9 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	private CirclePanel[] groundSensors = new CirclePanel[3];
 	private final Shape[] sensorShapes = {
 			// IR sensors
+			
+			//TODO ändern, exceltabelle ;)
+			
 			new Rectangle2D.Double(229, 33, 31, 38),
 			new Rectangle2D.Double(292, 81, 44, 28),
 			new Rectangle2D.Double(336, 186, 35, 30),
@@ -58,14 +61,15 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 
 	private ValuePosition[] labelPos = {
 			// IR sensors
-			new ValuePosition(220, 61, Math.PI / 9.5),
-			new ValuePosition(290, 93, Math.PI / 3.5),
-			new ValuePosition(339, 180, Math.PI / 2),
-			new ValuePosition(257, 340, Math.PI / -5.5),
-			new ValuePosition(110, 320, Math.PI / 6),
-			new ValuePosition(60, 226, Math.PI / -2),
-			new ValuePosition(83, 126, Math.PI / -3.5),
-			new ValuePosition(136, 75, Math.PI / -10),
+			
+			new ValuePosition(255, 49, Math.PI / 9.5),
+			new ValuePosition(330, 115, Math.PI / 3.5),
+			new ValuePosition(330, 273, Math.PI / 2),
+			new ValuePosition(255, 339, Math.PI / -5.5),
+			new ValuePosition(131, 339, Math.PI / 6),
+			new ValuePosition(56, 273, Math.PI / -2),
+			new ValuePosition(56, 115, Math.PI / -3.5),
+			new ValuePosition(131, 49, Math.PI / -10),
 			// Timer
 			new ValuePosition(165, 260, 0),
 			// Ground sensors

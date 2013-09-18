@@ -143,14 +143,16 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		try {
 			// Set position of the LEDs on the Robot
 			Iterator<CirclePanel> led = leds.iterator();
-			led.next().setBounds(192, 34, ledRadius, ledRadius);
-			led.next().setBounds(328, 111, ledRadius, ledRadius);
-			led.next().setBounds(351, 193, ledRadius, ledRadius);
-			led.next().setBounds(304, 305, ledRadius, ledRadius);
-			led.next().setBounds(220, 351, ledRadius, ledRadius);
-			led.next().setBounds(164, 351, ledRadius, ledRadius);			
-			led.next().setBounds(78, 306, ledRadius, ledRadius);
-			led.next().setBounds(31, 193, ledRadius, ledRadius);
+			
+			 //TODO vielleicht exakt ausrechnen und nicht schätzen?
+			led.next().setBounds(255, 49, ledRadius, ledRadius);
+			led.next().setBounds(330, 115, ledRadius, ledRadius);
+			led.next().setBounds(330, 273, ledRadius, ledRadius);
+			led.next().setBounds(255, 339, ledRadius, ledRadius);
+			led.next().setBounds(131, 339, ledRadius, ledRadius);
+			led.next().setBounds(56, 277, ledRadius, ledRadius);			
+			led.next().setBounds(56, 115, ledRadius, ledRadius);
+			led.next().setBounds(131, 49, ledRadius, ledRadius);
 			if (led.hasNext())
 				System.err
 						.println("Do not have enough led-positions for led-amount. Check setComponentBounds in BeepStatePanel!");
