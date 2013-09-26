@@ -91,4 +91,10 @@ public class BeepSensorIR implements ISmachableSensor, ISubscriberInfo {
 		return "ir";
 	}
 
+	@Override
+	public String[] onShutDown() {
+		// TODO Alle Aus, Hardware noch nicht bereit
+		return new String[0];
+	}
+
 }

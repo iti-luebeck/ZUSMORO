@@ -96,4 +96,11 @@ public interface ISmachableSensor {
 	 */
 	public abstract String getTransitionCondition(Operator op, int compVal);
 
+	/**
+	 * Returns a number of commands that shall be executed before the {@link SmachAutomat} is shut down.
+	 * Mainly this will be publishing some last messages for the sensor to deactivate etc.
+	 * @return Some commands to shutdown this sensor
+	 */
+	public abstract String[] onShutDown();
+	
 }

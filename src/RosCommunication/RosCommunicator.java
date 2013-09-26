@@ -17,6 +17,11 @@ public class RosCommunicator {
 	private LinkedList<ActionListener> listeners;
 	private String rosMasterIP;
 
+	/**
+	 * creates a new rosjava based Communicator that will listen on topics and can give back the last received message to subscribed listeners
+	 * @param rosMasterIp 
+	 * @param info All topics and topictypes linked with an name as identifier
+	 */
 	public RosCommunicator(String rosMasterIp, LinkedList<ISubscriberInfo> info) {
 
 		this.rosMasterIP = rosMasterIp;
@@ -52,7 +57,7 @@ public class RosCommunicator {
 		System.out.println("Listeneranzahl: " + listeners.size());
 	}
 
-	void notifyListeners(ActionEvent e) {
+	protected void notifyListeners(ActionEvent e) {
 		for (ActionListener l : listeners) {
 			l.actionPerformed(e);
 		}

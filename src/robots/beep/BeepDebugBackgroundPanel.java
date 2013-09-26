@@ -27,19 +27,19 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 
 	private static final long serialVersionUID = -278302991810159232L;
 	/**
-	 * The image of the epuck for programming the states
+	 * The image of the beep for programming the states
 	 */
 	public static final Image state_background = new ImageIcon(
 			BeepDebugBackgroundPanel.class.getResource("beep-background.png"))
 			.getImage();
 	/**
-	 * The image of the epuck for transitions
+	 * The image of the beep for transitions
 	 */
 	public static final Image trans_background = new ImageIcon(
 			BeepDebugBackgroundPanel.class.getResource("beep_trans_background.png"))
 			.getImage();
 	/**
-	 * The image of the epuck for debug-mode
+	 * The image of the beep for debug-mode
 	 */
 	public static final Image debug_background = new ImageIcon(
 			BeepDebugBackgroundPanel.class.getResource("beep_debug_background.png"))

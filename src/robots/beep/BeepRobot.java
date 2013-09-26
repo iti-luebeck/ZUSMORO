@@ -334,7 +334,7 @@ public class BeepRobot extends AbstractRobot {
 	public void stop() {
 		if (connected) {
 			try {
-				piIn.println("pkill -f 'python " + piDirAutomat + "/"
+				piIn.println("pkill -f -2 'python " + piDirAutomat + "/"
 						+ automatFileName + "'");
 				piOut.readLine(); // command
 			} catch (IOException e) {

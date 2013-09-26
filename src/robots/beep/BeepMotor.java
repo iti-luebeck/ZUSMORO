@@ -58,4 +58,11 @@ public class BeepMotor implements ISmachableActuator {
 		return "pub_" + name;
 	}
 
+	@Override
+	public String[] onShutDown() {
+		String[] commands = new String[1];
+		commands[0] = getPublisherName() + ".publish(0)";
+		return commands;
+	}
+
 }

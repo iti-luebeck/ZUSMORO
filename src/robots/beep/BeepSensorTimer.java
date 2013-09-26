@@ -73,4 +73,9 @@ public class BeepSensorTimer implements ISmachableSensor {
 		return "time.time()-" + getValueIdentifier() + op + (float)compVal / 1000;
 	}
 
+	@Override
+	public String[] onShutDown() {
+		return new String[0];
+	}
+
 }

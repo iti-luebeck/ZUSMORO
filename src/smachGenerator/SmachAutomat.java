@@ -62,7 +62,8 @@ public class SmachAutomat {
 		imports += "import roslib; roslib.load_manifest('" + pkg + "')\n";
 		imports += "import rospy\n";
 		imports += "import smach\n";
-		imports += "import smach_ros\n\n";
+		imports += "import smach_ros\n";
+		imports += "import atexit\n\n";
 
 		// messege dependencies
 		HashSet<String> deps = sensors.getMsgDeps();
@@ -163,7 +164,8 @@ public class SmachAutomat {
 	/**
 	 * create the smachMachine
 	 * 
-	 * @param sm the identifier of the state machine
+	 * @param sm
+	 *            the identifier of the state machine
 	 * @return
 	 */
 	private String getSmachStateMachine(String sm) {
@@ -202,9 +204,9 @@ public class SmachAutomat {
 		return "";
 	}
 
-	private String getMainMethode() {
+	private String getMainMethod() {
 		String main = "if __name__ == '__main__':\n";
-		main += "\trospy.init_node('zusmoro_state_machine')\n";
+		main += "\trospy.init_node('zusmoro_state_machine', disable_signals=True)\n";
 		for (String subSetup : sensors.getSubscriberSetups()) {
 			main += "\t" + subSetup + "\n";
 
@@ -217,6 +219,19 @@ public class SmachAutomat {
 		return main;
 	}
 
+	private String getShutDownMethod() {
+		String s = "@atexit.register\n";
+		s += "def shutdown():\n";
+		s += "\trospy.loginfo('zusmoro_state_machine is shutting down')\n";
+		for (ISmachableActuator act : actuators) {
+			for (String com : act.onShutDown()) {
+				s += "\t" + com + "\n";
+			}
+		}
+		s += "\trospy.signal_shutdown('zusmoro_state_machine was terminated by KeyBoard Interupt\n";
+		return s;
+	}
+
 	/**
 	 * Stores the smach automat as an executable python-program to the given
 	 * filename
@@ -226,15 +241,15 @@ public class SmachAutomat {
 	 * @return true, if constructing and saving was successfully. False if there
 	 *         were problems with Topics, names, or the saving progress.
 	 * @throws NoSuchElementException
-	 *             if there are no states in the states handed in the
+	 *             if there are no states in the states handed over in the
 	 *             constructor
 	 */
 	public boolean saveToFile(File file) throws NoSuchElementException {
+		if (states.size() == 0) {
+			throw new NoSuchElementException(
+					"Tried to create an smach automat out of NO STATES!");
+		}
 		try {
-			if (states.size() == 0) {
-				throw new NoSuchElementException(
-						"Tried to create an smach automat out of NO STATES!");
-			}
 			String pythonNode = getImports() + "\n\n";
 			// define global sensor variables
 			for (String init : sensors.getIdentifierInit()) {
@@ -247,6 +262,7 @@ public class SmachAutomat {
 
 			pythonNode += "\n\n";
 
+			// add states
 			for (int i = 0; i < smachStates.size(); i++) {
 				pythonNode += smachStates.get(i) + "\n";
 			}
@@ -254,9 +270,11 @@ public class SmachAutomat {
 			for (String cb : sensors.getCallbacks()) {
 				pythonNode += cb + "\n";
 			}
-			//add main methode
-			pythonNode += getMainMethode();
-			//save to file
+			// add shutdown method
+			pythonNode += getShutDownMethod();
+			// add main method
+			pythonNode += getMainMethod();
+			// save to file
 			PrintWriter out = new PrintWriter(file);
 			out.print(pythonNode);
 			out.close();

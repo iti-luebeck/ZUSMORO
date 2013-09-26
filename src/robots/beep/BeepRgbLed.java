@@ -6,6 +6,8 @@ import java.util.HashSet;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import model.Action;
+
 import smachGenerator.ISmachableAction;
 import smachGenerator.ISmachableActuator;
 
@@ -70,6 +72,12 @@ public class BeepRgbLed implements ISmachableActuator {
 		res.add("from beep_msgs.msg import Led");
 		res.add("from beep_msgs.msg import Color");
 		return res;
+	}
+
+	@Override
+	public String[] onShutDown() {
+		Action stoppen = new Action("color", 0);
+		return getPublishMessage(stoppen);
 	}
 
 }

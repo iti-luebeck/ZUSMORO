@@ -97,4 +97,10 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 		return "colorSensor";
 	}
 
+	@Override
+	public String[] onShutDown() {
+		// TODO Auto-generated method stub
+		return new String[0];
+	}
+
 }

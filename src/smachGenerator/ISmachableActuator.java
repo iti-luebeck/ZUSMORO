@@ -43,4 +43,12 @@ public interface ISmachableActuator {
 	 */
 	public abstract HashSet<String> getImports();
 
+	
+	/**
+	 * Returns a number of commands that shall be executed before the {@link SmachAutomat} is shut down.
+	 * Mainly this will be publishing some last messages for the actuator to deactivate etc.
+	 * @return Some commands to shutdown this actuator
+	 */
+	public abstract String[] onShutDown();
+	
 }

@@ -1,5 +1,6 @@
 package RosCommunication;
 
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -69,9 +70,10 @@ public class SubscriberNode extends AbstractNodeMain {
 			subscriber.addMessageListener(new MessageListener<Object>() {
 
 				@Override
-				public void onNewMessage(Object arg0) {
-					sensorValues.put(sensorName, arg0);
-					rosComm.notifyListeners(null);
+				public void onNewMessage(Object msg) {
+					sensorValues.put(sensorName, msg);
+					ActionEvent event = new ActionEvent(msg, 0, sensorName);
+					rosComm.notifyListeners(event);
 				}
 			});
 		}
@@ -79,7 +81,6 @@ public class SubscriberNode extends AbstractNodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
