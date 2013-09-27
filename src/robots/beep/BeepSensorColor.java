@@ -16,7 +16,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 
 	private String name;
 	private String topic;
-	private final String topicType = "beep_msgs.msg/Color_sensors";
+	private final String topicType = beep_msgs.Color_sensors._TYPE;
 	private final int sensorIndex;
 
 	public BeepSensorColor(String name, String topic, int sensorIndex) {
@@ -59,7 +59,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 	@Override
 	public HashSet<String> getImports() {
 		HashSet<String> res = new HashSet<String>();
-		res.add("from " + topicType.split("/")[0] + " import "
+		res.add("from " + topicType.split("/")[0] + ".msg import "
 				+ topicType.split("/")[1]);
 		res.add("import colorsys");
 		return res;

@@ -158,6 +158,7 @@ public class BeepRobot extends AbstractRobot {
 		smachableSensors.addAll(sensorsIR);
 		smachableSensors.addAll(sensorsCol);
 		smachableSensors.add(beepTimer);
+		
 
 		// Define default Beep actuators
 		motors.add(new BeepMotor("MOTOR1", "/motor_l"));
@@ -298,8 +299,15 @@ public class BeepRobot extends AbstractRobot {
 	@Override
 	public int getVariableValue(String variable) {
 		Object msg = rosComm.getSensorMsg(variable);
-		ISmachableSensor sen = smachableSensors.getSensor(variable);
-		if (msg != null && sen != null) {
+		ISmachableSensor  sen = smachableSensors.getSensor(variable);
+		ISubscriberInfo senInfo = null;
+		if (sen instanceof ISubscriberInfo) {
+			senInfo = (ISubscriberInfo) sen;			
+		}else{
+			System.err.println(sen.getName() + " does not implement ISubscriberInfo!");
+			return 0;
+		}
+		if (msg != null && senInfo != null) {
 			if (sen.getTopicType().equals(std_msgs.Int32._TYPE)) {
 				return ((std_msgs.Int32) msg).getData();
 			} else if (sen.getTopicType().equals(std_msgs.Int16._TYPE)) {
@@ -308,10 +316,12 @@ public class BeepRobot extends AbstractRobot {
 				return Math.round(((std_msgs.Float32) msg).getData());
 			} else if (sen.getTopicType().equals(beep_msgs.IR._TYPE)) {
 				// Sensorname: IRx ; x: index in ir-array of the message
-				return ((beep_msgs.IR) msg).getIr()[variable.charAt(2)];
+				int index = Integer.parseInt(variable.substring(2));
+				return ((beep_msgs.IR) msg).getIr()[index];
 			} else if (sen.getTopicType().equals(beep_msgs.Color_sensors._TYPE)) {
+				int index = Integer.parseInt(variable.substring(3));
 				beep_msgs.Color col = ((beep_msgs.Color_sensors) msg)
-						.getSensors().get(variable.charAt(3));
+						.getSensors().get(index);
 				Color c = new Color(col.getR(), col.getG(), col.getB(), col.getW());
 				return c.getRGB();
 			}// add new message-types here
@@ -322,7 +332,6 @@ public class BeepRobot extends AbstractRobot {
 	@Override
 	public void executeActions(ArrayList<Action> actions) throws IOException {
 		// TODO what to do with this?
-
 	}
 
 	@Override
@@ -334,7 +343,7 @@ public class BeepRobot extends AbstractRobot {
 	public void stop() {
 		if (connected) {
 			try {
-				piIn.println("pkill -f -2 'python " + piDirAutomat + "/"
+				piIn.println("pkill -2 -f 'python " + piDirAutomat + "/"
 						+ automatFileName + "'");
 				piOut.readLine(); // command
 			} catch (IOException e) {
@@ -546,8 +555,9 @@ public class BeepRobot extends AbstractRobot {
 	public void debug() {
 		if (connected) {
 			LinkedList<ISubscriberInfo> info = new LinkedList<>();
-			info.addAll(sensorsCol);
-			info.addAll(sensorsIR);
+			//info.addAll(sensorsCol);
+			//info.addAll(sensorsIR);
+			info.add(sensorsIR.get(5));
 			if (rosComm == null) {
 				rosComm = new RosCommunicator("http://" + beepIP + ":11311/",
 						info);
