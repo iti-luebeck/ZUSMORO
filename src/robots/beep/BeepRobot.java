@@ -555,9 +555,9 @@ public class BeepRobot extends AbstractRobot {
 	public void debug() {
 		if (connected) {
 			LinkedList<ISubscriberInfo> info = new LinkedList<>();
-			//info.addAll(sensorsCol);
-			//info.addAll(sensorsIR);
-			info.add(sensorsIR.get(5));
+			info.addAll(sensorsCol);
+			info.addAll(sensorsIR);
+			//info.add(sensorsIR.get(5));
 			if (rosComm == null) {
 				rosComm = new RosCommunicator("http://" + beepIP + ":11311/",
 						info);

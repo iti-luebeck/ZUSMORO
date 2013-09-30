@@ -6,15 +6,16 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import robots.beep.BeepRobot;
 import robots.epuck.SensorPanel;
 import robots.epuck.ValuePosition;
-
 import model.bool.Variable.Operator;
 
 /**
@@ -47,31 +48,11 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 
 	private Image background;
 
-	// public Shape[] sensorShapes = { new Rectangle2D.Double(137, 41, 35, 27),
-	// new Rectangle2D.Double(60, 83, 38, 28),
-	// new Rectangle2D.Double(29, 184, 33, 31), new Rectangle2D.Double(108, 316,
-	// 30, 38),
-	// new Rectangle2D.Double(262, 320, 33, 30), new Rectangle2D.Double(336,
-	// 186, 35, 30),
-	// new Rectangle2D.Double(292, 81, 44, 28), new Rectangle2D.Double(229, 33,
-	// 31, 38),
-	// new Rectangle2D.Double(134, 102, 32, 40), new Rectangle2D.Double(185,
-	// 102, 32, 40),
-	// new Rectangle2D.Double(234, 102, 32, 40), new Rectangle2D.Double(160,
-	// 238, 80, 32) };
+	private final int ROBOT_RADIUS = 150;
+	private final Point ROBOT_CENTER = new Point(188, 210);
 
 	// Positionen für die Anzeige der Werte (x,y,rotation)
-	private ValuePosition[] labelPos = {
-			new ValuePosition(220, 61, Math.PI / 9.5),
-			new ValuePosition(290, 93, Math.PI / 3.5),
-			new ValuePosition(339, 180, Math.PI / 2),
-			new ValuePosition(257, 340, Math.PI / -5.5),
-			new ValuePosition(110, 320, Math.PI / 6),
-			new ValuePosition(60, 226, Math.PI / -2),
-			new ValuePosition(83, 126, Math.PI / -3.5),
-			new ValuePosition(136, 75, Math.PI / -10),
-			new ValuePosition(126, 143, 0), new ValuePosition(179, 143, 0),
-			new ValuePosition(232, 143, 0), new ValuePosition(165, 260, 0) };
+	private ValuePosition[] labelPos = new ValuePosition[11];
 
 	private SensorPanel[] sensorPanels;
 	protected BeepRobot robot;
@@ -87,6 +68,15 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 		super();
 		setPreferredSize(new Dimension(400, 400));
 		this.background = background;
+		//Sensor Positions
+		for (int i = 0; i < 8; i++) {
+			labelPos[i] = new ValuePosition((int) (ROBOT_CENTER.x + Math.sin((67 - i * 45)
+					* Math.PI / 180) * ROBOT_RADIUS), (int) (ROBOT_CENTER.y + Math.cos((67 - i * 45)
+					* Math.PI / 180) * ROBOT_RADIUS), 0);
+		}
+		labelPos[8] = new ValuePosition(141, 135, 0);
+		labelPos[9] = new ValuePosition(192, 135, 0);
+		labelPos[10] = new ValuePosition(243, 135, 0);
 	}
 
 	@Override
