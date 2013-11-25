@@ -51,19 +51,19 @@
     <Color_Sensor>
         <name>UIR0</name>
         <topic>/ground_Color</topic>
-        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <topicType>beep_msgs/Color_sensors</topicType>
         <sensorIndex>0</sensorIndex>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR1</name>
         <topic>/ground_Color</topic>
-        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <topicType>beep_msgs/Color_sensors</topicType>
         <sensorIndex>1</sensorIndex>
     </Color_Sensor>
     <Color_Sensor>
         <name>UIR2</name>
         <topic>/ground_Color</topic>
-        <topicType>beep_msgs.msg/Color_sensors</topicType>
+        <topicType>beep_msgs/Color_sensors</topicType>
         <sensorIndex>2</sensorIndex>
     </Color_Sensor>
     <Motors>

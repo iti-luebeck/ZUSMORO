@@ -190,13 +190,13 @@ public class SmachAutomat {
 				stateToAdd.add(state);
 			}
 			// create state machine and add states in correct order
-			String stateMachine = "\t" + sm
+			String stateMachine = "\t\t" + sm
 					+ " = smach.StateMachine(outcomes=[])\n";
-			stateMachine += "\twith " + sm + ":\n";
-			stateMachine += "\t\t" + stateToAdd.get(initialStateIndex) + "\n";
+			stateMachine += "\t\twith " + sm + ":\n";
+			stateMachine += "\t\t\t" + stateToAdd.get(initialStateIndex) + "\n";
 			for (int i = 0; i < stateToAdd.size(); i++) {
 				if (i != initialStateIndex) {
-					stateMachine += "\t\t" + stateToAdd.get(i) + "\n";
+					stateMachine += "\t\t\t" + stateToAdd.get(i) + "\n";
 				}
 			}
 			return stateMachine;
@@ -206,30 +206,27 @@ public class SmachAutomat {
 
 	private String getMainMethod() {
 		String main = "if __name__ == '__main__':\n";
-		main += "\trospy.init_node('zusmoro_state_machine', disable_signals=True)\n";
+		main += "\ttry:\n";
+		main += "\t\trospy.init_node('zusmoro_state_machine', disable_signals=True)\n";
 		for (String subSetup : sensors.getSubscriberSetups()) {
-			main += "\t" + subSetup + "\n";
+			main += "\t\t" + subSetup + "\n";
 
 		}
 		main += getSmachStateMachine("sm");
 		// including possibility to use Smach_viewer
-		main += "\tsis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
-		main += "\tsis.start()\n\tsm.execute()\n";
-		main += "\trospy.spin()\n\tsis.stop()";
-		return main;
-	}
-
-	private String getShutDownMethod() {
-		String s = "@atexit.register\n";
-		s += "def shutdown():\n";
-		s += "\trospy.loginfo('zusmoro_state_machine is shutting down')\n";
+		main += "\t\tsis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')\n";
+		main += "\t\tsis.start()\n\t\tsm.execute()\n";
+		main += "\t\trospy.spin()\n\t\tsis.stop()\n";
+		//add shutdown sequence
+		main += "\tfinally:\n";
+		main += "\t\trospy.loginfo('zusmoro_state_machine is shutting down')\n";
 		for (ISmachableActuator act : actuators) {
 			for (String com : act.onShutDown()) {
-				s += "\t" + com + "\n";
+				main += "\t\t" + com + "\n";
 			}
 		}
-		s += "\trospy.signal_shutdown('zusmoro_state_machine was terminated by KeyBoard Interupt\n";
-		return s;
+		main += "\t\trospy.signal_shutdown('zusmoro_state_machine was terminated by KeyBoard Interupt')\n";
+		return main;
 	}
 
 	/**
@@ -259,7 +256,6 @@ public class SmachAutomat {
 			for (String pub : actuators.getPublisherSetups()) {
 				pythonNode += pub + "\n";
 			}
-
 			pythonNode += "\n\n";
 
 			// add states
@@ -270,8 +266,6 @@ public class SmachAutomat {
 			for (String cb : sensors.getCallbacks()) {
 				pythonNode += cb + "\n";
 			}
-			// add shutdown method
-			pythonNode += getShutDownMethod();
 			// add main method
 			pythonNode += getMainMethod();
 			// save to file

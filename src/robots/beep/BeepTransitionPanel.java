@@ -6,13 +6,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -40,41 +41,13 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	private final int IR0 = 0;
 	private final int IR7 = 7;
 	private final int TIMER = 8;
+	private final int ROBOT_RADIUS = 145;
+	private final Point ROBOT_CENTER = new Point(190, 190);
 
 	private SensorPanel[] sensorPanels;
 	private CirclePanel[] groundSensors = new CirclePanel[3];
-	private final Shape[] sensorShapes = {
-			// IR sensors
-			
-			//TODO ändern, exceltabelle ;)
-			
-			new Rectangle2D.Double(229, 33, 31, 38),
-			new Rectangle2D.Double(292, 81, 44, 28),
-			new Rectangle2D.Double(336, 186, 35, 30),
-			new Rectangle2D.Double(262, 320, 33, 30),
-			new Rectangle2D.Double(108, 316, 30, 38),
-			new Rectangle2D.Double(29, 184, 33, 31),
-			new Rectangle2D.Double(60, 83, 38, 28),
-			new Rectangle2D.Double(137, 41, 35, 27),
-			// Timer
-			new Rectangle2D.Double(160, 238, 80, 32) };
-
-	private ValuePosition[] labelPos = {
-			// IR sensors
-			
-			new ValuePosition(255, 49, Math.PI / 9.5),
-			new ValuePosition(330, 115, Math.PI / 3.5),
-			new ValuePosition(330, 273, Math.PI / 2),
-			new ValuePosition(255, 339, Math.PI / -5.5),
-			new ValuePosition(131, 339, Math.PI / 6),
-			new ValuePosition(56, 273, Math.PI / -2),
-			new ValuePosition(56, 115, Math.PI / -3.5),
-			new ValuePosition(131, 49, Math.PI / -10),
-			// Timer
-			new ValuePosition(165, 260, 0),
-			// Ground sensors
-			new ValuePosition(141, 135, 0), new ValuePosition(192, 135, 0),
-			new ValuePosition(243, 135, 0) };
+	private Shape[] sensorShapes = new Shape[9];
+	private ValuePosition[] labelPos = new ValuePosition[12];
 
 	private Transition transition;
 	private DifferencePanel differencePanel;
@@ -87,6 +60,7 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	 *            initial values.
 	 */
 	public BeepTransitionPanel(Transition trans) {
+
 		this.transition = trans;
 		addMouseListener(this);
 		setLayout(null);
@@ -96,6 +70,30 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	}
 
 	private void initComponents() {
+		// positions of IR sensors and value-labels
+		for (int i = 0; i < 8; i++) {
+			sensorShapes[i] = new Rectangle(
+					(int) (ROBOT_CENTER.x + Math.sin((67 - i * 45) * Math.PI
+							/ 180)
+							* ROBOT_RADIUS),
+					(int) (ROBOT_CENTER.y + Math.cos((67 - i * 45) * Math.PI
+							/ 180)
+							* ROBOT_RADIUS), 30, 30);
+			labelPos[i] = new ValuePosition(
+					(int) (ROBOT_CENTER.x + Math.sin((67 - i * 45) * Math.PI
+							/ 180)
+							* (ROBOT_RADIUS + 5)),
+					(int) (ROBOT_CENTER.y + 20 + Math.cos((67 - i * 45)
+							* Math.PI / 180)
+							* (ROBOT_RADIUS + 5)), 0);
+		}
+		// TIMER
+		sensorShapes[8] = new Rectangle(160, 238, 80, 32);
+		labelPos[8] = new ValuePosition(165, 260, 0);
+		labelPos[9] = new ValuePosition(141, 135, 0);
+		labelPos[10] = new ValuePosition(192, 135, 0);
+		labelPos[11] = new ValuePosition(243, 135, 0);
+
 		// IR and Timer
 		sensorPanels = new SensorPanel[9];
 		for (int i = 0; i < sensorPanels.length; i++) {

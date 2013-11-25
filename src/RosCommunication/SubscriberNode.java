@@ -75,7 +75,7 @@ public class SubscriberNode extends AbstractNodeMain {
 					ActionEvent event = new ActionEvent(msg, 0, sensorName);
 					rosComm.notifyListeners(event);
 				}
-			});
+			}, 15);
 		}
 	}
 
