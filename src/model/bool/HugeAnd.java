@@ -17,7 +17,8 @@ public class HugeAnd extends BooleanExpression implements ISmachableGuard {
 
 	public void addOperand(BooleanExpression expr) {
 		if (expr == null) {
-			throw new IllegalArgumentException("Boolean operants may not be null");
+			throw new IllegalArgumentException(
+					"Boolean operants may not be null");
 		}
 		this.operands.add(expr);
 	}
@@ -51,33 +52,35 @@ public class HugeAnd extends BooleanExpression implements ISmachableGuard {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && obj instanceof HugeAnd && operands.equals(((HugeAnd)obj).operands);
+		return obj != null && obj instanceof HugeAnd
+				&& operands.equals(((HugeAnd) obj).operands);
 	}
 
 	public void removeOperand(Variable v) {
-		if (v== null) {
-			throw new IllegalArgumentException("Boolean operants may not be null");
+		if (v == null) {
+			throw new IllegalArgumentException(
+					"Boolean operants may not be null");
 		}
 		this.operands.remove(v);
 	}
 
 	@Override
 	public LinkedList<String> getSensorNames() {
-		LinkedList<String> names= new LinkedList<>();
-		for(BooleanExpression be:operands){
-			if(be instanceof Variable){
-				names.add(((Variable)be).getVariableName());
+		LinkedList<String> names = new LinkedList<>();
+		for (BooleanExpression be : operands) {
+			if (be instanceof Variable) {
+				names.add(((Variable) be).getVariableName());
 			}
 		}
 		return names;
 	}
 
 	@Override
-	public LinkedList<Operator> getOperators() {
-		LinkedList<Operator> operators= new LinkedList<>();
-		for(BooleanExpression be:operands){
-			if(be instanceof Variable){
-				operators.add(((Variable)be).getOperator());
+	public LinkedList<String> getOperators() {
+		LinkedList<String> operators = new LinkedList<>();
+		for (BooleanExpression be : operands) {
+			if (be instanceof Variable) {
+				operators.add(((Variable) be).getOperator() + "");
 			}
 		}
 		return operators;
@@ -85,10 +88,10 @@ public class HugeAnd extends BooleanExpression implements ISmachableGuard {
 
 	@Override
 	public LinkedList<Integer> getCompValues() {
-		LinkedList<Integer> values= new LinkedList<>();
-		for(BooleanExpression be:operands){
-			if(be instanceof Variable){
-				values.add(((Variable)be).getCompValue());
+		LinkedList<Integer> values = new LinkedList<>();
+		for (BooleanExpression be : operands) {
+			if (be instanceof Variable) {
+				values.add(((Variable) be).getCompValue());
 			}
 		}
 		return values;

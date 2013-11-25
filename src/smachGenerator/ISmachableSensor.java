@@ -7,8 +7,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import robots.beep.BeepSensorColor;
 import robots.beep.BeepSensorIR;
 
-import model.bool.Variable.Operator;
-
 @XmlSeeAlso({ BeepSensorIR.class, BeepSensorColor.class })
 public interface ISmachableSensor {
 
@@ -88,13 +86,13 @@ public interface ISmachableSensor {
 	 * value.
 	 * 
 	 * @param op
-	 *            Operator to compare the values.
+	 *            Operator to compare the values. Choose one of <, <=, ==, >=, >, !=
 	 * @param compVal
 	 *            value to compare the current sensor value with.
 	 * @return a condition representing the comparison of the sensor value with
 	 *         the compare value.
 	 */
-	public abstract String getTransitionCondition(Operator op, int compVal);
+	public abstract String getTransitionCondition(String op, int compVal);
 
 	/**
 	 * Returns a number of commands that shall be executed before the {@link SmachAutomat} is shut down.

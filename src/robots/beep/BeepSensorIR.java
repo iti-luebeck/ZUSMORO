@@ -42,7 +42,7 @@ public class BeepSensorIR implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	@Override
-	public String getTransitionCondition(Operator op, int compVal) {
+	public String getTransitionCondition(String op, int compVal) {
 		return getValueIdentifier() + op + compVal;
 	}
 

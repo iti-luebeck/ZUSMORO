@@ -69,7 +69,7 @@ public class BeepSensorTimer implements ISmachableSensor {
 	}
 
 	@Override
-	public String getTransitionCondition(Operator op, int compVal) {
+	public String getTransitionCondition(String op, int compVal) {
 		return "time.time()-" + getValueIdentifier() + op + (float)compVal / 1000;
 	}
 

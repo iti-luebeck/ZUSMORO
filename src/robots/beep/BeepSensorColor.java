@@ -47,7 +47,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 	}
 
 	@Override
-	public String getTransitionCondition(Operator op, int compVal) {
+	public String getTransitionCondition(String op, int compVal) {
 		Color col = new Color(compVal);
 		float[] hsbCol = Color.RGBtoHSB(col.getRed(), col.getGreen(),
 				col.getBlue(), null);

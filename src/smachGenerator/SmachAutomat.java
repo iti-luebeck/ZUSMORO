@@ -143,7 +143,7 @@ public class SmachAutomat {
 								.getSensorNames().get(i));
 						if (sensor != null) {
 							state += sensor.getTransitionCondition(guard
-									.getOperators().get(i), guard
+									.getOperators().get(i) + "", guard
 									.getCompValues().get(i))
 									+ " and ";
 						} else {

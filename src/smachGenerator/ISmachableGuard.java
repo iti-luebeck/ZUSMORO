@@ -2,8 +2,6 @@ package smachGenerator;
 
 import java.util.LinkedList;
 
-import model.bool.Variable.Operator;
-
 public interface ISmachableGuard{
 
 	/**
@@ -18,10 +16,10 @@ public interface ISmachableGuard{
 	 * Returns a List of {@link Operator}s. Each {@link Operator} belongs to the
 	 * corresponding sensor in the getSensorNames list.
 	 * 
-	 * @return List of {@link Operator}s, representing the relation between
-	 *         sensor and compare value
+	 * @return List of Strings, representing the relation between
+	 *         sensor and compare value. Choose one of <, <=, ==, >=, >, !=
 	 */
-	public abstract LinkedList<Operator> getOperators();
+	public abstract LinkedList<String> getOperators();
 
 	/**
 	 * Returns a List of {@link Integer}s. Each of these compare values shall be

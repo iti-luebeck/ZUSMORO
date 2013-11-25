@@ -27,7 +27,7 @@ public class True extends BooleanExpression implements ISmachableGuard{
 	}
 
 	@Override
-	public LinkedList<Operator> getOperators() {
+	public LinkedList<String> getOperators() {
 		return new LinkedList<>();
 	}
 
