@@ -157,39 +157,39 @@ public class EPuckStatePanel extends AbstractStatePanel implements ChangeListene
 	private void setValues() {
 		ArrayList<Action> actions = state.getActions();
 		for (Action action : actions) {
-			if (action.getKey().equals("LED0")) {
+			if (action.getActuatorName().equals("LED0")) {
 				led0.setSelected(action.getValue() == 1);
-			} else if (action.getKey().equals("LED1")) {
+			} else if (action.getActuatorName().equals("LED1")) {
 				led1.setSelected(action.getValue() == 1);
-			} else if (action.getKey().equals("LED2")) {
+			} else if (action.getActuatorName().equals("LED2")) {
 				led2.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED3")) {
+			} else if (action.getActuatorName().equals("LED3")) {
 				led3.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED4")) {
+			} else if (action.getActuatorName().equals("LED4")) {
 				led4.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED4a")) {
+			} else if (action.getActuatorName().equals("LED4a")) {
 				led4a.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED5")) {
+			} else if (action.getActuatorName().equals("LED5")) {
 				led5.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED6")) {
+			} else if (action.getActuatorName().equals("LED6")) {
 				led6.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("LED7")) {
+			} else if (action.getActuatorName().equals("LED7")) {
 				led7.setSelected((action.getValue() == 1));
-			} else if (action.getKey().equals("MOTOR1CONTROLLER")) {
+			} else if (action.getActuatorName().equals("MOTOR1CONTROLLER")) {
 				motor1slider.setValue(0);
 				motor1spinner.setValue(0);
 				motor1slider.setEnabled(false);
 				motor1spinner.setEnabled(false);
-			} else if (action.getKey().equals("MOTOR2CONTROLLER")) {
+			} else if (action.getActuatorName().equals("MOTOR2CONTROLLER")) {
 				motor2slider.setValue(0);
 				motor2spinner.setValue(0);
 				motor2slider.setEnabled(false);
 				motor2spinner.setEnabled(false);
-			} else if (action.getKey().equals("MOTOR1")) {
+			} else if (action.getActuatorName().equals("MOTOR1")) {
 				motor1slider.setValue(action.getValue());
-			} else if (action.getKey().equals("MOTOR2")) {
+			} else if (action.getActuatorName().equals("MOTOR2")) {
 				motor2slider.setValue(action.getValue());
-			} else if (action.getKey().equals("BEEP")) {
+			} else if (action.getActuatorName().equals("BEEP")) {
 				beeper.setSelected((action.getValue() == 1));
 			}
 		}
@@ -212,10 +212,10 @@ public class EPuckStatePanel extends AbstractStatePanel implements ChangeListene
 		Action left = null;
 		Action right = null;
 		for (Action a : state.getActions()) {
-			if (a.getKey().equals("MOTOR1CONTROLLER")) {
+			if (a.getActuatorName().equals("MOTOR1CONTROLLER")) {
 				left = a;
 			}
-			if (a.getKey().equals("MOTOR2CONTROLLER")) {
+			if (a.getActuatorName().equals("MOTOR2CONTROLLER")) {
 				right = a;
 			}
 		}
@@ -273,7 +273,7 @@ public class EPuckStatePanel extends AbstractStatePanel implements ChangeListene
 		if (ac != null) {
 			for (int i = 0; i < actions.size(); i++) {
 				Action a = actions.get(i);
-				if (a.getKey().equals(ac.getKey())) {
+				if (a.getActuatorName().equals(ac.getActuatorName())) {
 					ac = (ActionController) a;
 					index = i;
 				}

@@ -20,7 +20,6 @@ import javax.swing.JToolTip;
 import model.ChangeEvent.ChangeEventType;
 import smachGenerator.ISmachableAction;
 import smachGenerator.ISmachableState;
-import smachGenerator.ISmachableTransition;
 import view.EditorPanel;
 import view.MainFrame;
 import view.StateView;

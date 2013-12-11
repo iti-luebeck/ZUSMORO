@@ -5,11 +5,11 @@ import smachGenerator.ISmachableAction;
 
 public class Action implements ISmachableAction {
 
-	private String key;
+	private String actuatorName;
 	private int value;
 
 	public Action(String key, int value) {
-		this.key = key;
+		this.actuatorName = key;
 		this.value = value;
 	}
 
@@ -17,12 +17,12 @@ public class Action implements ISmachableAction {
 	 * @see model.ISmachableAction#getKey()
 	 */
 	@Override
-	public String getKey() {
-		return key;
+	public String getActuatorName() {
+		return actuatorName;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setActuatorName(String key) {
+		this.actuatorName = key;
 	}
 
 	/* (non-Javadoc)
@@ -40,7 +40,7 @@ public class Action implements ISmachableAction {
 	public boolean equals(Object o) {
 		if (o instanceof Action) {
 			ISmachableAction action = (ISmachableAction) o;
-			return key.equals(action.getKey()) && (value==action.getValue());
+			return actuatorName.equals(action.getActuatorName()) && (value==action.getValue());
 		} else {
 			return false;
 		}
@@ -48,6 +48,6 @@ public class Action implements ISmachableAction {
 
 	@Override
 	public String toString() {
-		return key + " " + value;
+		return actuatorName + " " + value;
 	}
 }

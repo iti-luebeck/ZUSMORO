@@ -341,7 +341,7 @@ public class TransmitAutomat implements TransmissionJob {
 	protected int searchActions(List<Action> actions, String string) {
 		int value = 0;
 		for (ISmachableAction a : actions) {
-			if (a.getKey().equals(string)) {
+			if (a.getActuatorName().equals(string)) {
 				value = a.getValue();
 				break;
 			}
@@ -413,7 +413,7 @@ public class TransmitAutomat implements TransmissionJob {
 							+ ",0,0,0,0,0");
 				} else {
 					for (ISmachableAction a : actions) {
-						if (a.getKey().equalsIgnoreCase(
+						if (a.getActuatorName().equalsIgnoreCase(
 								"motor" + j + "controller")) {
 							stateStrings
 									.add(controllerString((ActionController) a));
@@ -444,9 +444,9 @@ public class TransmitAutomat implements TransmissionJob {
 
 	private String controllerString(ActionController a) {
 		String res;
-		if (a.getKey().equalsIgnoreCase("motor1controller")) {
+		if (a.getActuatorName().equalsIgnoreCase("motor1controller")) {
 			res = "l";
-		} else if (a.getKey().equalsIgnoreCase("motor2controller")) {
+		} else if (a.getActuatorName().equalsIgnoreCase("motor2controller")) {
 			res = "r";
 		} else {
 			return "Controller Unknown";

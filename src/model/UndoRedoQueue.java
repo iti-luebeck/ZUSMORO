@@ -3,6 +3,7 @@ package model;
 import java.util.LinkedList;
 
 public class UndoRedoQueue {
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 0;
 	private final LinkedList<ChangeEvent> undoList;
 	private final LinkedList<ChangeEvent> redoList;

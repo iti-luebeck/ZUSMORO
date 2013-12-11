@@ -8,7 +8,7 @@ public interface ISmachableAction {
 	 * 
 	 * @return name of the {@link ISmachableActuator}
 	 */
-	public abstract String getKey();
+	public abstract String getActuatorName();
 
 	/**
 	 * returns the value the {@link ISmachableActuator} shall interpret as an

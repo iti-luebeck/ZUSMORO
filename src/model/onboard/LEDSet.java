@@ -30,8 +30,8 @@ public class LEDSet {
 
 	public void set(ArrayList<Action> actions){
 		for (ISmachableAction a : actions) {
-			if (a.getKey().startsWith("LED")||a.getKey().equals("BEEP")) {
-				leds.set(ledIndexOf(a.getKey()), a.getValue() == 1);
+			if (a.getActuatorName().startsWith("LED")||a.getActuatorName().equals("BEEP")) {
+				leds.set(ledIndexOf(a.getActuatorName()), a.getValue() == 1);
 			}
 		}
 

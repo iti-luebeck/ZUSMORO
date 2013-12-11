@@ -113,7 +113,7 @@ public class SmachAutomat {
 
 		// add actions
 		for (ISmachableAction a : s.getActions()) {
-			ISmachableActuator actuator = actuators.getActuator(a.getKey());
+			ISmachableActuator actuator = actuators.getActuator(a.getActuatorName());
 			for (String str : actuator.getPublishMessage(a)) {
 				state += "\t\t" + str + "\n";
 			}

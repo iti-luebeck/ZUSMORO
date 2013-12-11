@@ -114,24 +114,24 @@ public class BeepStatePanel extends AbstractStatePanel implements
 	private void setValues() {
 		ArrayList<Action> actions = state.getActions();
 		for (Action action : actions) {
-			if (action.getKey().startsWith("LED")) {
-				leds.get(Integer.parseInt(action.getKey().substring(3)))
+			if (action.getActuatorName().startsWith("LED")) {
+				leds.get(Integer.parseInt(action.getActuatorName().substring(3)))
 						.setBackground(new Color(action.getValue()));
-			} else if (action.getKey().equals("MOTOR1CONTROLLER")) {
+			} else if (action.getActuatorName().equals("MOTOR1CONTROLLER")) {
 				motor1slider.setValue(0);
 				motor1spinner.setValue(0);
 				motor1slider.setEnabled(false);
 				motor1spinner.setEnabled(false);
-			} else if (action.getKey().equals("MOTOR2CONTROLLER")) {
+			} else if (action.getActuatorName().equals("MOTOR2CONTROLLER")) {
 				motor2slider.setValue(0);
 				motor2spinner.setValue(0);
 				motor2slider.setEnabled(false);
 				motor2spinner.setEnabled(false);
-			} else if (action.getKey().equals("MOTOR1")) {
+			} else if (action.getActuatorName().equals("MOTOR1")) {
 				motor1slider.setValue(action.getValue());
-			} else if (action.getKey().equals("MOTOR2")) {
+			} else if (action.getActuatorName().equals("MOTOR2")) {
 				motor2slider.setValue(action.getValue());
-			} else if (action.getKey().equals("BEEP")) {
+			} else if (action.getActuatorName().equals("BEEP")) {
 				beeper.setSelected((action.getValue() == 1));
 			}
 		}
@@ -144,7 +144,7 @@ public class BeepStatePanel extends AbstractStatePanel implements
 			// Set position of the LEDs on the Robot
 			Iterator<CirclePanel> led = leds.iterator();
 			
-			 //TODO vielleicht exakt ausrechnen und nicht schätzen?		
+			 //TODO vielleicht exakt ausrechnen und nicht schï¿½tzen?		
 			led.next().setBounds(330, 273, ledRadius, ledRadius);
 			led.next().setBounds(255, 339, ledRadius, ledRadius);
 			led.next().setBounds(131, 339, ledRadius, ledRadius);
@@ -185,10 +185,10 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		Action left = null;
 		Action right = null;
 		for (Action a : state.getActions()) {
-			if (a.getKey().equals("MOTOR1CONTROLLER")) {
+			if (a.getActuatorName().equals("MOTOR1CONTROLLER")) {
 				left = a;
 			}
-			if (a.getKey().equals("MOTOR2CONTROLLER")) {
+			if (a.getActuatorName().equals("MOTOR2CONTROLLER")) {
 				right = a;
 			}
 		}

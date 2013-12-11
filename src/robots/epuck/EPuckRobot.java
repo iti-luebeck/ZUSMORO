@@ -83,7 +83,7 @@ public class EPuckRobot extends AbstractRobot implements Observer, EPuckSensorI 
 		int motor1Value = 0;
 		int[] ledValues = new int[8];
 		for (ISmachableAction action : actions) {
-			String key = action.getKey();
+			String key = action.getActuatorName();
 			int value = action.getValue();
 			if (key.startsWith("LED")) { // LEDS setzen
 				int led = Character.getNumericValue(key.charAt(3));

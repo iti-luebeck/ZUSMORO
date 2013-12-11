@@ -3,7 +3,6 @@ package model;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import robots.beep.BeepRobot;
 

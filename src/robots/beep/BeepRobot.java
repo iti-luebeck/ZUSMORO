@@ -158,7 +158,6 @@ public class BeepRobot extends AbstractRobot {
 		smachableSensors.addAll(sensorsIR);
 		smachableSensors.addAll(sensorsCol);
 		smachableSensors.add(beepTimer);
-		
 
 		// Define default Beep actuators
 		motors.add(new BeepMotor("MOTOR1", "/motor_l"));
@@ -179,17 +178,16 @@ public class BeepRobot extends AbstractRobot {
 		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";
 		automatFileName = "TestAutomat.py";
 	}
-	
-	public void changeConfig(){
+
+	public void changeConfig() {
 		JFileChooser fChooser = new JFileChooser(".");
 		fChooser.showDialog(MainFrame.mainFrame, "Config laden");
 		File config = fChooser.getSelectedFile();
 		MainFrame.robot = BeepRobot.loadBeepRobot(config.getAbsolutePath());
-		if (connected){
+		if (connected) {
 			MainFrame.robot.connect(null);
 		}
 	}
-	
 
 	/**
 	 * returns a {@link SmachableSensors} instance containing all sensors of
@@ -299,12 +297,13 @@ public class BeepRobot extends AbstractRobot {
 	@Override
 	public int getVariableValue(String variable) {
 		Object msg = rosComm.getSensorMsg(variable);
-		ISmachableSensor  sen = smachableSensors.getSensor(variable);
+		ISmachableSensor sen = smachableSensors.getSensor(variable);
 		ISubscriberInfo senInfo = null;
 		if (sen instanceof ISubscriberInfo) {
-			senInfo = (ISubscriberInfo) sen;			
-		}else{
-			System.err.println(sen.getName() + " does not implement ISubscriberInfo!");
+			senInfo = (ISubscriberInfo) sen;
+		} else {
+			System.err.println(sen.getName()
+					+ " does not implement ISubscriberInfo!");
 			return 0;
 		}
 		if (msg != null && senInfo != null) {
@@ -322,7 +321,8 @@ public class BeepRobot extends AbstractRobot {
 				int index = Integer.parseInt(variable.substring(3));
 				beep_msgs.Color col = ((beep_msgs.Color_sensors) msg)
 						.getSensors().get(index);
-				Color c = new Color(col.getR(), col.getG(), col.getB(), col.getW());
+				Color c = new Color(col.getR(), col.getG(), col.getB(),
+						col.getW());
 				return c.getRGB();
 			}// add new message-types here
 		}
@@ -557,7 +557,7 @@ public class BeepRobot extends AbstractRobot {
 			LinkedList<ISubscriberInfo> info = new LinkedList<>();
 			info.addAll(sensorsCol);
 			info.addAll(sensorsIR);
-			//info.add(sensorsIR.get(5));
+			// info.add(sensorsIR.get(5));
 			if (rosComm == null) {
 				rosComm = new RosCommunicator("http://" + beepIP + ":11311/",
 						info);

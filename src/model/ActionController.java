@@ -65,7 +65,7 @@ public class ActionController extends Action {
 	public boolean equals(Object o) {
 		if (o instanceof ActionController) {
 			ActionController ac = (ActionController) o;
-			return getKey() == ac.getKey() && offset == ac.offset && min == ac.min && max == ac.max && kpr == ac.kpr
+			return getActuatorName() == ac.getActuatorName() && offset == ac.offset && min == ac.min && max == ac.max && kpr == ac.kpr
 					&& var.equals(ac.var) && compvalue == ac.compvalue;
 		} else {
 			return false;
@@ -74,7 +74,7 @@ public class ActionController extends Action {
 
 	@Override
 	public String toString() {
-		return getKey() + " " + offset + " " + min + " " + max + " " + kpr + " " + var + " " + compvalue;
+		return getActuatorName() + " " + offset + " " + min + " " + max + " " + kpr + " " + var + " " + compvalue;
 	}
 
 }

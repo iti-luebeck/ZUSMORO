@@ -16,11 +16,12 @@ public class BeepSettingPanel extends AbstractSettingPanel {
 	public BeepSettingPanel(BeepRobot robot){		
 		this.robot = robot;
 		this.add(new JLabel("Config laden:"));
-		btnloadConfig = new JButton("Ausw‰hlen");
+		btnloadConfig = new JButton("Ausw√§hlen");
 		btnloadConfig.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				BeepSettingPanel.this.robot.changeConfig();
+				setSettings();
 			}
 		});
 		
@@ -30,7 +31,7 @@ public class BeepSettingPanel extends AbstractSettingPanel {
 	@Override
 	public boolean setSettings() {
 		return true;
-		//TODO nicht sofort ‰ndern, sondern erst bei setSettings() Aufruf
+		//TODO nicht sofort √§ndern, sondern erst bei setSettings() Aufruf
 	}
 	
 	
