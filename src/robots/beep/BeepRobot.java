@@ -149,9 +149,9 @@ public class BeepRobot extends AbstractRobot {
 		sensorsIR.add(new BeepSensorIR("IR5", "/IR_filtered", 5));
 		sensorsIR.add(new BeepSensorIR("IR6", "/IR_filtered", 6));
 		sensorsIR.add(new BeepSensorIR("IR7", "/IR_filtered", 7));
-		sensorsCol.add(new BeepSensorColor("UIR0", "/ground_Color", 0));
-		sensorsCol.add(new BeepSensorColor("UIR1", "/ground_Color", 1));
-		sensorsCol.add(new BeepSensorColor("UIR2", "/ground_Color", 2));
+		sensorsCol.add(new BeepSensorColor("UIR0", "/ground_colors", 0));
+		sensorsCol.add(new BeepSensorColor("UIR1", "/ground_colors", 1));
+		sensorsCol.add(new BeepSensorColor("UIR2", "/ground_colors", 2));
 		beepTimer = new BeepSensorTimer("timer");
 
 		smachableSensors = new SmachableSensors();
