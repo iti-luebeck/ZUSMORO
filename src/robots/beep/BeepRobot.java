@@ -220,6 +220,17 @@ public class BeepRobot extends AbstractRobot {
 		connectTo = JOptionPane.showInputDialog(MainFrame.mainFrame,
 				"Bitte die IP-Adresse des Beeps angeben.", connectTo);
 		if (connectTo == null) {
+			SmachAutomat sA;
+			try {
+				sA = new SmachAutomat(MainFrame.automat.getStates(),
+						smachableSensors, getActuators(),
+						"zusmoro_state_machine");
+				File file = new File(automatFileName);
+				sA.saveToFile(file);
+			} catch (NoSuchAttributeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return false;
 		}
 		beepIP = connectTo;

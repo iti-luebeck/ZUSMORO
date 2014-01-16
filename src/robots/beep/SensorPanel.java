@@ -30,6 +30,7 @@ public class SensorPanel extends JPanel implements ActionListener {
 		compValue.addActionListener(this);
 		add(opSelect);
 		add(compValue);
+		compValue.requestFocus();
 	}
 
 	public int getCompValue() {

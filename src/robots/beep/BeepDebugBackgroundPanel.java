@@ -69,11 +69,16 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 		setPreferredSize(new Dimension(400, 400));
 		this.background = background;
 		//Sensor Positions
-		for (int i = 0; i < 8; i++) {
-			labelPos[i] = new ValuePosition((int) (ROBOT_CENTER.x + Math.sin((67 - i * 45)
-					* Math.PI / 180) * ROBOT_RADIUS), (int) (ROBOT_CENTER.y + Math.cos((67 - i * 45)
-					* Math.PI / 180) * ROBOT_RADIUS), 0);
-		}
+
+		labelPos[0] = new ValuePosition(358, 276, 0);
+		labelPos[1] = new ValuePosition(238, 383, 0);
+		labelPos[2] = new ValuePosition(112, 379, 0);
+		labelPos[3] = new ValuePosition(6, 277, 0);
+		labelPos[4] = new ValuePosition(12, 126, 0);
+		labelPos[5] = new ValuePosition(133, 28, 0);
+		labelPos[6] = new ValuePosition(249, 33, 0);
+		labelPos[7] = new ValuePosition(358, 130, 0);
+		
 		labelPos[8] = new ValuePosition(141, 135, 0);
 		labelPos[9] = new ValuePosition(192, 135, 0);
 		labelPos[10] = new ValuePosition(243, 135, 0);

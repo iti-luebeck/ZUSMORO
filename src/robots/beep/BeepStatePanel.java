@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -41,7 +40,7 @@ public class BeepStatePanel extends AbstractStatePanel implements
 	private JSpinner motor1spinner;
 	private JSpinner motor2spinner;
 
-	private JCheckBox beeper;// TODO mp3-Auswahl erstellen
+	//private JCheckBox beeper;// TODO mp3-Auswahl erstellen
 
 	private State state;
 
@@ -56,8 +55,8 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		add(this.motor2slider);
 		add(this.motor1spinner);
 		add(this.motor2spinner);
-		add(this.beeper);
-		setPreferredSize(new Dimension(400, 400));
+		//add(this.beeper);
+		setPreferredSize(new Dimension(390, 400));
 	}
 
 	private void initComponents() {
@@ -108,7 +107,7 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		motor1spinner.addChangeListener(this);
 		motor2spinner.addChangeListener(this);
 
-		this.beeper = new JCheckBox();
+		//this.beeper = new JCheckBox();
 	}
 
 	private void setValues() {
@@ -131,8 +130,8 @@ public class BeepStatePanel extends AbstractStatePanel implements
 				motor1slider.setValue(action.getValue());
 			} else if (action.getActuatorName().equals("MOTOR2")) {
 				motor2slider.setValue(action.getValue());
-			} else if (action.getActuatorName().equals("BEEP")) {
-				beeper.setSelected((action.getValue() == 1));
+//			} else if (action.getActuatorName().equals("BEEP")) {
+//				beeper.setSelected((action.getValue() == 1));
 			}
 		}
 	}
@@ -144,15 +143,14 @@ public class BeepStatePanel extends AbstractStatePanel implements
 			// Set position of the LEDs on the Robot
 			Iterator<CirclePanel> led = leds.iterator();
 			
-			 //TODO vielleicht exakt ausrechnen und nicht sch�tzen?		
-			led.next().setBounds(330, 273, ledRadius, ledRadius);
-			led.next().setBounds(255, 339, ledRadius, ledRadius);
-			led.next().setBounds(131, 339, ledRadius, ledRadius);
-			led.next().setBounds(56, 277, ledRadius, ledRadius);
-			led.next().setBounds(56, 115, ledRadius, ledRadius);
-			led.next().setBounds(131, 49, ledRadius, ledRadius);
-			led.next().setBounds(255, 49, ledRadius, ledRadius);
-			led.next().setBounds(330, 115, ledRadius, ledRadius);	
+			led.next().setBounds(377, 238, ledRadius, ledRadius);
+			led.next().setBounds(246, 374, ledRadius, ledRadius);
+			led.next().setBounds(120, 370, ledRadius, ledRadius);
+			led.next().setBounds(8, 238, ledRadius, ledRadius);
+			led.next().setBounds(8, 145, ledRadius, ledRadius);
+			led.next().setBounds(135, 10, ledRadius, ledRadius);
+			led.next().setBounds(258, 17, ledRadius, ledRadius);
+			led.next().setBounds(375, 145, ledRadius, ledRadius);
 			if (led.hasNext())
 				System.err
 						.println("Do not have enough led-positions for led-amount. Check setComponentBounds in BeepStatePanel!");
@@ -161,15 +159,15 @@ public class BeepStatePanel extends AbstractStatePanel implements
 					.println("Tried to set to many led-positions. Check setComponentBounds in BeepStatePanel!");
 		}
 
-		this.motor1slider.setBounds(65, 138, 20, 127);
-		this.motor2slider.setBounds(315, 138, 20, 127);
+		this.motor1slider.setBounds(48, 112, 20, 180);
+		this.motor2slider.setBounds(328, 112, 20, 180);
 
 		Dimension prefSize = this.motor1spinner.getPreferredSize();
-		this.motor1spinner.setBounds(95, 165, 70, prefSize.height);
-		this.motor2spinner.setBounds(224, 165, 70, prefSize.height);
+		this.motor1spinner.setBounds(75, 187, 70, prefSize.height);
+		this.motor2spinner.setBounds(255, 187, 70, prefSize.height);
 
-		prefSize = this.beeper.getPreferredSize();
-		this.beeper.setBounds(191, 265, prefSize.width, prefSize.height);
+//		prefSize = this.beeper.getPreferredSize();
+//		this.beeper.setBounds(191, 265, prefSize.width, prefSize.height);
 	}
 
 	@Override
@@ -202,7 +200,7 @@ public class BeepStatePanel extends AbstractStatePanel implements
 		} else {
 			actions.add(right);
 		}
-		actions.add(new Action("BEEP", convertBool(beeper.isSelected())));
+//		actions.add(new Action("BEEP", convertBool(beeper.isSelected())));
 		return actions;
 	}
 

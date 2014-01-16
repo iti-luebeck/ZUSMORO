@@ -14,9 +14,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import model.Transition;
@@ -41,8 +43,6 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 	private final int IR0 = 0;
 	private final int IR7 = 7;
 	private final int TIMER = 8;
-	private final int ROBOT_RADIUS = 145;
-	private final Point ROBOT_CENTER = new Point(190, 190);
 
 	private SensorPanel[] sensorPanels;
 	private CirclePanel[] groundSensors = new CirclePanel[3];
@@ -71,25 +71,32 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 
 	private void initComponents() {
 		// positions of IR sensors and value-labels
-		for (int i = 0; i < 8; i++) {
-			sensorShapes[i] = new Rectangle(
-					(int) (ROBOT_CENTER.x + Math.sin((67 - i * 45) * Math.PI
-							/ 180)
-							* ROBOT_RADIUS),
-					(int) (ROBOT_CENTER.y + Math.cos((67 - i * 45) * Math.PI
-							/ 180)
-							* ROBOT_RADIUS), 30, 30);
-			labelPos[i] = new ValuePosition(
-					(int) (ROBOT_CENTER.x + Math.sin((67 - i * 45) * Math.PI
-							/ 180)
-							* (ROBOT_RADIUS + 5)),
-					(int) (ROBOT_CENTER.y + 20 + Math.cos((67 - i * 45)
-							* Math.PI / 180)
-							* (ROBOT_RADIUS + 5)), 0);
-		}
+
+		sensorShapes[0] = new Rectangle(0, 0, 0, 0);
+
+		sensorShapes[0] = new Rectangle(360, 255, 30, 30);
+		sensorShapes[1] = new Rectangle(243, 360, 30, 30);
+		sensorShapes[2] = new Rectangle(115, 355, 30, 30);
+		sensorShapes[3] = new Rectangle(16, 253, 30, 30);
+		sensorShapes[4] = new Rectangle(16, 110, 30, 30);
+		sensorShapes[5] = new Rectangle(135, 8, 30, 30);
+		sensorShapes[6] = new Rectangle(252, 13, 30, 30);
+		sensorShapes[7] = new Rectangle(360, 110, 30, 30);
+
+		labelPos[0] = new ValuePosition(358, 276, 0);
+		labelPos[1] = new ValuePosition(238, 383, 0);
+		labelPos[2] = new ValuePosition(112, 379, 0);
+		labelPos[3] = new ValuePosition(6, 277, 0);
+		labelPos[4] = new ValuePosition(12, 126, 0);
+		labelPos[5] = new ValuePosition(133, 28, 0);
+		labelPos[6] = new ValuePosition(249, 33, 0);
+		labelPos[7] = new ValuePosition(358, 130, 0);
+		
 		// TIMER
-		sensorShapes[8] = new Rectangle(160, 238, 80, 32);
-		labelPos[8] = new ValuePosition(165, 260, 0);
+		sensorShapes[8] = new Rectangle(155, 190, 75, 75);
+		labelPos[8] = new ValuePosition(168, 245, 0);
+		
+		// UIR Sensor Pos
 		labelPos[9] = new ValuePosition(141, 135, 0);
 		labelPos[10] = new ValuePosition(192, 135, 0);
 		labelPos[11] = new ValuePosition(243, 135, 0);
@@ -255,7 +262,7 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 		Point2D.Double point = new Point2D.Double(x, y);
 		for (int i = 0; i < sensorShapes.length; i++) {
 			if (sensorShapes[i].contains(point)) {
-				addPanel(sensorPanels[i], x, y);
+				addPanel(sensorPanels[i], Math.min(Math.max(x,50),350) , Math.min(Math.max(y,27),373));
 				return;
 			}
 		}
@@ -297,7 +304,7 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 			AffineTransform Tx = g2d.getTransform();
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
-			g2d.setColor(Color.WHITE);
+			g2d.setColor(Color.BLACK);
 			g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 14.0f));
 			Operator op;
 			int compValue;
@@ -307,16 +314,18 @@ public class BeepTransitionPanel extends AbstractTransitionPanel implements
 				try {
 					op = sensorPanels[i].getOperator();
 					compValue = sensorPanels[i].getCompValue();
-					if (i == TIMER) {
-						g2d.setColor(Color.BLACK);
-						g2d.setFont(g2d.getFont().deriveFont(18.0f));
-					}
 				} catch (NumberFormatException e) {
 					continue;
 				}
 				Tx.rotate(pos.angle, pos.x, pos.y);
 				g2d.setTransform(Tx);
-				g2d.drawString(op.toString() + compValue, pos.x, pos.y);
+				if (i == TIMER) {
+					g2d.setColor(Color.BLACK);
+					g2d.setFont(g2d.getFont().deriveFont(15.0f).deriveFont(Font.BOLD));
+					g2d.drawString(op.toString() + compValue + "ms", pos.x, pos.y);
+				}else{
+					g2d.drawString(op.toString() + compValue, pos.x, pos.y);
+				}
 				Tx.rotate(-1 * pos.angle, pos.x, pos.y);
 				g2d.setTransform(Tx);
 			}
