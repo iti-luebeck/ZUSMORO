@@ -26,7 +26,7 @@ public class RunMenuListener implements ActionListener {
 											// viewer starten
 		@Override
 		public void doEvent(ActionEvent e) {
-			MainFrame.robot.debug();			
+			MainFrame.robot.debug();
 		}
 	};
 
@@ -55,7 +55,12 @@ public class RunMenuListener implements ActionListener {
 
 	private Method transmit = new Method() {
 		public void doEvent(ActionEvent e) {
-			MainFrame.robot.transmit();
+			if (!MainFrame.robot.transmit()) {
+				MainFrame
+						.showErrInfo(
+								"Die generierte Datei konnte nicht übertragen werden. Eventuell hilft ein neuer Verbindungsaufbau.",
+								"Übertragungsfehler");
+			}
 		}
 	};
 

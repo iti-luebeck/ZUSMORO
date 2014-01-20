@@ -520,8 +520,8 @@ public class Automat extends Observable implements Runnable {
 						followerState, label, xOffset, guard));
 			}
 		}
-		reader.close();
-		automat.setRobot(MainFrame.automat.getRobot());
+		reader.close();	
+		//automat.setRobot(MainFrame.automat.getRobot());
 		if (MainFrame.DEBUG) {
 			System.out.println("Loading succeded!");
 		}

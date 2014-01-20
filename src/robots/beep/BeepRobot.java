@@ -273,9 +273,21 @@ public class BeepRobot extends AbstractRobot {
 				e.printStackTrace();
 			}
 			if (!isRoscoreRunning()) {
-				startNewRoscoreAndBeepNode();
+				startNewRoscore();
+				try {
+					Thread.sleep(4000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			startBeepNode();
 
+			try {
+				Thread.sleep(8000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,13 +308,14 @@ public class BeepRobot extends AbstractRobot {
 		piIn = null;
 		try {
 			piOut.close();
+			piOut = null;
+			sess.close();
+			sess = null;
+			conn.close();
+			conn = null;
 		} catch (IOException e) {
 		}
-		piOut = null;
-		sess.close();
-		sess = null;
-		conn.close();
-		conn = null;
+		
 	}
 
 	@Override
@@ -384,16 +397,14 @@ public class BeepRobot extends AbstractRobot {
 			e1.printStackTrace();
 			return false;
 		}
-		SCPClient client = new SCPClient(conn);
+
 		try {
+			SCPClient client = new SCPClient(conn);
 			client.put(automatFileName, piDirAutomat);
 			piIn.println("chmod +x " + piDirAutomat + "/" + automatFileName);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
-			MainFrame.showErrInfo(
-					"Die generierte Datei konnte nicht übertragen werden.",
-					"Übertragungsfehler");
 			return false;
 		}
 	}
@@ -404,7 +415,8 @@ public class BeepRobot extends AbstractRobot {
 			if (isRoscoreRunning()) {
 				startAutomatOnPi();
 			} else {
-				startNewRoscoreAndBeepNode();
+				startNewRoscore();
+				startBeepNode();
 				startAutomatOnPi();
 			}
 		}
@@ -464,20 +476,25 @@ public class BeepRobot extends AbstractRobot {
 	 * that the roscore needs some time to start up after the call of this
 	 * function.
 	 */
-	private void startNewRoscoreAndBeepNode() {
+	private void startNewRoscore() {
 		if (connected) {
 			piIn.println("pkill roscore");
 			System.out.println("Starting new Roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
-			piIn.println("nohup rosrun Beep_main_node beep.py  2> ~/log/beepNode-err.log 1> ~/log/beepNode-out.log &");
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
+	/**
+	 * Starts a new _Beep node. Mind, that the node needs some time to start up after the call of this
+	 * function.
+	 */
+	private void startBeepNode() {
+		if (connected) {
+			System.out.println("Starting Beep-node");
+			piIn.println("nohup rosrun Beep_main_node beep.py  2> ~/log/beepNode-err.log 1> ~/log/beepNode-out.log &");			
+		}
+	}
+	
 	/**
 	 * Stops all already running Smach automates by calling {@link stop()}. Then
 	 * starts the Smach automate <code>automateFileName</code> on Beep. Will
