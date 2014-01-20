@@ -175,7 +175,7 @@ public class BeepRobot extends AbstractRobot {
 		motors.add(new BeepMotor("BEEP", "/beep"));// TODO!!
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
-		piDirAutomat = "/home/pi/ros_ws/beep_framework/zusmoro_state_machine";
+		piDirAutomat = "/home/pi/ros/beep_framework/zusmoro_state_machine";
 		automatFileName = "TestAutomat.py";
 	}
 
@@ -273,7 +273,7 @@ public class BeepRobot extends AbstractRobot {
 				e.printStackTrace();
 			}
 			if (!isRoscoreRunning()) {
-				startNewRoscore();
+				startNewRoscoreAndBeepNode();
 			}
 
 			return true;
@@ -404,7 +404,7 @@ public class BeepRobot extends AbstractRobot {
 			if (isRoscoreRunning()) {
 				startAutomatOnPi();
 			} else {
-				startNewRoscore();
+				startNewRoscoreAndBeepNode();
 				startAutomatOnPi();
 			}
 		}
@@ -464,13 +464,14 @@ public class BeepRobot extends AbstractRobot {
 	 * that the roscore needs some time to start up after the call of this
 	 * function.
 	 */
-	private void startNewRoscore() {
+	private void startNewRoscoreAndBeepNode() {
 		if (connected) {
 			piIn.println("pkill roscore");
 			System.out.println("Starting new Roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
+			piIn.println("nohup rosrun Beep_main_node beep.py  2> ~/log/beepNode-err.log 1> ~/log/beepNode-out.log &");
 			try {
-				Thread.sleep(8000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

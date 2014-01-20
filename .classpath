@@ -2,11 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib64/rxtx/RXTXcomm.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="zusmoro/lib64/rxtx"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib64/rxtx/RXTXcomm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib64/hamcrest-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib64/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="ganymed-ssh2-build251beta1.jar">

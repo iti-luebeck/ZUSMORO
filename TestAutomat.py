@@ -8,9 +8,9 @@ import atexit
 
 import colorsys
 from beep_msgs.msg import Color_sensors
+from beep_msgs.msg import MyColor
 import time
 from std_msgs.msg import Int8
-from beep_msgs.msg import Color
 from beep_msgs.msg import Led
 from beep_msgs.msg import IR
 
@@ -38,37 +38,25 @@ class State1(smach.State):
 		global pub_MOTOR1
 		global pub_MOTOR2
 		global pub_BEEP
+		MOTOR1 = Int8()
+		MOTOR1.data = 35
+		pub_MOTOR1.publish(MOTOR1)
+		MOTOR2 = Int8()
+		MOTOR2.data = 23
+		pub_MOTOR2.publish(MOTOR2)
 
 		while not rospy.is_shutdown():
 			rospy.sleep(0.01)
 
-class State2(smach.State):
-	def __init__(self):
-		smach.State.__init__(self, outcomes=[])
-
-	def execute(self, userdata):
-		rospy.loginfo('Executing state State 2')
-		global ir
-		global colorSensor
-		global t_timer
-		t_timer = time.time()
-		global pub_led
-		global pub_MOTOR1
-		global pub_MOTOR2
-		global pub_BEEP
-
-		while not rospy.is_shutdown():
-			rospy.sleep(0.01)
-
-
-def color_cb(msg):
-	global colorSensor
-	for (i, sensor) in enumerate(msg.sensors):
-		groundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]
 
 def ir_cb(msg):
 	global ir
 	ir = msg.ir
+
+def color_cb(msg):
+	global colorSensor
+	for (i, sensor) in enumerate(msg.sensors):
+		colorSensor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]
 
 if __name__ == '__main__':
 	try:
@@ -81,7 +69,6 @@ if __name__ == '__main__':
 		sm = smach.StateMachine(outcomes=[])
 		with sm:
 			smach.StateMachine.add('State1', State1(), transitions={})
-			smach.StateMachine.add('State2', State2(), transitions={})
 		sis = smach_ros.IntrospectionServer('Beep_State_Server', sm, '/SM_ROOT')
 		sis.start()
 		sm.execute()
@@ -92,7 +79,7 @@ if __name__ == '__main__':
 		pub_MOTOR1.publish(0)
 		pub_MOTOR2.publish(0)
 		pub_BEEP.publish(0)
-		c0 = Color()
+		c0 = MyColor()
 		c0.r = 0
 		c0.g = 0
 		c0.b = 0
@@ -102,7 +89,7 @@ if __name__ == '__main__':
 		led0.col = c0
 		led0.led = 0
 		pub_led.publish(led0)
-		c1 = Color()
+		c1 = MyColor()
 		c1.r = 0
 		c1.g = 0
 		c1.b = 0
@@ -112,7 +99,7 @@ if __name__ == '__main__':
 		led1.col = c1
 		led1.led = 1
 		pub_led.publish(led1)
-		c2 = Color()
+		c2 = MyColor()
 		c2.r = 0
 		c2.g = 0
 		c2.b = 0
@@ -122,7 +109,7 @@ if __name__ == '__main__':
 		led2.col = c2
 		led2.led = 2
 		pub_led.publish(led2)
-		c3 = Color()
+		c3 = MyColor()
 		c3.r = 0
 		c3.g = 0
 		c3.b = 0
@@ -132,7 +119,7 @@ if __name__ == '__main__':
 		led3.col = c3
 		led3.led = 3
 		pub_led.publish(led3)
-		c4 = Color()
+		c4 = MyColor()
 		c4.r = 0
 		c4.g = 0
 		c4.b = 0
@@ -142,7 +129,7 @@ if __name__ == '__main__':
 		led4.col = c4
 		led4.led = 4
 		pub_led.publish(led4)
-		c5 = Color()
+		c5 = MyColor()
 		c5.r = 0
 		c5.g = 0
 		c5.b = 0
@@ -152,7 +139,7 @@ if __name__ == '__main__':
 		led5.col = c5
 		led5.led = 5
 		pub_led.publish(led5)
-		c6 = Color()
+		c6 = MyColor()
 		c6.r = 0
 		c6.g = 0
 		c6.b = 0
@@ -162,7 +149,7 @@ if __name__ == '__main__':
 		led6.col = c6
 		led6.led = 6
 		pub_led.publish(led6)
-		c7 = Color()
+		c7 = MyColor()
 		c7.r = 0
 		c7.g = 0
 		c7.b = 0

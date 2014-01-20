@@ -71,7 +71,7 @@ public class BeepSensorColor implements ISmachableSensor, ISubscriberInfo {
 		res += "def color_cb(msg):\n";
 		res += "\tglobal colorSensor\n";
 		res += "\tfor (i, sensor) in enumerate(msg.sensors):\n";
-		res += "\t\tgroundColor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";
+		res += "\t\tcolorSensor[i] = colorsys.rgb_to_hsv(sensor.r, sensor.g, sensor.b)[0]\n";
 		return res;
 	}
 
