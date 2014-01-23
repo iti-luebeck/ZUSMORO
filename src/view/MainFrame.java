@@ -106,15 +106,18 @@ public class MainFrame extends JFrame {
 		
 		robots = getRobots();
 		
-		try {
-			robotClass = (Class<AbstractRobot>) Class
-					.forName("robots.beep.BeepRobot");
-			robot = robotClass.newInstance();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			// robotClass = EPuckRobot.class;
-		}
+		robot = robots.get(0);
+		robotClass = (Class<AbstractRobot>) robot.getClass();
+		
+//		try {
+//			robotClass = (Class<AbstractRobot>) Class
+//					.forName("robots.beep.BeepRobot");
+//			robot = robotClass.newInstance();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			// robotClass = EPuckRobot.class;
+//		}
 		onBoard = new OnBoardEpuck();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("ZUSMORO - ZUstandbasierte Steuerung für MObile ROboter v"

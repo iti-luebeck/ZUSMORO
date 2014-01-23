@@ -44,9 +44,6 @@ class LinksDrift(smach.State):
 		MOTOR2 = Int8()
 		MOTOR2.data = 65
 		pub_MOTOR2.publish(MOTOR2)
-		BEEP = Int8()
-		BEEP.data = 0
-		pub_BEEP.publish(BEEP)
 
 		while not rospy.is_shutdown():
 			if(ir[7]<210):
@@ -79,11 +76,14 @@ class RechtsDrift(smach.State):
 		MOTOR2 = Int8()
 		MOTOR2.data = 45
 		pub_MOTOR2.publish(MOTOR2)
+		BEEP = Int8()
+		BEEP.data = 0
+		pub_BEEP.publish(BEEP)
 
 		while not rospy.is_shutdown():
 			if(ir[7]>210):
 				return 'T2'
-			if(ir[6]>180):
+			if(ir[6]>165):
 				return 'T31'
 			if(ir[7]<160):
 				return 'T6'
@@ -138,8 +138,11 @@ class RechtsKurve(smach.State):
 		MOTOR1.data = 60
 		pub_MOTOR1.publish(MOTOR1)
 		MOTOR2 = Int8()
-		MOTOR2.data = 15
+		MOTOR2.data = 0
 		pub_MOTOR2.publish(MOTOR2)
+		BEEP = Int8()
+		BEEP.data = 0
+		pub_BEEP.publish(BEEP)
 
 		while not rospy.is_shutdown():
 			if(ir[7]>160):

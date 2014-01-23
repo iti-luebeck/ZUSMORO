@@ -1,18 +1,8 @@
 package robots.beep;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import javax.swing.JDialog;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.SwingConstants;
-import robots.epuck.MotorModel;
-import robots.epuck.MotorSpinnerModel;
-import smachGenerator.ISmachableActuator;
 import view.MainFrame;
 
 /**

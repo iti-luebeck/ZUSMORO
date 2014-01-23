@@ -24,7 +24,7 @@ import model.bool.Variable.Operator;
  *         Class setting the epuck image into the background. Different images
  *         for different modes.
  */
-public class BeepDebugBackgroundPanel extends JPanel  {
+public class BeepDebugBackgroundPanel extends JPanel {
 
 	private static final long serialVersionUID = -278302991810159232L;
 	/**
@@ -37,14 +37,14 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 	 * The image of the beep for transitions
 	 */
 	public static final Image trans_background = new ImageIcon(
-			BeepDebugBackgroundPanel.class.getResource("beep_trans_background.png"))
-			.getImage();
+			BeepDebugBackgroundPanel.class
+					.getResource("beep_trans_background.png")).getImage();
 	/**
 	 * The image of the beep for debug-mode
 	 */
 	public static final Image debug_background = new ImageIcon(
-			BeepDebugBackgroundPanel.class.getResource("beep_debug_background.png"))
-			.getImage();
+			BeepDebugBackgroundPanel.class
+					.getResource("beep_debug_background.png")).getImage();
 
 	private Image background;
 
@@ -68,7 +68,7 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 		super();
 		setPreferredSize(new Dimension(400, 400));
 		this.background = background;
-		//Sensor Positions
+		// Sensor Positions
 
 		labelPos[0] = new ValuePosition(358, 276, 0);
 		labelPos[1] = new ValuePosition(238, 383, 0);
@@ -78,7 +78,7 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 		labelPos[5] = new ValuePosition(133, 28, 0);
 		labelPos[6] = new ValuePosition(249, 33, 0);
 		labelPos[7] = new ValuePosition(358, 130, 0);
-		
+
 		labelPos[8] = new ValuePosition(141, 135, 0);
 		labelPos[9] = new ValuePosition(192, 135, 0);
 		labelPos[10] = new ValuePosition(243, 135, 0);
@@ -135,23 +135,27 @@ public class BeepDebugBackgroundPanel extends JPanel  {
 				// Operator op;
 				int value = 0;
 				ValuePosition pos;
-				for (int i = 0; i < labelPos.length - 1; i++) {
+				for (int i = 0; i < labelPos.length; i++) {
 					pos = labelPos[i];
 					if (i <= 7) {
 						// op = sensorPanels[i].getOperator();
-						value = robot.getVariableValue("IR"+i);
+						value = robot.getVariableValue("IR" + i);
+						
+						Tx.rotate(pos.angle, pos.x, pos.y);
+						g2d.setTransform(Tx);
+						g2d.drawString(" " + value, pos.x, pos.y);
+						Tx.rotate(-1 * pos.angle, pos.x, pos.y);
+						g2d.setTransform(Tx);
+						
 					} else if (i <= 10) {
-						value = robot.getVariableValue("UIR"+(i - 8));
+						// groundcolor
+						// value = robot.getVariableValue("UIR"+(i - 8));
 					}
 					// if (i == 11) {
 					// g2d.setColor(Color.BLACK);
 					// g2d.setFont(g2d.getFont().deriveFont(18.0f));
 					// }
-					Tx.rotate(pos.angle, pos.x, pos.y);
-					g2d.setTransform(Tx);
-					g2d.drawString(" " + value, pos.x, pos.y);
-					Tx.rotate(-1 * pos.angle, pos.x, pos.y);
-					g2d.setTransform(Tx);
+					
 				}
 			}
 		}

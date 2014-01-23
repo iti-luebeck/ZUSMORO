@@ -525,6 +525,7 @@ public class Automat extends Observable implements Runnable {
 		if (MainFrame.DEBUG) {
 			System.out.println("Loading succeded!");
 		}
+		automat.robot = MainFrame.robot;
 		return automat;
 	}
 }

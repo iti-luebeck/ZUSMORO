@@ -46,7 +46,7 @@ public class FileMenuListener implements ActionListener {
 							Transition.createdTransitions = 0;
 							MainFrame.automat = Automat.loadAutomat(fChooser.getSelectedFile());
 						} catch (Exception e1) {
-							JOptionPane.showMessageDialog(MainFrame.mainFrame, "<html>Fehler beim Laden des Programms<br>"
+							JOptionPane.showMessageDialog(MainFrame.mainFrame, "<html>Fehler beim Laden des Programms<br />"
 									+ e1.getMessage() + "</html>", "Laden gescheitert", JOptionPane.WARNING_MESSAGE);
 						}
 						MainFrame.editorPanel.validateProgramm();
