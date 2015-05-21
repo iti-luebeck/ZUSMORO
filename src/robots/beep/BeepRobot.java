@@ -175,8 +175,8 @@ public class BeepRobot extends AbstractRobot {
 		motors.add(new BeepMotor("BEEP", "/beep"));// TODO!!
 
 		beepIP = "141.83.158.160"; // "141.83.158.207";
-		piDirAutomat = "/home/pi/ros/beep_framework/zusmoro_state_machine";
-		automatFileName = "TestAutomat.py";
+		piDirAutomat = "$HOME/catkin_ws/src/zusmoro_state_machine";
+		automatFileName = "Automat.py";
 	}
 
 	public void changeConfig() {
@@ -239,7 +239,11 @@ public class BeepRobot extends AbstractRobot {
 			// connect and authorize
 			conn.connect();
 
-			conn.authenticateWithPassword("pi", "beep");
+			// try to authenticate with private key
+			// TODO allow password protected private keys, user selection of key file
+			conn.authenticateWithPublicKey("pi", new File(System.getProperty("user.home")+"/.ssh/id_rsa"), null);
+			
+			//conn.authenticateWithPassword("pi", "beep");
 
 			// start a compatible shell
 			sess = conn.openSession();
@@ -264,9 +268,14 @@ public class BeepRobot extends AbstractRobot {
 			}
 
 			connected = true;
+			
+			// ensure that directory for path automate exists
+			piIn.println("mkdir -p " + piDirAutomat);
 
-			// Start a new roscore
+			// ensure log directory exists
 			piIn.println("mkdir -p ~/log");
+			
+			// Start a new roscore
 			try {
 				piOut.readLine(); // command
 			} catch (IOException e) {
@@ -280,6 +289,7 @@ public class BeepRobot extends AbstractRobot {
 					e.printStackTrace();
 				}
 			}
+			// start BEEP nodes (old nodes will shutdown automatically)
 			startBeepNode();
 
 			try {
@@ -287,13 +297,13 @@ public class BeepRobot extends AbstractRobot {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			MainFrame
 					.showErrInfo(
-							"<html>Es konnte keine Verbindung mit "
+							"Es konnte keine Verbindung mit "
 									+ connectTo
 									+ " hergestellt werden.<br>Bitte überprüfe die IP des Roboters und ob dieser über eine aktive W-Lan Verbindung verfügt!",
 							"Verbindung fehlgeschlagen");
@@ -315,7 +325,7 @@ public class BeepRobot extends AbstractRobot {
 			conn = null;
 		} catch (IOException e) {
 		}
-		
+
 	}
 
 	@Override
@@ -367,8 +377,7 @@ public class BeepRobot extends AbstractRobot {
 	public void stop() {
 		if (connected) {
 			try {
-				piIn.println("pkill -2 -f 'python " + piDirAutomat + "/"
-						+ automatFileName + "'");
+				piIn.println("pkill -2 -f " + automatFileName);
 				piOut.readLine(); // command
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -448,18 +457,32 @@ public class BeepRobot extends AbstractRobot {
 	 * @return true, if roscore is running
 	 */
 	private boolean isRoscoreRunning() {
-		System.out.print("Roscore running: ");
+		System.out.print("ROS Master running: ");
 		if (connected) {
-			piIn.println("ps -ef | grep 'roscore' | grep -v 'grep' | wc -l");
+			piIn.println("pgrep -x rosmaster | wc -l");
 			try {
 				String line = piOut.readLine();
 				while (line.length() != 1) {
 					line = piOut.readLine();
 				}
-				if (line.equals("1")) { // number of roscore
-										// processes running
+				int n;
+				
+				try {
+					n = Integer.parseInt(line);
+				} catch (NumberFormatException e) {
+					System.out.println("false");
+					return false;
+				}
+
+				if (n == 1) {
 					System.out.println("true");
 					return true;
+				} else if (n>1) {
+					System.out.println("true (multiple?!)");
+					return true;
+				} else{
+					System.out.println("false");
+					return false;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -467,34 +490,36 @@ public class BeepRobot extends AbstractRobot {
 
 		}
 
-		System.out.println("false");
+		System.out.println("not connected");
 		return false;
 	}
 
 	/**
-	 * Terminates every running roscore process and starts a new roscore. Mind,
+	 * Terminates every running roscore process (rosmaster, roslaunch) and starts a new roscore. Mind,
 	 * that the roscore needs some time to start up after the call of this
 	 * function.
 	 */
 	private void startNewRoscore() {
 		if (connected) {
-			piIn.println("pkill roscore");
+			piIn.println("killall roslaunch");
+			piIn.println("killall roscore");
+			piIn.println("killall rosmaster");
 			System.out.println("Starting new Roscore");
 			piIn.println("nohup roscore 2> ~/log/roscore-err.log 1> ~/log/roscore-out.log &");
 		}
 	}
 
 	/**
-	 * Starts a new _Beep node. Mind, that the node needs some time to start up after the call of this
-	 * function.
+	 * Starts a new _Beep node. Mind, that the node needs some time to start up
+	 * after the call of this function.
 	 */
 	private void startBeepNode() {
 		if (connected) {
 			System.out.println("Starting Beep-node");
-			piIn.println("nohup rosrun Beep_main_node beep.py  2> ~/log/beepNode-err.log 1> ~/log/beepNode-out.log &");			
+			piIn.println("nohup roslaunch beep_nodes zusmoro.launch  2> ~/log/beep_nodes-err.log 1> ~/log/beep_nodes-out.log &");
 		}
 	}
-	
+
 	/**
 	 * Stops all already running Smach automates by calling {@link stop()}. Then
 	 * starts the Smach automate <code>automateFileName</code> on Beep. Will
@@ -504,7 +529,8 @@ public class BeepRobot extends AbstractRobot {
 	 */
 	private void startAutomatOnPi() {
 		stop(); // Stop old automate
-		piIn.println("nohup rosrun zusmoro_state_machine " + automatFileName
+		// TODO use ros package
+		piIn.println("nohup " + piDirAutomat + "/" + automatFileName
 				+ " 2> ~/log/" + automatFileName + "-err.log 1> ~/log/"
 				+ automatFileName + "-out.log &");
 		try {

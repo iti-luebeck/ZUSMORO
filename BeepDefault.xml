@@ -125,6 +125,6 @@
         <name>timer</name>
     </TIMER>
     <beepIP>141.83.158.160</beepIP>
-    <piDirAutomat>/home/pi/ros/beep_framework/zusmoro_state_machine</piDirAutomat>
-    <automatFileName>TestAutomat.py</automatFileName>
+    <piDirAutomat>$HOME/catkin_ws/src/zusmoro_state_machine</piDirAutomat>
+    <automatFileName>Automat.py</automatFileName>
 </beepRobot>

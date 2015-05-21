@@ -1,0 +1,60 @@
+<Automat robotName='Beep Robot' >
+<State>
+<initial> true </initial>
+<label> State 1 </label>
+<location> 289 113 </location>
+<action> LED1 -3407821 </action>
+<action> LED2 -16724788 </action>
+<action> MOTOR1 127 </action>
+<action> MOTOR2 0 </action>
+</State>
+<State>
+<initial> false </initial>
+<label> State 2 </label>
+<location> 276 213 </location>
+<action> LED1 -205 </action>
+<action> LED2 -16737895 </action>
+<action> MOTOR1 0 </action>
+<action> MOTOR2 127 </action>
+</State>
+<Transition>
+<label> T1 </label>
+<xOffset> 0 </xOffset>
+<rootState> 0 </rootState>
+<followerState> 1 </followerState>
+<guard>
+<HugeAnd>
+<Variable>
+IR5
+BIGGER
+120
+</Variable>
+<Variable>
+timer
+BIGGER
+500
+</Variable>
+</HugeAnd>
+</guard>
+</Transition>
+<Transition>
+<label> T2 </label>
+<xOffset> -108 </xOffset>
+<rootState> 1 </rootState>
+<followerState> 0 </followerState>
+<guard>
+<HugeAnd>
+<Variable>
+IR5
+SMALLER_EQUAL
+120
+</Variable>
+<Variable>
+timer
+BIGGER
+100
+</Variable>
+</HugeAnd>
+</guard>
+</Transition>
+</Automat>

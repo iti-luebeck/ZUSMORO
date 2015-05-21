@@ -52,7 +52,7 @@ public class BeepRgbLed implements ISmachableActuator {
 		String col = "c" + ledIndex;
 		String led = "led" + ledIndex;
 
-		res[0] = col + " = MyColor()";
+		res[0] = col + " = Color()";
 		res[1] = col + ".r = " + c.getRed();
 		res[2] = col + ".g = " + c.getGreen();
 		res[3] = col + ".b = " + c.getBlue();
@@ -70,7 +70,7 @@ public class BeepRgbLed implements ISmachableActuator {
 	public HashSet<String> getImports() {
 		HashSet<String> res = new HashSet<String>();
 		res.add("from beep_msgs.msg import Led");
-		res.add("from beep_msgs.msg import MyColor");
+		res.add("from beep_msgs.msg import Color");
 		return res;
 	}
 

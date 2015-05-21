@@ -1,0 +1,62 @@
+<Automat robotName='Beep Robot' >
+<State>
+<initial> true </initial>
+<label> State 1 </label>
+<location> 147 215 </location>
+<action> LED0 -16777012 </action>
+<action> LED1 -16776961 </action>
+<action> LED2 -16776961 </action>
+<action> LED3 -16777012 </action>
+<action> LED4 -16777012 </action>
+<action> LED5 -16777012 </action>
+<action> LED6 -16777012 </action>
+<action> LED7 -16777012 </action>
+<action> MOTOR1 0 </action>
+<action> MOTOR2 0 </action>
+</State>
+<State>
+<initial> false </initial>
+<label> State 2 </label>
+<location> 316 207 </location>
+<action> LED0 -6750055 </action>
+<action> LED1 -6750055 </action>
+<action> LED2 -3407668 </action>
+<action> LED3 -3407668 </action>
+<action> LED4 -6750055 </action>
+<action> LED5 -10092442 </action>
+<action> LED6 -6750055 </action>
+<action> LED7 -6750055 </action>
+<action> MOTOR1 0 </action>
+<action> MOTOR2 0 </action>
+</State>
+<Transition>
+<label> T1 </label>
+<xOffset> 0 </xOffset>
+<rootState> 0 </rootState>
+<followerState> 1 </followerState>
+<guard>
+<HugeAnd>
+<Variable>
+timer
+BIGGER
+500
+</Variable>
+</HugeAnd>
+</guard>
+</Transition>
+<Transition>
+<label> T2 </label>
+<xOffset> 0 </xOffset>
+<rootState> 1 </rootState>
+<followerState> 0 </followerState>
+<guard>
+<HugeAnd>
+<Variable>
+timer
+BIGGER
+500
+</Variable>
+</HugeAnd>
+</guard>
+</Transition>
+</Automat>

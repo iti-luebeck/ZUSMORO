@@ -59,7 +59,7 @@ public class SmachAutomat {
 
 	private String getImports() {
 		String imports = "#!/usr/bin/env python\n\n";
-		imports += "import roslib; roslib.load_manifest('" + pkg + "')\n";
+		imports += "import roslib\n";
 		imports += "import rospy\n";
 		imports += "import smach\n";
 		imports += "import smach_ros\n";
