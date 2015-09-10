@@ -27,29 +27,70 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package model.onboard;
+package robots.beep;
 
-public interface TransmissionJob {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
-	/**
-	 * @param lastMsgRec
-	 *            Last Message received from epuck
-	 * @param lastMsgSent
-	 *            Last Message sent from program
-	 * @return unit recieved equals unit sent
-	 * 
-	 *         Method checking if the last information unit (e.g. a state
-	 *         including transitions, name, actions etc.) was transmitted
-	 *         correctly. If not, a point of restart is set.
-	 */
-	boolean check(String lastMsgRec, String lastMsgSent);
+import smachGenerator.ISmachableActuator;
 
-	boolean isComplete();
+@XmlAccessorType(XmlAccessType.FIELD)
+public class BeepActuator implements ISmachableActuator {
 
-	double completionStatus();
+	private String name;
+	private String topic;
+	private String objectInMessage;
+	private String topicType;
+	private String topicPackage;
 
-	void removeFirst();
+	public BeepActuator(String name, String topic, String topicType,
+			String topicPackage, String objectInMessage) {
+		this.name = name;
+		this.topic = topic;
+		this.objectInMessage = objectInMessage;
+		this.topicType = topicType;
+		this.topicPackage = topicPackage;
+	}
 
-	String getFirst();
+	public BeepActuator() {
+		name = null;
+		topic = null;
+		objectInMessage = null;
+		topicType = null;
+		topicPackage = null;
+	}
 
+	@Override
+	public String getTopic() {
+		return topic;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getObejctInMessage() {
+		return objectInMessage;
+	}
+
+	public String getTopicType() {
+		return topicType;
+	}
+
+	public String getTopicPackage() {
+		return topicPackage;
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof BeepActuator)) {
+			return false;
+		} else {
+			BeepActuator s = (BeepActuator) o;
+			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
+					.equals(s.getObejctInMessage())));
+		}
+	}
+	
 }

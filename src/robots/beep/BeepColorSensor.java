@@ -27,56 +27,81 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package model;
+package robots.beep;
 
-import smachGenerator.ISmachableAction;
+import java.awt.Color;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
-public class Action implements ISmachableAction {
+import model.bool.Variable.Operator;
+import smachGenerator.ISmachableSensor;
 
-	private String actuatorName;
-	private int value;
+@XmlAccessorType(XmlAccessType.FIELD)
+public class BeepColorSensor implements ISmachableSensor {
 
-	public Action(String key, int value) {
-		this.actuatorName = key;
-		this.value = value;
+	private String name;
+	private String topic;
+	private String objectInMessage;
+	private String topicType;
+	private String topicPackage;
+
+	public BeepColorSensor(String name, String topic, String topicType,
+			String topicPackage, String objectInMessage) {
+		this.name = name;
+		this.topic = topic;
+		this.objectInMessage = objectInMessage;
+		this.topicType = topicType;
+		this.topicPackage = topicPackage;
 	}
 
-	/* (non-Javadoc)
-	 * @see model.ISmachableAction#getKey()
-	 */
-	@Override
-	public String getActuatorName() {
-		return actuatorName;
-	}
-
-	public void setActuatorName(String key) {
-		this.actuatorName = key;
-	}
-
-	/* (non-Javadoc)
-	 * @see model.ISmachableAction#getValue()
-	 */
-	@Override
-	public int getValue() {
-		return value;
-	}
-	public void setValue(int value) {
-		this.value = value;
+	public BeepColorSensor() {
+		name = null;
+		topic = null;
+		objectInMessage = null;
+		topicType = null;
+		topicPackage = null;
 	}
 
 	@Override
+	public String getTopic() {
+		return topic;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getObejctInMessage() {
+		return objectInMessage;
+	}
+
+	public String getTopicType() {
+		return topicType;
+	}
+
+	public String getTopicPackage() {
+		return topicPackage;
+	}
+
 	public boolean equals(Object o) {
-		if (o instanceof Action) {
-			ISmachableAction action = (ISmachableAction) o;
-			return actuatorName.equals(action.getActuatorName()) && (value==action.getValue());
-		} else {
+		if (!(o instanceof BeepIRSensor)) {
 			return false;
+		} else {
+			BeepIRSensor s = (BeepIRSensor) o;
+			return (name.equals(s.getName()) || (topic.equals(s.getTopic()) && objectInMessage
+					.equals(s.getObejctInMessage())));
 		}
 	}
 
 	@Override
-	public String toString() {
-		return actuatorName + " " + value;
+	public String getTransitionCondition(Operator op, int compVal) {
+		Color col = new Color(compVal);
+		float[] hsbCol =  Color.RGBtoHSB(col.getRed(), col.getGreen(), col.getBlue(), null);
+		
+		return name + ">" + (hsbCol[0]-0.1+1)%1 + " and " + name + "<" + (hsbCol[0]+0.1)%1;
 	}
+
 }
